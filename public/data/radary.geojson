@@ -1,0 +1,310 @@
+{
+  "type": "FeatureCollection",
+  "name": "radary",
+  "crs": {
+    "type": "name",
+    "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 1,
+        "ID": 1,
+        "LOKALITA": "Josefa Suka",
+        "V_PROVOZU": 1,
+        "SMER": 315,
+        "GPS": "50.502104900792261, 13.656826351983822"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.656826351983822, 50.502104900792261]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 2,
+        "ID": 2,
+        "LOKALITA": "Průběžná",
+        "V_PROVOZU": 1,
+        "SMER": 225,
+        "GPS": "50.499710605685415, 13.626922608632677"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.626922608632677, 50.499710605685415]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 3,
+        "ID": 3,
+        "LOKALITA": "Višňová",
+        "V_PROVOZU": 1,
+        "SMER": 25,
+        "GPS": "50.493927217098054, 13.655625599839672"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.655625599839672, 50.493927217098054]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 4,
+        "ID": 4,
+        "LOKALITA": "Jana Palacha",
+        "V_PROVOZU": 1,
+        "SMER": 100,
+        "GPS": "50.4981944762322, 13.651310652190956"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.651310652190956, 50.4981944762322]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 5,
+        "ID": 5,
+        "LOKALITA": "Pod Lajsníkem",
+        "V_PROVOZU": 1,
+        "SMER": 40,
+        "GPS": "50.500006634743777, 13.663760827696633"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.663760827696633, 50.500006634743777]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 6,
+        "ID": 6,
+        "LOKALITA": "Československé armády",
+        "V_PROVOZU": 0,
+        "SMER": 30,
+        "GPS": "50.510249829507053, 13.635255331704508"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.635255331704508, 50.510249829507053]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 7,
+        "ID": 7,
+        "LOKALITA": "Jana Opletala",
+        "V_PROVOZU": 0,
+        "SMER": 290,
+        "GPS": "50.514117272590923, 13.632136366114887"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.632136366114887, 50.514117272590923]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 8,
+        "ID": 8,
+        "LOKALITA": "Mostecká",
+        "V_PROVOZU": 1,
+        "SMER": 190,
+        "GPS": "50.489581580756685, 13.672024397898481"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.672024397898481, 50.489581580756685]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 9,
+        "ID": 9,
+        "LOKALITA": "Josefa Skupy",
+        "V_PROVOZU": 0,
+        "SMER": 290,
+        "GPS": "50.506200981867089, 13.638736183712728"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.638736183712728, 50.506200981867089]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 10,
+        "ID": 10,
+        "LOKALITA": "Okružní",
+        "V_PROVOZU": 0,
+        "SMER": 270,
+        "GPS": "50.492059658324997, 13.656996345285942"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.656996345285942, 50.492059658324997]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 11,
+        "ID": 11,
+        "LOKALITA": "Vtelenská",
+        "V_PROVOZU": 1,
+        "SMER": 200,
+        "GPS": "50.494807814510914, 13.673042358937737"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.673042358937737, 50.494807814510914]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 12,
+        "ID": 12,
+        "LOKALITA": "Zdeňka Štěpánka",
+        "V_PROVOZU": 0,
+        "SMER": 90,
+        "GPS": "50.493683843861518, 13.638268059791328"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.638268059791328, 50.493683843861518]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 13,
+        "ID": 13,
+        "LOKALITA": "Okružní",
+        "V_PROVOZU": 0,
+        "SMER": 245,
+        "GPS": "50.492967209250274, 13.663176441956553"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.663176441956553, 50.492967209250274]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 14,
+        "ID": 14,
+        "LOKALITA": "Višňová",
+        "V_PROVOZU": 0,
+        "SMER": 200,
+        "GPS": "50.49493893047152, 13.65587191291706"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.65587191291706, 50.49493893047152]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 15,
+        "ID": 15,
+        "LOKALITA": "Chomutovská",
+        "V_PROVOZU": 0,
+        "SMER": 120,
+        "GPS": "50.515607701350362, 13.641112598280225"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.641112598280225, 50.515607701350362]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 16,
+        "ID": 16,
+        "LOKALITA": "Bělehradská",
+        "V_PROVOZU": 0,
+        "SMER": 20,
+        "GPS": "50.507511719077016, 13.644560762104764"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.644560762104764, 50.507511719077016]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 17,
+        "ID": 17,
+        "LOKALITA": "tř. Budovatelů (bl. 369)",
+        "V_PROVOZU": 1,
+        "SMER": 35,
+        "GPS": "50.496665225030675, 13.636343659863481"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.636343659863481, 50.496665225030675]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 18,
+        "ID": 18,
+        "LOKALITA": "Jiřího z Poděbrad",
+        "V_PROVOZU": 1,
+        "SMER": 200,
+        "GPS": "50.50321783766509, 13.644877558665585"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.644877558665585, 50.50321783766509]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 19,
+        "ID": 19,
+        "LOKALITA": "Kuldova",
+        "V_PROVOZU": 1,
+        "SMER": 350,
+        "GPS": "50.510936134268115, 13.63532483801759"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.63532483801759, 50.510936134268115]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "OBJECTID": 20,
+        "ID": 20,
+        "LOKALITA": "Tvrzova",
+        "V_PROVOZU": 1,
+        "SMER": 70,
+        "GPS": "50.52324738765676, 13.622543848017029"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.622543848017029, 50.52324738765676]
+      }
+    }
+  ]
+}
