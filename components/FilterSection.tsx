@@ -18,45 +18,32 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 }) => {
   return (
     <div
-      style={{
-        marginBottom: "20px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        padding: "20px",
-        backgroundColor: "#C8E6C9",
-        border: "2px solid #66BB6A",
-        borderRadius: "40px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-        color: "#388E3C",
-        opacity: "80%",
-        width: isFiltersVisible ? "auto" : "10px",
-        overflow: "hidden",
-      }}
+      className={`mb-5 flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 ${
+        isFiltersVisible ? "max-w-[300px]" : "max-w-[10px]"
+      }`}
     >
       {/* Nadpis */}
       <h3
-        style={{
-          alignSelf: "center",
-          visibility: isFiltersVisible ? "visible" : "hidden",
-        }}
+        className={`self-center transition-opacity duration-300 ${
+          isFiltersVisible ? "opacity-100" : "opacity-0"
+        }`}
       >
         Filtry
       </h3>
 
       {/* Zelená čára pod nadpisem */}
       <div
-        style={{
-          width: "100%",
-          borderBottom: "2px solid #66BB6A",
-          marginBottom: "20px",
-          marginTop: "10px",
-          visibility: isFiltersVisible ? "visible" : "hidden",
-        }}
-      />
+        className={`w-[calc(100%+2.5rem)] -mx-5  border-b-2 border-[#66BB6A] mb-5 mt-2 transition-opacity duration-300 ${
+          isFiltersVisible ? "opacity-100" : "opacity-0"
+        }`}
+      ></div>
 
       {/* Obsah */}
-      <div style={{ visibility: isFiltersVisible ? "visible" : "hidden" }}>
+      <div
+        className={`transition-opacity duration-300 ${
+          isFiltersVisible ? "opacity-100" : "opacity-0"
+        }`}
+      >
         <ButtonToggle
           showData={showRadarData}
           toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}

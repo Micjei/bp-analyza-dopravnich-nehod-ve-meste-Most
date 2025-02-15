@@ -9,16 +9,16 @@
     {
       "type": "Feature",
       "properties": {
-        "OBJECTID": 17,
-        "ID": 17,
-        "LOKALITA": "tř. Budovatelů (bl. 369)",
+        "OBJECTID": 1,
+        "ID": 1,
+        "LOKALITA": "Josefa Suka",
         "V_PROVOZU": 1,
-        "SMER": 35,
-        "GPS": "50.496665225030675, 13.636343659863481"
+        "SMER": 315,
+        "GPS": "50.502104900792261, 13.656826351983822"
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [13.636343659863481, 50.496665225030675]
+        "coordinates": [13.656826351983822, 50.502104900792261]
       }
     }
   ]

@@ -26,3 +26,7 @@ body {
   display: block;
   margin-top: 20px;
 }
+
+.leaflet-control-attribution {
+  display: none !important;
+}

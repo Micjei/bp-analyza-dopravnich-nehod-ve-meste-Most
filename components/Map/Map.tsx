@@ -6,15 +6,16 @@ import L from "leaflet";
 import "../../app/globals.css";
 import ButtonToggle from "../ButtonToggle";
 import FilterSection from "../FilterSection";
+import LegendSection from "../LegendSection";
+import Footer from "../FooterSection";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
   const [RadarsData, setRadarsData] = useState<any>(null);
-  const [showRadars, setShowRadars] = useState<boolean>(false);
   const [otherGeoJsonData, setOtherGeoJsonData] = useState<any>(null);
-  const [showOtherData, setShowOtherData] = useState(false);
 
   const [showFilters, setShowFilters] = useState(true);
+  const [showLegend, setShowLegend] = useState(true);
 
   useEffect(() => {
     fetch("data/radary.geojson")
@@ -56,26 +57,11 @@ const Map: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        width: "100%",
-        position: "relative",
-      }}
-    >
-      {/* Rodičovský kontejner pro mapu */}
-      <div style={{ width: "100%", height: "600px", position: "relative" }}>
+    <div className="flex flex-col items-start w-full relative">
+      {/* Kontejner pro mapu */}
+      <div className="w-full h-[600px] relative">
         {/* Sekce filtrů s možností skrytí/odkrytí */}
-        <div
-          style={{
-            position: "absolute",
-            top: "200px",
-            left: "20px",
-            zIndex: 1000,
-          }}
-        >
+        <div className="absolute top-[40%] left-5 z-[1000]">
           <FilterSection
             showRadarData={showRadarData}
             setShowRadarData={setShowRadarData}
@@ -83,25 +69,29 @@ const Map: React.FC = () => {
             setShowOtherData={setShowOtherDataFilter}
             isFiltersVisible={showFilters}
           />
-
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "100%",
-              transform: "translateY(-50%)",
-              backgroundColor: "#C8E6C9",
-              color: "#388E3C",
-              padding: "10px",
-              borderRadius: "20%",
-              cursor: "pointer",
-              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.2)",
-            }}
+            className="absolute h-12 w-6 top-1/2 left-full -translate-y-1/2 -translate-x-[0.100rem] bg-[#aac9ab] text-[#388E3C] border-2 border-[#66BB6A] rounded-r-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80"
           >
-            {showFilters ? "⮜" : "⮞"} {/* Ikony pro otevření a zavření */}
+            {showFilters ? "⮜" : "⮞"}
           </button>
+        </div>
+
+        <div className="absolute bottom-5 right-5 z-[1000]">
+          <LegendSection isLegendVisible={showLegend} />
+          {/* Tlačítko pro zobrazení a skrytí legendy */}
+          <button
+            onClick={() => setShowLegend(!showLegend)}
+            className="absolute w-12 left-1/2 bottom-full -translate-x-1/2 translate-y-[0.100rem] bg-[#aac9ab] text-[#388E3C] border-2 border-[#66BB6A] rounded-t-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80"
+          >
+            {showLegend ? "⮛" : "⮙"}
+          </button>
+        </div>
+
+        {/* footer */}
+        <div className="w-full absolute -bottom-5 z-[1000]">
+          <Footer footerText="Tvůj nápis zde" />
         </div>
 
         <MapContainer
@@ -112,11 +102,10 @@ const Map: React.FC = () => {
           style={{ width: "100%", height: "100%" }}
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution={""}
             url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-
-          {/* GeoJSON data podle filtrů */}
+          {/* GeoJSON data */}
           {showRadarData && RadarsData && (
             <GeoJSON data={RadarsData} pointToLayer={pointToLayerRadars} />
           )}
