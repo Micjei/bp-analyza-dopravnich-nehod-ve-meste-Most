@@ -109,7 +109,9 @@ const Map: React.FC = () => {
         >
           <TileLayer
             attribution={""}
-            url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" // saletitní
+            //url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" // normalni
+            //url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" // idk jaká
           />
           {/* GeoJSON data */}
           {showRadarData && RadarsData && (
