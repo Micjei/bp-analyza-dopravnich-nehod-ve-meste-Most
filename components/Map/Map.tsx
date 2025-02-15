@@ -7,7 +7,8 @@ import "../../app/globals.css";
 import ButtonToggle from "../ButtonToggle";
 import FilterSection from "../FilterSection";
 import LegendSection from "../LegendSection";
-import Footer from "../FooterSection";
+import FooterSection from "../FooterSection";
+import HeaderSection from "../HeaderSection";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
@@ -59,7 +60,7 @@ const Map: React.FC = () => {
   return (
     <div className="flex flex-col items-start w-full relative">
       {/* Kontejner pro mapu */}
-      <div className="w-full h-[600px] relative">
+      <div className="map">
         {/* Sekce filtrů s možností skrytí/odkrytí */}
         <div className="absolute top-[40%] left-5 z-[1000]">
           <FilterSection
@@ -78,7 +79,7 @@ const Map: React.FC = () => {
           </button>
         </div>
 
-        <div className="absolute bottom-5 right-5 z-[1000]">
+        <div className="absolute bottom-10 right-5 z-[1000]">
           <LegendSection isLegendVisible={showLegend} />
           {/* Tlačítko pro zobrazení a skrytí legendy */}
           <button
@@ -90,8 +91,13 @@ const Map: React.FC = () => {
         </div>
 
         {/* footer */}
-        <div className="w-full absolute -bottom-5 z-[1000]">
-          <Footer footerText="Tvůj nápis zde" />
+        <div className="w-full absolute bottom-0 z-[1000]">
+          <FooterSection footerText="nějaky napis, aktualizace či co" />
+        </div>
+
+        {/* header */}
+        <div className="w-full absolute top-0 z-[1000]">
+          <HeaderSection headerText="header content" />
         </div>
 
         <MapContainer

@@ -4,11 +4,11 @@ interface FooterProps {
   footerText: string;
 }
 
-const Footer: React.FC<FooterProps> = ({ footerText }) => {
+const FooterSection: React.FC<FooterProps> = ({ footerText }) => {
   return (
     <div
       className={
-        "absolute bottom-0 w-full transform flex flex-col items-center bg-[#C8E6C9] border-2 border-t-[#66BB6A] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500"
+        "absolute bottom-0 w-full flex flex-col items-center bg-[#C8E6C9] border-2 border-t-[#66BB6A] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap"
       }
     >
       <h3 className={"transition-opacity duration-300"}>{footerText}</h3>
@@ -16,4 +16,4 @@ const Footer: React.FC<FooterProps> = ({ footerText }) => {
   );
 };
 
-export default Footer;
+export default FooterSection;
