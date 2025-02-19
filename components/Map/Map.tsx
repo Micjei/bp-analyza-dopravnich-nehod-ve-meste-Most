@@ -18,22 +18,18 @@ const Map: React.FC = () => {
   const [showFilters, setShowFilters] = useState(true);
   const [showLegend, setShowLegend] = useState(true);
 
-  useEffect(() => {
-    fetch("data/radary.geojson")
-      .then((response) => response.json())
-      .then((data) => setRadarsData(data))
-      .catch((error) => console.error("Chyba při načítání GeoJSON:", error));
-
-    fetch("data/otherData.geojson")
-      .then((response) => response.json())
-      .then((data) => setOtherGeoJsonData(data))
-      .catch((error) =>
-        console.error("Chyba při načítání jiných dat GeoJSON:", error)
-      );
-  }, []);
-
   const [showRadarData, setShowRadarData] = useState(false);
   const [showOtherDataFilter, setShowOtherDataFilter] = useState(false);
+
+  const [tileLayerUrl, setTileLayerUrl] = useState(
+    "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+  );
+
+  const [lastUpdate, setLastUpdate] = useState<string>("");
+
+  useEffect(() => {
+    handleUpdateData();
+  }, []);
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
     return L.circleMarker(latlng, {
@@ -57,6 +53,24 @@ const Map: React.FC = () => {
     });
   };
 
+  const handleUpdateData = () => {
+    // TODO logika pro stažení a uložení nových dat
+    console.log("Aktualizuji data...");
+    fetch("data/radary.geojson")
+      .then((response) => response.json())
+      .then((data) => setRadarsData(data))
+      .catch((error) => console.error("Chyba při načítání GeoJSON:", error));
+
+    fetch("data/otherData.geojson")
+      .then((response) => response.json())
+      .then((data) => setOtherGeoJsonData(data))
+      .catch((error) =>
+        console.error("Chyba při načítání jiných dat GeoJSON:", error)
+      );
+
+    setLastUpdate(new Date().toLocaleString());
+  };
+
   return (
     <div className="flex flex-col items-start w-full relative">
       {/* Kontejner pro mapu */}
@@ -69,6 +83,7 @@ const Map: React.FC = () => {
             showOtherData={showOtherDataFilter}
             setShowOtherData={setShowOtherDataFilter}
             isFiltersVisible={showFilters}
+            onUpdateData={handleUpdateData}
           />
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button
@@ -90,14 +105,20 @@ const Map: React.FC = () => {
           </button>
         </div>
 
-        {/* footer */}
-        <div className="w-full absolute bottom-0 z-[1000]">
-          <FooterSection footerText="nějaky napis, aktualizace či co" />
-        </div>
-
         {/* header */}
         <div className="w-full absolute top-0 z-[1000]">
-          <HeaderSection headerText="header content" />
+          <HeaderSection
+            headerText="Interaktivní Dopravní Mapa"
+            onLayerChange={setTileLayerUrl}
+          />
+        </div>
+
+        {/* footer */}
+        <div className="w-full absolute bottom-0 z-[1000]">
+          <FooterSection
+            footerText="Čas poslední aktualizace:"
+            lastUpdate={lastUpdate}
+          />
         </div>
 
         <MapContainer
@@ -109,7 +130,8 @@ const Map: React.FC = () => {
         >
           <TileLayer
             attribution={""}
-            url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" // saletitní
+            url={tileLayerUrl}
+            //url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" // saletitní
             //url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" // normalni
             //url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" // idk jaká
           />

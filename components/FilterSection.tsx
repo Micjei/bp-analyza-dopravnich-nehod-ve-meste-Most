@@ -7,6 +7,7 @@ interface FilterSectionProps {
   showOtherData: boolean;
   setShowOtherData: (value: boolean) => void;
   isFiltersVisible: boolean;
+  onUpdateData?: () => void;
 }
 
 const FilterSection: React.FC<FilterSectionProps> = ({
@@ -15,6 +16,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   showOtherData,
   setShowOtherData,
   isFiltersVisible,
+  onUpdateData,
 }) => {
   return (
     <div
@@ -24,7 +26,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     >
       {/* Nadpis */}
       <h3
-        className={`self-center transition-opacity duration-300 ${
+        className={`self-center transition-opacity duration-300 text-1xl font-bold ${
           isFiltersVisible ? "opacity-100" : "opacity-0"
         }`}
       >
@@ -54,6 +56,13 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           toggleGeoJsonVisibility={() => setShowOtherData(!showOtherData)}
           label="Jiná Data"
         />
+        {/* Tlačítko pro aktualizaci dat */}
+        <button
+          onClick={onUpdateData}
+          className="mt-4 bg-[#66BB6A] text-white px-4 py-2 rounded-[30px] shadow hover:bg-[#558b55]"
+        >
+          Aktualizovat
+        </button>
       </div>
     </div>
   );

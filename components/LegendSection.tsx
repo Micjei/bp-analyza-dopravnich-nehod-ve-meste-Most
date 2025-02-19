@@ -13,7 +13,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({ isLegendVisible }) => {
     >
       {/* Nadpis */}
       <h3
-        className={`self-center transition-opacity duration-300 ${
+        className={`self-center transition-opacity duration-300 text-1xl font-bold ${
           isLegendVisible ? "opacity-100" : "opacity-0"
         }`}
       >
