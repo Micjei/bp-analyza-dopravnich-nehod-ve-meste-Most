@@ -4,6 +4,8 @@ import ButtonToggle from "./ButtonToggle";
 interface FilterSectionProps {
   showRadarData: boolean;
   setShowRadarData: (value: boolean) => void;
+  showAccidentData: boolean;
+  setShowAccidentData: (value: boolean) => void;
   showOtherData: boolean;
   setShowOtherData: (value: boolean) => void;
   isFiltersVisible: boolean;
@@ -13,6 +15,8 @@ interface FilterSectionProps {
 const FilterSection: React.FC<FilterSectionProps> = ({
   showRadarData,
   setShowRadarData,
+  showAccidentData,
+  setShowAccidentData,
   showOtherData,
   setShowOtherData,
   isFiltersVisible,
@@ -50,6 +54,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           showData={showRadarData}
           toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
           label="Radary"
+        />
+        <ButtonToggle
+          showData={showAccidentData}
+          toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
+          label="Nehody"
         />
         <ButtonToggle
           showData={showOtherData}
