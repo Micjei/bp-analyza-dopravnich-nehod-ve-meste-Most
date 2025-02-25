@@ -9,17 +9,24 @@ import FilterSection from "../FilterSection";
 import LegendSection from "../LegendSection";
 import FooterSection from "../FooterSection";
 import HeaderSection from "../HeaderSection";
+import {
+  fetchRadarsData,
+  fetchAccidentsData,
+  fetchOtherGeoJsonData,
+} from "../../utils/fetchData";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
   const [RadarsData, setRadarsData] = useState<any>(null);
-  const [otherGeoJsonData, setOtherGeoJsonData] = useState<any>(null);
+  const [AccidentsData, setAccidentsData] = useState<any>(null);
+  const [otherGeoJsonData, setOtherGeoJsonData] = useState<any>(null); // smazat
 
   const [showFilters, setShowFilters] = useState(true);
   const [showLegend, setShowLegend] = useState(true);
 
   const [showRadarData, setShowRadarData] = useState(false);
-  const [showOtherDataFilter, setShowOtherDataFilter] = useState(false);
+  const [showAccidentData, setShowAccidentData] = useState(false);
+  const [showOtherDataFilter, setShowOtherDataFilter] = useState(false); // smazat
 
   const [tileLayerUrl, setTileLayerUrl] = useState(
     "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
@@ -28,7 +35,22 @@ const Map: React.FC = () => {
   const [lastUpdate, setLastUpdate] = useState<string>("");
 
   useEffect(() => {
-    handleUpdateData();
+    const loadData = async () => {
+      const radars = await fetchRadarsData();
+      setRadarsData(radars);
+
+      const accidents = await fetchAccidentsData();
+      setAccidentsData(accidents);
+
+      const otherData = await fetchOtherGeoJsonData(); // smazat
+      setOtherGeoJsonData(otherData); // smazat
+
+      setLastUpdate(new Date().toLocaleString());
+    };
+
+    loadData();
+
+    setLastUpdate(new Date().toLocaleString());
   }, []);
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
@@ -42,6 +64,18 @@ const Map: React.FC = () => {
     });
   };
 
+  const pointToLayerAccidents = (feature: any, latlng: LatLngExpression) => {
+    return L.circleMarker(latlng, {
+      radius: 8,
+      fillColor: "green",
+      color: "white",
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.7,
+    });
+  };
+
+  // smazat
   const pointToLayerOthers = (feature: any, latlng: LatLngExpression) => {
     return L.circleMarker(latlng, {
       radius: 8,
@@ -53,20 +87,59 @@ const Map: React.FC = () => {
     });
   };
 
+  // upload data do Firestore
+  const uploadData = async () => {
+    try {
+      const datasets = [
+        { name: "radary", file: "radary.geojson", api: "/api/uploadRadars" },
+        { name: "nehody", file: "nehody.geojson", api: "/api/uploadAccidents" },
+        {
+          name: "vozidla",
+          file: "vozidla.geojson",
+          api: "/api/uploadVehicles",
+        },
+        {
+          name: "nasledky",
+          file: "nasledky.geojson",
+          api: "/api/uploadConsequences",
+        },
+        {
+          name: "chodci",
+          file: "chodci.geojson",
+          api: "/api/uploadPedestrians",
+        },
+      ];
+
+      // Načíst soubory
+      const fetchData = datasets.map(async (dataset) => {
+        const response = await fetch(`/data/${dataset.file}`);
+        const geojson = await response.json();
+        return { ...dataset, geojson };
+      });
+
+      const loadedData = await Promise.all(fetchData);
+
+      // Odeslat data
+      const uploadRequests = loadedData.map(async ({ name, api, geojson }) => {
+        const res = await fetch(api, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(geojson),
+        });
+
+        const result = await res.json();
+        console.log(`${name} data:`, result);
+      });
+
+      await Promise.all(uploadRequests);
+      console.log("✅ Všechna data byla úspěšně nahrána!");
+    } catch (error) {
+      console.error("❌ Chyba při nahrávání dat:", error);
+    }
+  };
+
   const handleUpdateData = () => {
     // TODO logika pro stažení a uložení nových dat
-    console.log("Aktualizuji data...");
-    fetch("data/radary.geojson")
-      .then((response) => response.json())
-      .then((data) => setRadarsData(data))
-      .catch((error) => console.error("Chyba při načítání GeoJSON:", error));
-
-    fetch("data/otherData.geojson")
-      .then((response) => response.json())
-      .then((data) => setOtherGeoJsonData(data))
-      .catch((error) =>
-        console.error("Chyba při načítání jiných dat GeoJSON:", error)
-      );
 
     setLastUpdate(new Date().toLocaleString());
   };
@@ -80,10 +153,13 @@ const Map: React.FC = () => {
           <FilterSection
             showRadarData={showRadarData}
             setShowRadarData={setShowRadarData}
+            showAccidentData={showAccidentData}
+            setShowAccidentData={setShowAccidentData}
             showOtherData={showOtherDataFilter}
             setShowOtherData={setShowOtherDataFilter}
             isFiltersVisible={showFilters}
-            onUpdateData={handleUpdateData}
+            onUpdateData={uploadData}
+            //onUpdateData={handleUpdateData}
           />
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button
@@ -138,6 +214,12 @@ const Map: React.FC = () => {
           {/* GeoJSON data */}
           {showRadarData && RadarsData && (
             <GeoJSON data={RadarsData} pointToLayer={pointToLayerRadars} />
+          )}
+          {showAccidentData && AccidentsData && (
+            <GeoJSON
+              data={AccidentsData}
+              pointToLayer={pointToLayerAccidents}
+            />
           )}
           {showOtherDataFilter && otherGeoJsonData && (
             <GeoJSON
