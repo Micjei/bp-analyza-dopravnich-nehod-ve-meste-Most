@@ -29,7 +29,7 @@ const Map: React.FC = () => {
   const [showOtherDataFilter, setShowOtherDataFilter] = useState(false); // smazat
 
   const [tileLayerUrl, setTileLayerUrl] = useState(
-    "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+    "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   );
 
   const [lastUpdate, setLastUpdate] = useState<string>("");
@@ -54,25 +54,54 @@ const Map: React.FC = () => {
   }, []);
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
-    return L.circleMarker(latlng, {
+    const marker = L.circleMarker(latlng, {
       radius: 8,
-      fillColor: "blue",
+      fillColor: "red",
       color: "white",
       weight: 2,
       opacity: 1,
       fillOpacity: 0.7,
     });
+
+    marker.bindPopup(`
+      <b>směr:</b> ${feature.properties.smer}°<br/>
+      <b>ulice:</b> ${feature.properties.lokalita}<br/>
+      <b>v provozu:</b> ${feature.properties.v_provozu}<br/>
+    `);
+
+    return marker;
   };
 
+  // zobrazeni nehod, pokud je v tom chodec, tak je červeně
   const pointToLayerAccidents = (feature: any, latlng: LatLngExpression) => {
-    return L.circleMarker(latlng, {
+    const hasPedestrianCategory =
+      feature.properties.kategorie_chodce &&
+      feature.properties.kategorie_chodce !== "neznámé";
+
+    let fillColor = "blue"; // Výchozí barva
+
+    if (hasPedestrianCategory) {
+      fillColor = "red"; // Chodec i následek
+    }
+
+    const marker = L.circleMarker(latlng, {
       radius: 8,
-      fillColor: "green",
+      fillColor: fillColor,
       color: "white",
       weight: 2,
       opacity: 1,
       fillOpacity: 0.7,
     });
+
+    marker.bindPopup(`
+      <b>id nehody:</b> ${feature.properties.id}<br/>
+      <b>alkohol u viníka:</b> ${feature.properties.alkohol}<br/>
+      <b>kategorie chodce:</b> ${feature.properties.kategorie_chodce}<br/>
+      <b>nasledky na chodci:</b> ${feature.properties.nasledky_chodci}<br/>
+      <b>nasledky ve vozidle:</b> ${feature.properties.nasledky_ve_vozidle}<br/>
+    `);
+
+    return marker;
   };
 
   // smazat

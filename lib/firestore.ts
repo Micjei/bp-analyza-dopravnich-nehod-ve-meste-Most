@@ -154,7 +154,7 @@ export const savePedestriansGeoJSON = async (geojson: any) => {
         vek: feature.properties.p33d, // Věk chodce
         statni_prislusnost: feature.properties.p33e, // Státní příslušnost
         prvni_pomoc: feature.properties.p33f, // Poskytnutí první pomoci
-        nasledky: feature.properties.p33g, // Následky
+        nasledky: feature.properties.p33g, // Následky chodce
       });
 
       console.log(`✅ Uloženo: ${id}`);
