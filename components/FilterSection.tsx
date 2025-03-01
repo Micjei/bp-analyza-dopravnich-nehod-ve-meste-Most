@@ -1,14 +1,22 @@
 import React from "react";
 import ButtonToggle from "./ButtonToggle";
 
+const getCurrentYear = () => new Date().getFullYear();
+const years = Array.from(
+  { length: getCurrentYear() - 2014 },
+  (_, i) => 2015 + i
+);
+
 interface FilterSectionProps {
   showRadarData: boolean;
   setShowRadarData: (value: boolean) => void;
   showAccidentData: boolean;
   setShowAccidentData: (value: boolean) => void;
-  showOtherData: boolean;
-  setShowOtherData: (value: boolean) => void;
+  showTrafficData: boolean;
+  setShowTrafficData: (value: boolean) => void;
   isFiltersVisible: boolean;
+  selectedYear: string;
+  setSelectedYear: (value: string) => void;
   onUpdateData?: () => void;
 }
 
@@ -17,14 +25,16 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   setShowRadarData,
   showAccidentData,
   setShowAccidentData,
-  showOtherData,
-  setShowOtherData,
+  showTrafficData,
+  setShowTrafficData,
   isFiltersVisible,
+  selectedYear,
+  setSelectedYear,
   onUpdateData,
 }) => {
   return (
     <div
-      className={`mb-5 flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 ${
+      className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 ${
         isFiltersVisible ? "max-w-[300px]" : "max-w-[10px]"
       }`}
     >
@@ -55,20 +65,35 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
           label="Radary"
         />
+        <div className="flex flex-row items-center gap-2">
+          <ButtonToggle
+            showData={showAccidentData}
+            toggleGeoJsonVisibility={() =>
+              setShowAccidentData(!showAccidentData)
+            }
+            label="Nehody"
+          />
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            className="border rounded"
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
         <ButtonToggle
-          showData={showAccidentData}
-          toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
-          label="Nehody"
-        />
-        <ButtonToggle
-          showData={showOtherData}
-          toggleGeoJsonVisibility={() => setShowOtherData(!showOtherData)}
-          label="Jiná Data"
+          showData={showTrafficData}
+          toggleGeoJsonVisibility={() => setShowTrafficData(!showTrafficData)}
+          label="Dopravní situace"
         />
         {/* Tlačítko pro aktualizaci dat */}
         <button
           onClick={onUpdateData}
-          className="mt-4 bg-[#66BB6A] text-white px-4 py-2 rounded-[30px] shadow hover:bg-[#558b55]"
+          className="mt-4 bg-[#66BB6A] text-white px-4 py-2 rounded-[30px] shadow hover:bg-[#558b55] w-full"
         >
           Aktualizovat
         </button>

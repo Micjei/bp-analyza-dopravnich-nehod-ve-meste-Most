@@ -15,7 +15,7 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
   return (
     <div
       onClick={toggleGeoJsonVisibility}
-      className="flex items-center cursor-pointer mb-3"
+      className="flex items-center cursor-pointer my-1"
     >
       <div
         className={`w-5 h-5 rounded-sm mr-2 transition-colors duration-300 ${

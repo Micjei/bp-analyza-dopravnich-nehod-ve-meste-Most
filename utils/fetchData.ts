@@ -51,10 +51,9 @@ export const fetchRadarsData = async () => {
   }
 };
 
-// přidat nějaký filter podle roku a podobne ****
 export const fetchAccidentsData = async () => {
   try {
-    // Načtení chodců do mapy
+    // Načtení chodců do mapy (seskupení podle ID nehody)
     const pedestriansSnapshot = await getDocs(collection(db, "chodci"));
     const pedestriansMap = new Map();
 
@@ -73,13 +72,16 @@ export const fetchAccidentsData = async () => {
               Number(data.nasledky) as CategoryOfConsequence
             ];
 
-      pedestriansMap.set(data.ID, {
+      if (!pedestriansMap.has(data.ID)) {
+        pedestriansMap.set(data.ID, []);
+      }
+      pedestriansMap.get(data.ID).push({
         kategorie: kategorie,
         nasledky_chodci: nasledky_chodci,
       });
     });
 
-    // Načtení následků do mapy
+    // Načtení následků do mapy (seskupení podle ID nehody)
     const consequencesSnapshot = await getDocs(collection(db, "nasledky"));
     const consequencesMap = new Map();
 
@@ -91,7 +93,11 @@ export const fetchAccidentsData = async () => {
           : categoryOfConsequence[
               Number(data.nasledky) as CategoryOfConsequence
             ];
-      consequencesMap.set(data.ID, {
+
+      if (!consequencesMap.has(data.ID)) {
+        consequencesMap.set(data.ID, []);
+      }
+      consequencesMap.get(data.ID).push({
         nasledky_vozidlo: nasledky_vozidlo,
       });
     });
@@ -100,8 +106,8 @@ export const fetchAccidentsData = async () => {
     const accidentsSnapshot = await getDocs(collection(db, "nehody"));
     const features = accidentsSnapshot.docs.map((doc) => {
       const data = doc.data();
-      const pedestriansData = pedestriansMap.get(data.ID) || {};
-      const consequencesData = consequencesMap.get(data.ID) || {};
+      const pedestriansData = pedestriansMap.get(data.ID) || [];
+      const consequencesData = consequencesMap.get(data.ID) || [];
 
       return {
         type: "Feature",
@@ -111,10 +117,10 @@ export const fetchAccidentsData = async () => {
         },
         properties: {
           id: data.ID,
+          datum: data.datum,
           alkohol: data.alkohol_u_vinika || "neznámé",
-          kategorie_chodce: pedestriansData.kategorie || "neznámé",
-          nasledky_chodci: pedestriansData.nasledky_chodci || "neznámé",
-          nasledky_ve_vozidle: consequencesData.nasledky_vozidlo || "neznámé",
+          chodci: pedestriansData, // Pole chodců
+          nasledky_ve_vozidle: consequencesData, // Pole následků
         },
       };
     });
@@ -125,18 +131,6 @@ export const fetchAccidentsData = async () => {
     };
   } catch (error) {
     console.error("Chyba při načítání dat:", error);
-    return null;
-  }
-};
-
-// smazat
-export const fetchOtherGeoJsonData = async () => {
-  try {
-    const response = await fetch("data/otherData.geojson");
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Chyba při načítání jiných dat GeoJSON:", error);
     return null;
   }
 };

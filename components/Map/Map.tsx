@@ -9,30 +9,29 @@ import FilterSection from "../FilterSection";
 import LegendSection from "../LegendSection";
 import FooterSection from "../FooterSection";
 import HeaderSection from "../HeaderSection";
-import {
-  fetchRadarsData,
-  fetchAccidentsData,
-  fetchOtherGeoJsonData,
-} from "../../utils/fetchData";
+import { fetchRadarsData, fetchAccidentsData } from "../../utils/fetchData";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
   const [RadarsData, setRadarsData] = useState<any>(null);
   const [AccidentsData, setAccidentsData] = useState<any>(null);
-  const [otherGeoJsonData, setOtherGeoJsonData] = useState<any>(null); // smazat
+  const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null); // filtrovane nehody
 
   const [showFilters, setShowFilters] = useState(true);
   const [showLegend, setShowLegend] = useState(true);
 
   const [showRadarData, setShowRadarData] = useState(false);
   const [showAccidentData, setShowAccidentData] = useState(false);
-  const [showOtherDataFilter, setShowOtherDataFilter] = useState(false); // smazat
+  const [showTrafficData, setShowTrafficData] = useState(false);
 
   const [tileLayerUrl, setTileLayerUrl] = useState(
     "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   );
 
   const [lastUpdate, setLastUpdate] = useState<string>("");
+  const [selectedYear, setSelectedYear] = useState(
+    new Date().getFullYear().toString()
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -42,21 +41,39 @@ const Map: React.FC = () => {
       const accidents = await fetchAccidentsData();
       setAccidentsData(accidents);
 
-      const otherData = await fetchOtherGeoJsonData(); // smazat
-      setOtherGeoJsonData(otherData); // smazat
-
       setLastUpdate(new Date().toLocaleString());
     };
 
     loadData();
-
-    setLastUpdate(new Date().toLocaleString());
   }, []);
+
+  useEffect(() => {
+    if (AccidentsData) {
+      const filtered = {
+        type: "FeatureCollection",
+        features: AccidentsData.features.filter((feature: any) => {
+          const datum = feature.properties?.datum; // Bezpečný přístup
+          if (!datum) return false; // Ochrana proti neplatným hodnotám
+          const parts = datum.split("/"); // Rozdělení podle "/"
+          if (parts.length !== 3) return false; // Ověření správného formátu
+          const rok = parts[2]; // Extrakce roku
+          console.log(rok === selectedYear);
+          return rok === selectedYear; // Porovnání s vybraným rokem
+        }),
+      };
+      setFilteredAccidentsData(filtered);
+    }
+
+    if (showAccidentData) {
+      setShowAccidentData(false);
+      setTimeout(() => setShowAccidentData(true), 0);
+    }
+  }, [selectedYear, AccidentsData]);
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
     const marker = L.circleMarker(latlng, {
       radius: 8,
-      fillColor: "red",
+      fillColor: "yellow",
       color: "white",
       weight: 2,
       opacity: 1,
@@ -74,14 +91,14 @@ const Map: React.FC = () => {
 
   // zobrazeni nehod, pokud je v tom chodec, tak je červeně
   const pointToLayerAccidents = (feature: any, latlng: LatLngExpression) => {
-    const hasPedestrianCategory =
-      feature.properties.kategorie_chodce &&
-      feature.properties.kategorie_chodce !== "neznámé";
+    const pedestrians = feature.properties.chodci; // Pole chodců
+    const consequences = feature.properties.nasledky_ve_vozidle; // Pole následků
+    const hasPedestrianCategory = pedestrians.length > 0;
 
     let fillColor = "blue"; // Výchozí barva
 
     if (hasPedestrianCategory) {
-      fillColor = "red"; // Chodec i následek
+      fillColor = "red"; // Pokud je přítomen chodec
     }
 
     const marker = L.circleMarker(latlng, {
@@ -93,27 +110,38 @@ const Map: React.FC = () => {
       fillOpacity: 0.7,
     });
 
+    // Zpracování chodců do HTML řetězce
+    const pedestriansInfo =
+      pedestrians.length > 0
+        ? pedestrians
+            .map(
+              (p: any, index: number) =>
+                `<b>Chodec ${index + 1}:</b> ${p.kategorie}, následky: ${
+                  p.nasledky_chodci
+                }<br/>`
+            )
+            .join("")
+        : "";
+
+    // Zpracování následků do HTML řetězce
+    const consequencesInfo =
+      consequences.length > 0
+        ? consequences
+            .map(
+              (c: any, index: number) =>
+                `<b>Následek ${index + 1}:</b> ${c.nasledky_vozidlo}<br/>` // ve vozidle následky?
+            )
+            .join("")
+        : "";
+
     marker.bindPopup(`
-      <b>id nehody:</b> ${feature.properties.id}<br/>
-      <b>alkohol u viníka:</b> ${feature.properties.alkohol}<br/>
-      <b>kategorie chodce:</b> ${feature.properties.kategorie_chodce}<br/>
-      <b>nasledky na chodci:</b> ${feature.properties.nasledky_chodci}<br/>
-      <b>nasledky ve vozidle:</b> ${feature.properties.nasledky_ve_vozidle}<br/>
+      <b>ID nehody:</b> ${feature.properties.id}<br/>
+      <b>Alkohol u viníka:</b> ${feature.properties.alkohol}<br/>
+      ${pedestriansInfo}
+      ${consequencesInfo}
     `);
 
     return marker;
-  };
-
-  // smazat
-  const pointToLayerOthers = (feature: any, latlng: LatLngExpression) => {
-    return L.circleMarker(latlng, {
-      radius: 8,
-      fillColor: "red",
-      color: "white",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.7,
-    });
   };
 
   // upload data do Firestore
@@ -184,9 +212,11 @@ const Map: React.FC = () => {
             setShowRadarData={setShowRadarData}
             showAccidentData={showAccidentData}
             setShowAccidentData={setShowAccidentData}
-            showOtherData={showOtherDataFilter}
-            setShowOtherData={setShowOtherDataFilter}
+            showTrafficData={showTrafficData}
+            setShowTrafficData={setShowTrafficData}
             isFiltersVisible={showFilters}
+            selectedYear={selectedYear}
+            setSelectedYear={setSelectedYear}
             onUpdateData={uploadData}
             //onUpdateData={handleUpdateData}
           />
@@ -233,29 +263,18 @@ const Map: React.FC = () => {
           scrollWheelZoom={true}
           style={{ width: "100%", height: "100%" }}
         >
-          <TileLayer
-            attribution={""}
-            url={tileLayerUrl}
-            //url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" // saletitní
-            //url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" // normalni
-            //url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" // idk jaká
-          />
+          <TileLayer attribution={""} url={tileLayerUrl} />
           {/* GeoJSON data */}
           {showRadarData && RadarsData && (
             <GeoJSON data={RadarsData} pointToLayer={pointToLayerRadars} />
           )}
-          {showAccidentData && AccidentsData && (
+          {showAccidentData && filteredAccidentsData && (
             <GeoJSON
-              data={AccidentsData}
+              data={filteredAccidentsData}
               pointToLayer={pointToLayerAccidents}
             />
           )}
-          {showOtherDataFilter && otherGeoJsonData && (
-            <GeoJSON
-              data={otherGeoJsonData}
-              pointToLayer={pointToLayerOthers}
-            />
-          )}
+          {/* tu přidat layer na dopravní situaci či co. */}
         </MapContainer>
       </div>
     </div>
