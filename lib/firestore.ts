@@ -1,5 +1,5 @@
 import { db } from "./firebase";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore";
 import { convertCoordinates } from "../utils/coordinateUtils";
 
 // Uložení radaru do Firestore
@@ -8,9 +8,7 @@ export const saveRadarsGeoJSON = async (geojson: any) => {
     const radaryRef = collection(db, "radary");
 
     for (const feature of geojson.features) {
-      const id = feature.properties.ID.toString();
-      const docRef = doc(radaryRef, id);
-      await setDoc(docRef, {
+      await addDoc(radaryRef, {
         ID: feature.properties.ID,
         lokalita: feature.properties.LOKALITA,
         v_provozu: feature.properties.V_PROVOZU,
@@ -18,7 +16,6 @@ export const saveRadarsGeoJSON = async (geojson: any) => {
         gps: feature.properties.GPS,
         geometry: feature.geometry,
       });
-      console.log(`✅ Uloženo: ${id}`);
     }
 
     console.log("✅ Všechna data byla uložena do Firestore!");
@@ -33,16 +30,13 @@ export const saveAccidentsGeoJSON = async (geojson: any) => {
     const accidentsRef = collection(db, "nehody");
 
     for (const feature of geojson.features) {
-      const id = feature.properties.p1.toString();
-      const docRef = doc(accidentsRef, id);
-
       // Převod souřadnic z EPSG:5514 na CRS84
       const { latitude, longitude } = convertCoordinates(
         feature.geometry.coordinates[0],
         feature.geometry.coordinates[1]
       );
 
-      await setDoc(docRef, {
+      await addDoc(accidentsRef, {
         ID: feature.properties.p1, // id nehody
         datum: feature.properties.p2a, // den, mesic, rok
         cas: feature.properties.p2b, // cas
@@ -82,8 +76,6 @@ export const saveAccidentsGeoJSON = async (geojson: any) => {
           longitude,
         },
       });
-
-      console.log(`✅ Uloženo: ${id}`);
     }
 
     console.log("✅ Všechna data byla uložena do Firestore!");
@@ -98,10 +90,7 @@ export const saveVehiclesGeoJSON = async (geojson: any) => {
     const vehicleRef = collection(db, "vozidla");
 
     for (const feature of geojson.features) {
-      const id = feature.properties.p1.toString();
-      const docRef = doc(vehicleRef, id);
-
-      await setDoc(docRef, {
+      await addDoc(vehicleRef, {
         ID: feature.properties.p1, // ID vozidla
         druh_vozidla: feature.properties.p44, // Druh vozidla
         znacka_vozidla: feature.properties.p45a, // Výrobní značka motorového vozidla
@@ -121,8 +110,6 @@ export const saveVehiclesGeoJSON = async (geojson: any) => {
         stav_ridice: feature.properties.p57, // Stav řidiče
         vnejsi_ovlivneni_ridice: feature.properties.p58, // Vnější ovlivnění řidiče
       });
-
-      console.log(`✅ Uloženo: ${id}`);
     }
 
     console.log("✅ Všechna data byla uložena do Firestore!");
@@ -137,10 +124,7 @@ export const savePedestriansGeoJSON = async (geojson: any) => {
     const pedestriansRef = collection(db, "chodci");
 
     for (const feature of geojson.features) {
-      const id = feature.properties.p1.toString();
-      const docRef = doc(pedestriansRef, id);
-
-      await setDoc(docRef, {
+      await addDoc(pedestriansRef, {
         ID: feature.properties.p1, // ID chodce
         kategorie_chodce: feature.properties.p29, // Kategorie chodce
         stav_chodce: feature.properties.p30, // Stav chodce
@@ -156,8 +140,6 @@ export const savePedestriansGeoJSON = async (geojson: any) => {
         prvni_pomoc: feature.properties.p33f, // Poskytnutí první pomoci
         nasledky: feature.properties.p33g, // Následky chodce
       });
-
-      console.log(`✅ Uloženo: ${id}`);
     }
 
     console.log("✅ Všechna data byla uložena do Firestore!");
@@ -172,21 +154,16 @@ export const saveConsequencesGeoJSON = async (geojson: any) => {
     const consequencesRef = collection(db, "nasledky");
 
     for (const feature of geojson.features) {
-      const id = feature.properties.p1.toString();
-      const docRef = doc(consequencesRef, id);
-
-      await setDoc(docRef, {
-        ID: feature.properties.p1, // ID nasledku
-        oznaceni_osoby: feature.properties.p59a, // oznaceni osoby
-        blizsi_oznaceni_osoby: feature.properties.p59b, // blizsi oznaceni osoby
-        pohlavi: feature.properties.p59c, // pohlavi osoby
-        vek: feature.properties.p59d, // vek osoby
-        statni_prislusnost: feature.properties.p59e, // statni prislusnost
-        prvni_pomoc: feature.properties.p59f, // poskytnuti prvni pomoci
-        nasledky: feature.properties.p59g, // nasledky
+      await addDoc(consequencesRef, {
+        ID: feature.properties.p1,
+        oznaceni_osoby: feature.properties.p59a,
+        blizsi_oznaceni_osoby: feature.properties.p59b,
+        pohlavi: feature.properties.p59c,
+        vek: feature.properties.p59d,
+        statni_prislusnost: feature.properties.p59e,
+        prvni_pomoc: feature.properties.p59f,
+        nasledky: feature.properties.p59g,
       });
-
-      console.log(`✅ Uloženo: ${id}`);
     }
 
     console.log("✅ Všechna data byla uložena do Firestore!");

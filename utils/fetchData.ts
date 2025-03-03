@@ -77,6 +77,7 @@ export const fetchAccidentsData = async () => {
       }
       pedestriansMap.get(data.ID).push({
         kategorie: kategorie,
+        vek: data.vek,
         nasledky_chodci: nasledky_chodci,
       });
     });

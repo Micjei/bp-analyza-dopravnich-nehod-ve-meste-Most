@@ -118,7 +118,7 @@ const Map: React.FC = () => {
               (p: any, index: number) =>
                 `<b>Chodec ${index + 1}:</b> ${p.kategorie}, následky: ${
                   p.nasledky_chodci
-                }<br/>`
+                }, věk: ${p.vek}<br/>`
             )
             .join("")
         : "";
