@@ -9,7 +9,9 @@ import FilterSection from "../FilterSection";
 import LegendSection from "../LegendSection";
 import FooterSection from "../FooterSection";
 import HeaderSection from "../HeaderSection";
-import { fetchRadarsData, fetchAccidentsData } from "../../utils/fetchData";
+import { fetchRadarsData, fetchAccidentsData } from "@/utils/fetchData";
+import "leaflet-rotatedmarker";
+import { radarIcon } from "@/utils/mapIcons";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
@@ -32,6 +34,7 @@ const Map: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   );
+  const [realAngle, setRealAngle] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -70,16 +73,20 @@ const Map: React.FC = () => {
     }
   }, [selectedYear, AccidentsData]);
 
-  const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
-    const marker = L.circleMarker(latlng, {
-      radius: 8,
-      fillColor: "yellow",
-      color: "white",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.7,
-    });
+  useEffect(() => {
+    if (showRadarData) {
+      setShowRadarData(false);
+      setTimeout(() => setShowRadarData(true), 0);
+    }
+  }, [realAngle]); // Když se změní realAngle, triggeruj překreslení radarů
 
+  const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
+    const rotation = realAngle ? feature.properties.smer - 90 : 0; // cca směr si myslím
+    const marker = L.marker(latlng, {
+      icon: radarIcon,
+    } as L.MarkerOptions);
+
+    (marker as any).setRotationAngle(rotation);
     marker.bindPopup(`
       <b>směr:</b> ${feature.properties.smer}°<br/>
       <b>ulice:</b> ${feature.properties.lokalita}<br/>
@@ -219,6 +226,8 @@ const Map: React.FC = () => {
             setSelectedYear={setSelectedYear}
             onUpdateData={uploadData}
             //onUpdateData={handleUpdateData}
+            realAngle={realAngle}
+            setRealAngle={setRealAngle}
           />
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button

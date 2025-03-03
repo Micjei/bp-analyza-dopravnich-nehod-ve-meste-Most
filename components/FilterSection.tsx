@@ -18,6 +18,8 @@ interface FilterSectionProps {
   selectedYear: string;
   setSelectedYear: (value: string) => void;
   onUpdateData?: () => void;
+  realAngle: boolean;
+  setRealAngle: (value: boolean) => void;
 }
 
 const FilterSection: React.FC<FilterSectionProps> = ({
@@ -31,6 +33,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   selectedYear,
   setSelectedYear,
   onUpdateData,
+  realAngle,
+  setRealAngle,
 }) => {
   return (
     <div
@@ -60,11 +64,16 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           isFiltersVisible ? "opacity-100" : "opacity-0"
         }`}
       >
-        <ButtonToggle
-          showData={showRadarData}
-          toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
-          label="Radary"
-        />
+        <div className="flex flex-row items-center gap-2">
+          <ButtonToggle
+            showData={showRadarData}
+            toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
+            label="Radary"
+          />
+          <button onClick={() => setRealAngle(!realAngle)}>
+            {realAngle ? "směr: ano" : "směr: ne"}
+          </button>
+        </div>
         <div className="flex flex-row items-center gap-2">
           <ButtonToggle
             showData={showAccidentData}
