@@ -1,5 +1,5 @@
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Polyline } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 import { useEffect, useState } from "react";
 import L from "leaflet";
@@ -11,7 +11,12 @@ import FooterSection from "../FooterSection";
 import HeaderSection from "../HeaderSection";
 import { fetchRadarsData, fetchAccidentsData } from "@/utils/fetchData";
 import "leaflet-rotatedmarker";
-import { radarIcon } from "@/utils/mapIcons";
+import {
+  radarIcon,
+  carCrashIcon,
+  carCrashPedestrianIcon,
+  arrowIcon,
+} from "@/utils/mapIcons";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
@@ -34,7 +39,13 @@ const Map: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   );
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+  const [selectedDay, setSelectedDay] = useState<string>("all");
   const [realAngle, setRealAngle] = useState(false);
+
+  //tomtom api
+  const apiKey = process.env.NEXT_PUBLIC_TOMTOM_API_KEY;
+  const tomTomTileUrl = `https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key=${apiKey}`;
 
   useEffect(() => {
     const loadData = async () => {
@@ -55,13 +66,21 @@ const Map: React.FC = () => {
       const filtered = {
         type: "FeatureCollection",
         features: AccidentsData.features.filter((feature: any) => {
-          const datum = feature.properties?.datum; // Bezpečný přístup
-          if (!datum) return false; // Ochrana proti neplatným hodnotám
-          const parts = datum.split("/"); // Rozdělení podle "/"
-          if (parts.length !== 3) return false; // Ověření správného formátu
-          const rok = parts[2]; // Extrakce roku
-          console.log(rok === selectedYear);
-          return rok === selectedYear; // Porovnání s vybraným rokem
+          const datum = feature.properties?.datum;
+          if (!datum) return false;
+          const parts = datum.split("/");
+          if (parts.length !== 3) return false;
+          const den = parts[0];
+          const mesic = parts[1];
+          const rok = parts[2];
+
+          return (
+            rok === selectedYear &&
+            (selectedMonth === "all" ||
+              parseInt(mesic, 10) === parseInt(selectedMonth, 10)) &&
+            (selectedDay === "all" ||
+              parseInt(den, 10) === parseInt(selectedDay, 10))
+          );
         }),
       };
       setFilteredAccidentsData(filtered);
@@ -71,7 +90,7 @@ const Map: React.FC = () => {
       setShowAccidentData(false);
       setTimeout(() => setShowAccidentData(true), 0);
     }
-  }, [selectedYear, AccidentsData]);
+  }, [selectedYear, selectedMonth, selectedDay, AccidentsData]);
 
   useEffect(() => {
     if (showRadarData) {
@@ -81,14 +100,20 @@ const Map: React.FC = () => {
   }, [realAngle]); // Když se změní realAngle, triggeruj překreslení radarů
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
-    const rotation = realAngle ? feature.properties.smer - 90 : 0; // cca směr si myslím
+    const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
+    const arrowRotation = feature.properties.smer - 90; // směr šipky - 90 protože originál směřuje doprava
     const marker = L.marker(latlng, {
       icon: radarIcon,
     } as L.MarkerOptions);
 
     (marker as any).setRotationAngle(rotation);
     marker.bindPopup(`
-      <b>směr:</b> ${feature.properties.smer}°<br/>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <b>směr:</b> ${feature.properties.smer}°
+        <img src="${arrowIcon.options.iconUrl}" 
+             style="width: 20px; height: 20px; transform: rotate(${arrowRotation}deg);" 
+             alt="Radar směr"/>
+      </div>
       <b>ulice:</b> ${feature.properties.lokalita}<br/>
       <b>v provozu:</b> ${feature.properties.v_provozu}<br/>
     `);
@@ -102,19 +127,14 @@ const Map: React.FC = () => {
     const consequences = feature.properties.nasledky_ve_vozidle; // Pole následků
     const hasPedestrianCategory = pedestrians.length > 0;
 
-    let fillColor = "blue"; // Výchozí barva
+    let icon = carCrashIcon;
 
     if (hasPedestrianCategory) {
-      fillColor = "red"; // Pokud je přítomen chodec
+      icon = carCrashPedestrianIcon;
     }
 
-    const marker = L.circleMarker(latlng, {
-      radius: 8,
-      fillColor: fillColor,
-      color: "white",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.7,
+    const marker = L.marker(latlng, {
+      icon: icon,
     });
 
     // Zpracování chodců do HTML řetězce
@@ -224,6 +244,10 @@ const Map: React.FC = () => {
             isFiltersVisible={showFilters}
             selectedYear={selectedYear}
             setSelectedYear={setSelectedYear}
+            selectedMonth={selectedMonth}
+            setSelectedMonth={setSelectedMonth}
+            selectedDay={selectedDay}
+            setSelectedDay={setSelectedDay}
             onUpdateData={uploadData}
             //onUpdateData={handleUpdateData}
             realAngle={realAngle}
@@ -239,7 +263,10 @@ const Map: React.FC = () => {
         </div>
 
         <div className="absolute bottom-10 right-5 z-[1000]">
-          <LegendSection isLegendVisible={showLegend} />
+          <LegendSection
+            isLegendVisible={showLegend}
+            showTrafficData={showTrafficData}
+          />
           {/* Tlačítko pro zobrazení a skrytí legendy */}
           <button
             onClick={() => setShowLegend(!showLegend)}
@@ -284,6 +311,7 @@ const Map: React.FC = () => {
             />
           )}
           {/* tu přidat layer na dopravní situaci či co. */}
+          {showTrafficData && <TileLayer url={tomTomTileUrl} />}
         </MapContainer>
       </div>
     </div>
