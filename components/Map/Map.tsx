@@ -17,6 +17,10 @@ import {
   carCrashPedestrianIcon,
   arrowIcon,
 } from "@/utils/mapIcons";
+import {
+  getAlcoholDescription,
+  getDrugsDescription,
+} from "@/utils/popupDescription";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
@@ -41,6 +45,10 @@ const Map: React.FC = () => {
   );
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
   const [selectedDay, setSelectedDay] = useState<string>("all");
+  const [alcoholFilter, setAlcoholFilter] = useState<string>("-");
+  const [drugsFilter, setDrugsFilter] = useState<string>("-");
+  const [pedestrianFilter, setPedestrianFilter] = useState<string>("-");
+
   const [realAngle, setRealAngle] = useState(false);
 
   //tomtom api
@@ -74,12 +82,27 @@ const Map: React.FC = () => {
           const mesic = parts[1];
           const rok = parts[2];
 
+          // alkohol filter
+          const alkohol = feature.properties?.alkohol;
+          // drugs filter
+          const drogy = feature.properties?.drogy;
+          // pedestrian filter
+          const chodci = feature.properties?.chodci || [];
+
+          // TODO null hodnoty
           return (
             rok === selectedYear &&
             (selectedMonth === "all" ||
               parseInt(mesic, 10) === parseInt(selectedMonth, 10)) &&
             (selectedDay === "all" ||
-              parseInt(den, 10) === parseInt(selectedDay, 10))
+              parseInt(den, 10) === parseInt(selectedDay, 10)) &&
+            (alcoholFilter === "-" ||
+              parseInt(alkohol, 10) === parseInt(alcoholFilter, 10)) &&
+            (drugsFilter === "-" ||
+              parseInt(drogy, 10) === parseInt(drugsFilter, 10)) &&
+            (pedestrianFilter === "-" ||
+              (pedestrianFilter === "ano" && chodci.length > 0) ||
+              (pedestrianFilter === "ne" && chodci.length === 0))
           );
         }),
       };
@@ -90,7 +113,15 @@ const Map: React.FC = () => {
       setShowAccidentData(false);
       setTimeout(() => setShowAccidentData(true), 0);
     }
-  }, [selectedYear, selectedMonth, selectedDay, AccidentsData]);
+  }, [
+    selectedYear,
+    selectedMonth,
+    selectedDay,
+    alcoholFilter,
+    drugsFilter,
+    pedestrianFilter,
+    AccidentsData,
+  ]);
 
   useEffect(() => {
     if (showRadarData) {
@@ -163,7 +194,12 @@ const Map: React.FC = () => {
 
     marker.bindPopup(`
       <b>ID nehody:</b> ${feature.properties.id}<br/>
-      <b>Alkohol u viníka:</b> ${feature.properties.alkohol}<br/>
+      <b>Alkohol u viníka:</b> ${getAlcoholDescription(
+        feature.properties.alkohol
+      )}<br/>
+      <b>Drogy u viníka:</b> ${getDrugsDescription(
+        feature.properties.drogy
+      )}<br/>
       ${pedestriansInfo}
       ${consequencesInfo}
     `);
@@ -233,7 +269,7 @@ const Map: React.FC = () => {
       {/* Kontejner pro mapu */}
       <div className="map">
         {/* Sekce filtrů s možností skrytí/odkrytí */}
-        <div className="absolute top-[40%] left-5 z-[1000]">
+        <div className="absolute top-1/2 left-5 z-[1000] -translate-y-1/2">
           <FilterSection
             showRadarData={showRadarData}
             setShowRadarData={setShowRadarData}
@@ -248,6 +284,12 @@ const Map: React.FC = () => {
             setSelectedMonth={setSelectedMonth}
             selectedDay={selectedDay}
             setSelectedDay={setSelectedDay}
+            alcoholFilter={alcoholFilter}
+            setAlcoholFilter={setAlcoholFilter}
+            drugsFilter={drugsFilter}
+            setDrugsFilter={setDrugsFilter}
+            pedestrianFilter={pedestrianFilter}
+            setPedestrianFilter={setPedestrianFilter}
             onUpdateData={uploadData}
             //onUpdateData={handleUpdateData}
             realAngle={realAngle}
@@ -266,6 +308,8 @@ const Map: React.FC = () => {
           <LegendSection
             isLegendVisible={showLegend}
             showTrafficData={showTrafficData}
+            showAccidentData={showAccidentData}
+            showRadarData={showRadarData}
           />
           {/* Tlačítko pro zobrazení a skrytí legendy */}
           <button

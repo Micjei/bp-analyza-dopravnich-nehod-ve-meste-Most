@@ -120,6 +120,7 @@ export const fetchAccidentsData = async () => {
           id: data.ID,
           datum: data.datum,
           alkohol: data.alkohol_u_vinika || "neznámé",
+          drogy: data.drogy_u_vinika || "neznámé",
           chodci: pedestriansData, // Pole chodců
           nasledky_ve_vozidle: consequencesData, // Pole následků
         },

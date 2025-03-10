@@ -4,37 +4,16 @@ import { Slider } from "primereact/slider";
 import { InputText } from "primereact/inputtext";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // Téma pro slider
 import "primereact/resources/primereact.min.css"; // Základní styly pro všechny komponenty PrimeReact
-
-const getCurrentYear = () => new Date().getFullYear();
-const years = Array.from(
-  { length: getCurrentYear() - 2014 },
-  (_, i) => 2015 + i
-);
-
-// přestupný rok
-const isLeapYear = (year: number) => {
-  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-};
-
-// Funkce pro získání počtu dní v měsíci
-const getDaysInMonth = (month: number, year: number) => {
-  const daysInMonth = [
-    31, // Leden
-    28 + (isLeapYear(year) ? 1 : 0), // Únor (28 nebo 29 dní)
-    31, // Březen
-    30, // Duben
-    31, // Květen
-    30, // Červen
-    31, // Červenec
-    31, // Srpen
-    30, // Září
-    31, // Říjen
-    30, // Listopad
-    31, // Prosinec
-  ];
-
-  return daysInMonth[month - 1];
-};
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  getCurrentYear,
+  years,
+  getDaysInMonth,
+  isLeapYear,
+  alcoholOptions,
+  drugsOptions,
+  pedestrianOptions,
+} from "@/utils/selectOptions";
 
 interface FilterSectionProps {
   showRadarData: boolean;
@@ -50,6 +29,12 @@ interface FilterSectionProps {
   setSelectedMonth: (value: string) => void;
   selectedDay: string;
   setSelectedDay: (value: string) => void;
+  alcoholFilter: string;
+  setAlcoholFilter: (value: string) => void;
+  drugsFilter: string;
+  setDrugsFilter: (value: string) => void;
+  pedestrianFilter: string;
+  setPedestrianFilter: (value: string) => void;
   onUpdateData?: () => void;
   realAngle: boolean;
   setRealAngle: (value: boolean) => void;
@@ -69,11 +54,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   setSelectedMonth,
   selectedDay,
   setSelectedDay,
+  alcoholFilter,
+  setAlcoholFilter,
+  drugsFilter,
+  setDrugsFilter,
+  pedestrianFilter,
+  setPedestrianFilter,
   onUpdateData,
   realAngle,
   setRealAngle,
 }) => {
   const [days, setDays] = useState<string[]>([]);
+  const [accidentsFilter, setAccidentsFilter] = useState(false); // podrobnější nehody
 
   // Funkce pro aktualizaci počtu dnů při změně měsíce nebo roku
   useEffect(() => {
@@ -139,65 +131,177 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         <ButtonToggle
           showData={showAccidentData}
           toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
+          toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
+          accidentFilter={accidentsFilter}
           label="Nehody"
         />
-        {/* Výběr roku */}
-        <div className="ml-6">
-          {/*<div className="flex flex-row gap-2">
-            <p>rok:</p>
-            <InputText
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-              className="bg-transparent"
-              style={{ width: ${selectedYear.length * 10}px }}
-            />
-          </div>
-          <Slider
-            value={parseInt(selectedYear)}
-            onChange={(e) => setSelectedYear(e.value.toString())}
-            min={2015}
-            max={getCurrentYear()}
-            step={1}
-            className="w-full h-2 bg-gray-200 rounded-lg my-2"
-          />*/}
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            className="border rounded"
-          >
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
 
-          {/* Výběr měsíce */}
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-            className="border rounded"
-          >
-            {months.map((month) => (
-              <option key={month} value={month}>
-                {month === "all" ? "-" : `${month}`}
-              </option>
-            ))}
-          </select>
+        {/* detail nehod */}
+        <AnimatePresence>
+          {accidentsFilter && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="ml-6 overflow-hidden"
+            >
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="border rounded"
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
 
-          {/* Výběr dne */}
-          <select
-            value={selectedDay}
-            onChange={(e) => setSelectedDay(e.target.value)}
-            className="border rounded"
-          >
-            {days.map((day) => (
-              <option key={day} value={day}>
-                {day === "all" ? "-" : `${day}`}
-              </option>
-            ))}
-          </select>
-        </div>
+              {/* Výběr měsíce */}
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="border rounded"
+              >
+                {months.map((month) => (
+                  <option key={month} value={month}>
+                    {month === "all" ? "-" : `${month}`}
+                  </option>
+                ))}
+              </select>
+
+              {/* Výběr dne */}
+              <select
+                value={selectedDay}
+                onChange={(e) => setSelectedDay(e.target.value)}
+                className="border rounded"
+              >
+                {days.map((day) => (
+                  <option key={day} value={day}>
+                    {day === "all" ? "-" : `${day}`}
+                  </option>
+                ))}
+              </select>
+
+              {/* Alkohol u viníka */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="alkohol-u-vinika">Alkohol u viníka:</label>
+                <select
+                  id="alkohol-u-vinika"
+                  value={alcoholFilter}
+                  onChange={(e) => setAlcoholFilter(e.target.value)}
+                  className="border rounded w-20"
+                >
+                  {alcoholOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Drogy u viníka */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="drogy-u-vinika">Drogy u viníka:</label>
+                <select
+                  id="drogy-u-vinika"
+                  value={drugsFilter}
+                  onChange={(e) => setDrugsFilter(e.target.value)}
+                  className="border rounded w-20"
+                >
+                  {drugsOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* účast chodce TODO */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="ucast-chodce">Účast chodce:</label>
+                <select
+                  id="ucast-chodce"
+                  value={pedestrianFilter}
+                  onChange={(e) => setPedestrianFilter(e.target.value)}
+                  className="border rounded w-20"
+                >
+                  {pedestrianOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Druh nehody TODO */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="druh-nehody">Druh nehody:</label>
+                <select
+                  id="druh-nehody"
+                  value={selectedDay}
+                  onChange={(e) => setSelectedDay(e.target.value)}
+                  className="border rounded"
+                >
+                  {days.map((day) => (
+                    <option key={day} value={day}>
+                      {day === "all" ? "-" : `${day}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Druh srážky TODO */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="druh-srazky">Druh srážky:</label>
+                <select
+                  id="druh-srazky"
+                  value={selectedDay}
+                  onChange={(e) => setSelectedDay(e.target.value)}
+                  className="border rounded"
+                >
+                  {days.map((day) => (
+                    <option key={day} value={day}>
+                      {day === "all" ? "-" : `${day}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Druh povrchu TODO */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="druh-povrchu">Druh povrchu:</label>
+                <select
+                  id="druh-povrchu"
+                  value={selectedDay}
+                  onChange={(e) => setSelectedDay(e.target.value)}
+                  className="border rounded"
+                >
+                  {days.map((day) => (
+                    <option key={day} value={day}>
+                      {day === "all" ? "-" : `${day}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Druh zranění TODO */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="druh-zraneni">Druh zranění:</label>
+                <select
+                  id="druh-zraneni"
+                  value={selectedDay}
+                  onChange={(e) => setSelectedDay(e.target.value)}
+                  className="border rounded"
+                >
+                  {days.map((day) => (
+                    <option key={day} value={day}>
+                      {day === "all" ? "-" : `${day}`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <ButtonToggle
           showData={showTrafficData}
