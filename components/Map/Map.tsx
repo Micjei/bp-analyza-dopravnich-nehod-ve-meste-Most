@@ -38,6 +38,8 @@ import {
 import {
   getAlcoholDescription,
   getDrugsDescription,
+  getConsequenceDescription,
+  getPedestrianDescription,
 } from "@/utils/popupDescription";
 
 const Map: React.FC = () => {
@@ -66,6 +68,7 @@ const Map: React.FC = () => {
   const [alcoholFilter, setAlcoholFilter] = useState<string>("-");
   const [drugsFilter, setDrugsFilter] = useState<string>("-");
   const [pedestrianFilter, setPedestrianFilter] = useState<string>("-");
+  const [deadFilter, setDeadFilter] = useState<string>("-");
 
   const [realAngle, setRealAngle] = useState(false);
 
@@ -108,6 +111,8 @@ const Map: React.FC = () => {
           const drogy = feature.properties?.drogy;
           // pedestrian filter
           const chodci = feature.properties?.chodci || [];
+          // dead filter
+          const smrt = feature.properties?.smrt;
 
           // TODO null hodnoty
           return (
@@ -122,7 +127,10 @@ const Map: React.FC = () => {
               parseInt(drogy, 10) === parseInt(drugsFilter, 10)) &&
             (pedestrianFilter === "-" ||
               (pedestrianFilter === "ano" && chodci.length > 0) ||
-              (pedestrianFilter === "ne" && chodci.length === 0))
+              (pedestrianFilter === "ne" && chodci.length === 0)) &&
+            (deadFilter === "-" ||
+              parseInt(smrt, 10) === parseInt(deadFilter, 10) ||
+              (deadFilter === "0" && parseInt(smrt, 10) !== 1))
           );
         }),
       };
@@ -140,6 +148,7 @@ const Map: React.FC = () => {
     alcoholFilter,
     drugsFilter,
     pedestrianFilter,
+    deadFilter,
     AccidentsData,
   ]);
 
@@ -159,6 +168,7 @@ const Map: React.FC = () => {
 
     (marker as any).setRotationAngle(rotation);
     marker.bindPopup(`
+      <b>ID:</b> ${feature.properties.id}<br/>
       <div style="display: flex; align-items: center; gap: 8px;">
         <b>směr:</b> ${feature.properties.smer}°
         <img src="${arrowIcon.options.iconUrl}" 
@@ -194,9 +204,11 @@ const Map: React.FC = () => {
         ? pedestrians
             .map(
               (p: any, index: number) =>
-                `<b>Chodec ${index + 1}:</b> ${p.kategorie}, následky: ${
+                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(
+                  p.kategorie
+                )}, následky: ${getConsequenceDescription(
                   p.nasledky_chodci
-                }, věk: ${p.vek}<br/>`
+                )}, věk: ${p.vek}<br/>`
             )
             .join("")
         : "";
@@ -207,7 +219,9 @@ const Map: React.FC = () => {
         ? consequences
             .map(
               (c: any, index: number) =>
-                `<b>Následek ${index + 1}:</b> ${c.nasledky_vozidlo}<br/>` // ve vozidle následky?
+                `<b>Následek ${index + 1}:</b> ${getConsequenceDescription(
+                  c.nasledky_vozidlo
+                )}<br/>` // ve vozidle následky?
             )
             .join("")
         : "";
@@ -366,6 +380,8 @@ const Map: React.FC = () => {
             setDrugsFilter={setDrugsFilter}
             pedestrianFilter={pedestrianFilter}
             setPedestrianFilter={setPedestrianFilter}
+            deadFilter={deadFilter}
+            setDeadFilter={setDeadFilter}
             onUpdateData={uploadData}
             //onUpdateData={handleUpdateData}
             realAngle={realAngle}

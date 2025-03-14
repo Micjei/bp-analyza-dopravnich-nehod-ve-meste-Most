@@ -30,3 +30,30 @@ export const getDrugsDescription = (drug: string | number): string => {
   const parsedValue = parseInt(String(drug), 10);
   return drugMap[String(parsedValue)] || "Neznámá hodnota";
 };
+
+export const getConsequenceDescription = (
+  consequence: string | number
+): string => {
+  const consequenceMap: Record<string, string> = {
+    "1": "usmrcení",
+    "2": "těžké zranění",
+    "3": "lehké zranění",
+    "4": "bez zranění",
+  };
+  const parsedValue = parseInt(String(consequence), 10);
+  return consequenceMap[String(parsedValue)] || "Neznámá hodnota";
+};
+
+export const getPedestrianDescription = (
+  pedestrian: string | number
+): string => {
+  const pedestrianMap: Record<string, string> = {
+    "1": "muž",
+    "2": "žena",
+    "3": "dítě (do 15 let)",
+    "4": "skupina dětí",
+    "5": "jiná skupina",
+  };
+  const parsedValue = parseInt(String(pedestrian), 10);
+  return pedestrianMap[String(parsedValue)] || "Neznámá hodnota";
+};

@@ -62,3 +62,9 @@ export const pedestrianOptions = [
   { label: "ano", value: "ano" },
   { label: "ne", value: "ne" },
 ];
+
+export const consequenceOptions = [
+  { label: "-", value: "-" },
+  { label: "ano", value: "1" },
+  { label: "ne", value: "0" },
+];

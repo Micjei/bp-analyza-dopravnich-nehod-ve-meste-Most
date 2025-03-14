@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ButtonToggle from "./ButtonToggle";
-import { Slider } from "primereact/slider";
-import { InputText } from "primereact/inputtext";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // Téma pro slider
 import "primereact/resources/primereact.min.css"; // Základní styly pro všechny komponenty PrimeReact
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,6 +11,7 @@ import {
   alcoholOptions,
   drugsOptions,
   pedestrianOptions,
+  consequenceOptions,
 } from "@/utils/selectOptions";
 
 interface FilterSectionProps {
@@ -35,6 +34,8 @@ interface FilterSectionProps {
   setDrugsFilter: (value: string) => void;
   pedestrianFilter: string;
   setPedestrianFilter: (value: string) => void;
+  deadFilter: string;
+  setDeadFilter: (value: string) => void;
   onUpdateData?: () => void;
   realAngle: boolean;
   setRealAngle: (value: boolean) => void;
@@ -62,6 +63,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   setDrugsFilter,
   pedestrianFilter,
   setPedestrianFilter,
+  deadFilter,
+  setDeadFilter,
   onUpdateData,
   realAngle,
   setRealAngle,
@@ -70,6 +73,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 }) => {
   const [days, setDays] = useState<string[]>([]);
   const [accidentsFilter, setAccidentsFilter] = useState(false); // podrobnější nehody
+  const [radarsFilter, setRadarsFilter] = useState(false); // podrobnější radary
 
   // Funkce pro aktualizaci počtu dnů při změně měsíce nebo roku
   useEffect(() => {
@@ -122,16 +126,50 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           isFiltersVisible ? "opacity-100" : "opacity-0"
         }`}
       >
+        {/** radary */}
         <div className="flex flex-row items-center gap-2">
           <ButtonToggle
             showData={showRadarData}
             toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
+            toggleDetailVisibility={() => setRadarsFilter(!radarsFilter)}
             label="Radary"
           />
+          {/** smazat směr button*/}
           <button onClick={() => setRealAngle(!realAngle)}>
             {realAngle ? "směr: ano" : "směr: ne"}
           </button>
         </div>
+        {/** detail radaru */}
+        <AnimatePresence>
+          {radarsFilter && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="ml-6 overflow-hidden"
+            >
+              {/** aktivita radaru TODO*/}
+              <div className="flex items-center gap-2">
+                <label htmlFor="aktivita-radaru">Aktivní radary:</label>
+                <select
+                  id="aktivita-radaru"
+                  value={deadFilter}
+                  onChange={(e) => setDeadFilter(e.target.value)}
+                  className="border rounded w-20"
+                >
+                  {consequenceOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/** nehody */}
         <ButtonToggle
           showData={showAccidentData}
           toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
@@ -240,16 +278,16 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 </select>
               </div>
 
-              {/* smrtelná nehoda TODO */}
+              {/* smrtelná nehoda */}
               <div className="flex items-center gap-2">
                 <label htmlFor="smrtelna-nehoda">Smrtelná nehoda:</label>
                 <select
                   id="smrtelna-nehoda"
-                  value={pedestrianFilter}
-                  onChange={(e) => setPedestrianFilter(e.target.value)}
+                  value={deadFilter}
+                  onChange={(e) => setDeadFilter(e.target.value)}
                   className="border rounded w-20"
                 >
-                  {pedestrianOptions.map((option) => (
+                  {consequenceOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -265,7 +303,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           toggleGeoJsonVisibility={() => setShowTrafficData(!showTrafficData)}
           label="Dopravní situace"
         />
-        {/* Tlačítko pro aktualizaci dat */}
+        {/* Tlačítko pro aktualizaci dat TODO*/}
         <button
           onClick={onUpdateData}
           className="mt-4 bg-[#66BB6A] text-white px-4 py-2 rounded-[30px] shadow hover:bg-[#558b55] w-full"
