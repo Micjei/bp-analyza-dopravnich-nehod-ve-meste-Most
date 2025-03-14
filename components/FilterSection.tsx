@@ -38,6 +38,8 @@ interface FilterSectionProps {
   onUpdateData?: () => void;
   realAngle: boolean;
   setRealAngle: (value: boolean) => void;
+  showHeatmap: boolean;
+  setShowHeatmap: (value: boolean) => void;
 }
 
 const FilterSection: React.FC<FilterSectionProps> = ({
@@ -63,6 +65,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   onUpdateData,
   realAngle,
   setRealAngle,
+  showHeatmap,
+  setShowHeatmap,
 }) => {
   const [days, setDays] = useState<string[]>([]);
   const [accidentsFilter, setAccidentsFilter] = useState(false); // podrobnější nehody
@@ -132,6 +136,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           showData={showAccidentData}
           toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
           toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
+          toggleHeatmapVisibility={() => setShowHeatmap(!showHeatmap)}
           accidentFilter={accidentsFilter}
           label="Nehody"
         />
@@ -218,7 +223,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 </select>
               </div>
 
-              {/* účast chodce TODO */}
+              {/* účast chodce */}
               <div className="flex items-center gap-2">
                 <label htmlFor="ucast-chodce">Účast chodce:</label>
                 <select
@@ -235,66 +240,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 </select>
               </div>
 
-              {/* Druh nehody TODO */}
+              {/* smrtelná nehoda TODO */}
               <div className="flex items-center gap-2">
-                <label htmlFor="druh-nehody">Druh nehody:</label>
+                <label htmlFor="smrtelna-nehoda">Smrtelná nehoda:</label>
                 <select
-                  id="druh-nehody"
-                  value={selectedDay}
-                  onChange={(e) => setSelectedDay(e.target.value)}
-                  className="border rounded"
+                  id="smrtelna-nehoda"
+                  value={pedestrianFilter}
+                  onChange={(e) => setPedestrianFilter(e.target.value)}
+                  className="border rounded w-20"
                 >
-                  {days.map((day) => (
-                    <option key={day} value={day}>
-                      {day === "all" ? "-" : `${day}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {/* Druh srážky TODO */}
-              <div className="flex items-center gap-2">
-                <label htmlFor="druh-srazky">Druh srážky:</label>
-                <select
-                  id="druh-srazky"
-                  value={selectedDay}
-                  onChange={(e) => setSelectedDay(e.target.value)}
-                  className="border rounded"
-                >
-                  {days.map((day) => (
-                    <option key={day} value={day}>
-                      {day === "all" ? "-" : `${day}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {/* Druh povrchu TODO */}
-              <div className="flex items-center gap-2">
-                <label htmlFor="druh-povrchu">Druh povrchu:</label>
-                <select
-                  id="druh-povrchu"
-                  value={selectedDay}
-                  onChange={(e) => setSelectedDay(e.target.value)}
-                  className="border rounded"
-                >
-                  {days.map((day) => (
-                    <option key={day} value={day}>
-                      {day === "all" ? "-" : `${day}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {/* Druh zranění TODO */}
-              <div className="flex items-center gap-2">
-                <label htmlFor="druh-zraneni">Druh zranění:</label>
-                <select
-                  id="druh-zraneni"
-                  value={selectedDay}
-                  onChange={(e) => setSelectedDay(e.target.value)}
-                  className="border rounded"
-                >
-                  {days.map((day) => (
-                    <option key={day} value={day}>
-                      {day === "all" ? "-" : `${day}`}
+                  {pedestrianOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
                   ))}
                 </select>

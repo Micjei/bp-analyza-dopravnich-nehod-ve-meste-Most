@@ -1,8 +1,11 @@
+import { button } from "framer-motion/client";
 import React from "react";
+
 interface ButtonToggleProps {
   showData: boolean;
   toggleGeoJsonVisibility: () => void;
   toggleDetailVisibility?: () => void;
+  toggleHeatmapVisibility?: () => void;
   accidentFilter?: boolean;
   label: string;
 }
@@ -11,6 +14,7 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
   showData,
   toggleGeoJsonVisibility,
   toggleDetailVisibility,
+  toggleHeatmapVisibility,
   accidentFilter,
   label,
 }) => {
@@ -43,6 +47,18 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
           >
             &#8595;
           </span>
+        </button>
+      )}
+
+      {/* Ikona pro HeatMap */}
+      {toggleHeatmapVisibility && (
+        <button
+          onClick={toggleHeatmapVisibility}
+          className="flex items-center hover:text-green-900 transition-all"
+        >
+          <div className="flex items-center">
+            <img src="../heatmap.png" alt="Heatmap Icon" className="w-5 h-5" />
+          </div>
         </button>
       )}
     </div>

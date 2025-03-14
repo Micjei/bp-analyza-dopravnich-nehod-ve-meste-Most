@@ -1,22 +1,40 @@
-import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, GeoJSON, Polyline } from "react-leaflet";
-import { LatLngExpression } from "leaflet";
-import { useEffect, useState } from "react";
+// Základní knihovny
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// Knihovny pro práci s React a Leaflet
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import { LatLngExpression } from "leaflet";
+
+// Utility a styly
+import { useEffect, useState } from "react";
 import "../../app/globals.css";
+
+// Specifické komponenty
 import ButtonToggle from "../ButtonToggle";
 import FilterSection from "../FilterSection";
 import LegendSection from "../LegendSection";
 import FooterSection from "../FooterSection";
 import HeaderSection from "../HeaderSection";
+
+// Funkce pro získání dat
 import { fetchRadarsData, fetchAccidentsData } from "@/utils/fetchData";
+
+// Další doplňky pro mapu
 import "leaflet-rotatedmarker";
+import "leaflet.markercluster";
+import MarkerClusterGroup from "react-leaflet-markercluster";
+import "leaflet.heat";
+
+// Ikony pro mapu
 import {
   radarIcon,
   carCrashIcon,
   carCrashPedestrianIcon,
   arrowIcon,
 } from "@/utils/mapIcons";
+
+// Popisné funkce pro popup okna
 import {
   getAlcoholDescription,
   getDrugsDescription,
@@ -54,6 +72,8 @@ const Map: React.FC = () => {
   //tomtom api
   const apiKey = process.env.NEXT_PUBLIC_TOMTOM_API_KEY;
   const tomTomTileUrl = `https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key=${apiKey}`;
+
+  const [showHeatmap, setShowHeatmap] = useState(false); // heatmap
 
   useEffect(() => {
     const loadData = async () => {
@@ -264,6 +284,62 @@ const Map: React.FC = () => {
     setLastUpdate(new Date().toLocaleString());
   };
 
+  // cluster
+  const customClusterIcon = (cluster: L.MarkerCluster, color: string) => {
+    const markers = cluster.getAllChildMarkers();
+    const size = markers.length;
+    console.log("Leaflet object:", L);
+    console.log("heatLayer exists?", L.heatLayer);
+
+    return L.divIcon({
+      html: `<div style="color: ${color}; border: 2px solid ${color}; background-color: white;"
+                 class="p-2 rounded-full w-10 h-10 flex justify-center items-center text-xl">
+                ${size}
+              </div>`,
+      className: "custom-cluster-icon",
+      iconSize: L.point(40, 40),
+    });
+  };
+
+  //heatmap
+  const HeatmapLayer: React.FC<{ showHeatmap: boolean; data: any }> = ({
+    showHeatmap,
+    data,
+  }) => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (!map || !showHeatmap || !data) return;
+
+      const heatmapLayer = L.heatLayer(
+        data.features
+          .map((feature: any) => {
+            const { geometry, properties } = feature;
+            if (!geometry || !geometry.coordinates) return null;
+
+            const lat = geometry.coordinates[1];
+            const lng = geometry.coordinates[0];
+            const intensity = properties.nasledky_ve_vozidle.length + 1; // váha podle následků
+
+            return [lat, lng, intensity];
+          })
+          .filter(Boolean),
+        {
+          radius: 20,
+          blur: 15,
+          maxZoom: 17,
+        }
+      );
+
+      heatmapLayer.addTo(map);
+
+      return () => {
+        map.removeLayer(heatmapLayer);
+      };
+    }, [map, showHeatmap, data]);
+
+    return null;
+  };
   return (
     <div className="flex flex-col items-start w-full relative">
       {/* Kontejner pro mapu */}
@@ -294,6 +370,8 @@ const Map: React.FC = () => {
             //onUpdateData={handleUpdateData}
             realAngle={realAngle}
             setRealAngle={setRealAngle}
+            showHeatmap={showHeatmap}
+            setShowHeatmap={setShowHeatmap}
           />
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button
@@ -344,17 +422,40 @@ const Map: React.FC = () => {
           style={{ width: "100%", height: "100%" }}
         >
           <TileLayer attribution={""} url={tileLayerUrl} />
-          {/* GeoJSON data */}
+
+          {/* radary */}
           {showRadarData && RadarsData && (
-            <GeoJSON data={RadarsData} pointToLayer={pointToLayerRadars} />
+            <MarkerClusterGroup
+              iconCreateFunction={(cluster: L.MarkerCluster) =>
+                customClusterIcon(cluster, "red")
+              }
+            >
+              <GeoJSON data={RadarsData} pointToLayer={pointToLayerRadars} />
+            </MarkerClusterGroup>
           )}
-          {showAccidentData && filteredAccidentsData && (
-            <GeoJSON
+
+          {showHeatmap && (
+            <HeatmapLayer
+              showHeatmap={showHeatmap}
               data={filteredAccidentsData}
-              pointToLayer={pointToLayerAccidents}
             />
           )}
-          {/* tu přidat layer na dopravní situaci či co. */}
+
+          {/** nehody */}
+          {!showHeatmap && showAccidentData && filteredAccidentsData && (
+            <MarkerClusterGroup
+              iconCreateFunction={(cluster: L.MarkerCluster) =>
+                customClusterIcon(cluster, "black")
+              }
+            >
+              <GeoJSON
+                data={filteredAccidentsData}
+                pointToLayer={pointToLayerAccidents}
+              />
+            </MarkerClusterGroup>
+          )}
+
+          {/** dopravni situace */}
           {showTrafficData && <TileLayer url={tomTomTileUrl} />}
         </MapContainer>
       </div>
