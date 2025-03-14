@@ -1,38 +1,79 @@
-import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import { LatLngExpression } from "leaflet";
-import { useEffect, useState } from "react";
+// Základní knihovny
 import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+
+// Knihovny pro práci s React a Leaflet
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import { LatLngExpression } from "leaflet";
+
+// Utility a styly
+import { useEffect, useState } from "react";
 import "../../app/globals.css";
+
+// Specifické komponenty
 import ButtonToggle from "../ButtonToggle";
 import FilterSection from "../FilterSection";
 import LegendSection from "../LegendSection";
 import FooterSection from "../FooterSection";
 import HeaderSection from "../HeaderSection";
+
+// Funkce pro získání dat
+import { fetchRadarsData, fetchAccidentsData } from "@/utils/fetchData";
+
+// Další doplňky pro mapu
+import "leaflet-rotatedmarker";
+import "leaflet.markercluster";
+import MarkerClusterGroup from "react-leaflet-markercluster";
+import "leaflet.heat";
+
+// Ikony pro mapu
 import {
-  fetchRadarsData,
-  fetchAccidentsData,
-  fetchOtherGeoJsonData,
-} from "../../utils/fetchData";
+  radarIcon,
+  carCrashIcon,
+  carCrashPedestrianIcon,
+  arrowIcon,
+} from "@/utils/mapIcons";
+
+// Popisné funkce pro popup okna
+import {
+  getAlcoholDescription,
+  getDrugsDescription,
+} from "@/utils/popupDescription";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
   const [RadarsData, setRadarsData] = useState<any>(null);
   const [AccidentsData, setAccidentsData] = useState<any>(null);
-  const [otherGeoJsonData, setOtherGeoJsonData] = useState<any>(null); // smazat
+  const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null); // filtrovane nehody
 
   const [showFilters, setShowFilters] = useState(true);
   const [showLegend, setShowLegend] = useState(true);
 
   const [showRadarData, setShowRadarData] = useState(false);
   const [showAccidentData, setShowAccidentData] = useState(false);
-  const [showOtherDataFilter, setShowOtherDataFilter] = useState(false); // smazat
+  const [showTrafficData, setShowTrafficData] = useState(false);
 
   const [tileLayerUrl, setTileLayerUrl] = useState(
-    "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+    "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   );
 
   const [lastUpdate, setLastUpdate] = useState<string>("");
+  const [selectedYear, setSelectedYear] = useState(
+    new Date().getFullYear().toString()
+  );
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+  const [selectedDay, setSelectedDay] = useState<string>("all");
+  const [alcoholFilter, setAlcoholFilter] = useState<string>("-");
+  const [drugsFilter, setDrugsFilter] = useState<string>("-");
+  const [pedestrianFilter, setPedestrianFilter] = useState<string>("-");
+
+  const [realAngle, setRealAngle] = useState(false);
+
+  //tomtom api
+  const apiKey = process.env.NEXT_PUBLIC_TOMTOM_API_KEY;
+  const tomTomTileUrl = `https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key=${apiKey}`;
+
+  const [showHeatmap, setShowHeatmap] = useState(false); // heatmap
 
   useEffect(() => {
     const loadData = async () => {
@@ -42,49 +83,148 @@ const Map: React.FC = () => {
       const accidents = await fetchAccidentsData();
       setAccidentsData(accidents);
 
-      const otherData = await fetchOtherGeoJsonData(); // smazat
-      setOtherGeoJsonData(otherData); // smazat
-
       setLastUpdate(new Date().toLocaleString());
     };
 
     loadData();
-
-    setLastUpdate(new Date().toLocaleString());
   }, []);
 
+  useEffect(() => {
+    if (AccidentsData) {
+      const filtered = {
+        type: "FeatureCollection",
+        features: AccidentsData.features.filter((feature: any) => {
+          const datum = feature.properties?.datum;
+          if (!datum) return false;
+          const parts = datum.split("/");
+          if (parts.length !== 3) return false;
+          const den = parts[0];
+          const mesic = parts[1];
+          const rok = parts[2];
+
+          // alkohol filter
+          const alkohol = feature.properties?.alkohol;
+          // drugs filter
+          const drogy = feature.properties?.drogy;
+          // pedestrian filter
+          const chodci = feature.properties?.chodci || [];
+
+          // TODO null hodnoty
+          return (
+            rok === selectedYear &&
+            (selectedMonth === "all" ||
+              parseInt(mesic, 10) === parseInt(selectedMonth, 10)) &&
+            (selectedDay === "all" ||
+              parseInt(den, 10) === parseInt(selectedDay, 10)) &&
+            (alcoholFilter === "-" ||
+              parseInt(alkohol, 10) === parseInt(alcoholFilter, 10)) &&
+            (drugsFilter === "-" ||
+              parseInt(drogy, 10) === parseInt(drugsFilter, 10)) &&
+            (pedestrianFilter === "-" ||
+              (pedestrianFilter === "ano" && chodci.length > 0) ||
+              (pedestrianFilter === "ne" && chodci.length === 0))
+          );
+        }),
+      };
+      setFilteredAccidentsData(filtered);
+    }
+
+    if (showAccidentData) {
+      setShowAccidentData(false);
+      setTimeout(() => setShowAccidentData(true), 0);
+    }
+  }, [
+    selectedYear,
+    selectedMonth,
+    selectedDay,
+    alcoholFilter,
+    drugsFilter,
+    pedestrianFilter,
+    AccidentsData,
+  ]);
+
+  useEffect(() => {
+    if (showRadarData) {
+      setShowRadarData(false);
+      setTimeout(() => setShowRadarData(true), 0);
+    }
+  }, [realAngle]); // Když se změní realAngle, triggeruj překreslení radarů
+
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
-    return L.circleMarker(latlng, {
-      radius: 8,
-      fillColor: "blue",
-      color: "white",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.7,
-    });
+    const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
+    const arrowRotation = feature.properties.smer - 90; // směr šipky - 90 protože originál směřuje doprava
+    const marker = L.marker(latlng, {
+      icon: radarIcon,
+    } as L.MarkerOptions);
+
+    (marker as any).setRotationAngle(rotation);
+    marker.bindPopup(`
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <b>směr:</b> ${feature.properties.smer}°
+        <img src="${arrowIcon.options.iconUrl}" 
+             style="width: 20px; height: 20px; transform: rotate(${arrowRotation}deg);" 
+             alt="Radar směr"/>
+      </div>
+      <b>ulice:</b> ${feature.properties.lokalita}<br/>
+      <b>v provozu:</b> ${feature.properties.v_provozu}<br/>
+    `);
+
+    return marker;
   };
 
+  // zobrazeni nehod, pokud je v tom chodec, tak je červeně
   const pointToLayerAccidents = (feature: any, latlng: LatLngExpression) => {
-    return L.circleMarker(latlng, {
-      radius: 8,
-      fillColor: "green",
-      color: "white",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.7,
-    });
-  };
+    const pedestrians = feature.properties.chodci; // Pole chodců
+    const consequences = feature.properties.nasledky_ve_vozidle; // Pole následků
+    const hasPedestrianCategory = pedestrians.length > 0;
 
-  // smazat
-  const pointToLayerOthers = (feature: any, latlng: LatLngExpression) => {
-    return L.circleMarker(latlng, {
-      radius: 8,
-      fillColor: "red",
-      color: "white",
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.7,
+    let icon = carCrashIcon;
+
+    if (hasPedestrianCategory) {
+      icon = carCrashPedestrianIcon;
+    }
+
+    const marker = L.marker(latlng, {
+      icon: icon,
     });
+
+    // Zpracování chodců do HTML řetězce
+    const pedestriansInfo =
+      pedestrians.length > 0
+        ? pedestrians
+            .map(
+              (p: any, index: number) =>
+                `<b>Chodec ${index + 1}:</b> ${p.kategorie}, následky: ${
+                  p.nasledky_chodci
+                }, věk: ${p.vek}<br/>`
+            )
+            .join("")
+        : "";
+
+    // Zpracování následků do HTML řetězce
+    const consequencesInfo =
+      consequences.length > 0
+        ? consequences
+            .map(
+              (c: any, index: number) =>
+                `<b>Následek ${index + 1}:</b> ${c.nasledky_vozidlo}<br/>` // ve vozidle následky?
+            )
+            .join("")
+        : "";
+
+    marker.bindPopup(`
+      <b>ID nehody:</b> ${feature.properties.id}<br/>
+      <b>Alkohol u viníka:</b> ${getAlcoholDescription(
+        feature.properties.alkohol
+      )}<br/>
+      <b>Drogy u viníka:</b> ${getDrugsDescription(
+        feature.properties.drogy
+      )}<br/>
+      ${pedestriansInfo}
+      ${consequencesInfo}
+    `);
+
+    return marker;
   };
 
   // upload data do Firestore
@@ -144,22 +284,94 @@ const Map: React.FC = () => {
     setLastUpdate(new Date().toLocaleString());
   };
 
+  // cluster
+  const customClusterIcon = (cluster: L.MarkerCluster, color: string) => {
+    const markers = cluster.getAllChildMarkers();
+    const size = markers.length;
+    console.log("Leaflet object:", L);
+    console.log("heatLayer exists?", L.heatLayer);
+
+    return L.divIcon({
+      html: `<div style="color: ${color}; border: 2px solid ${color}; background-color: white;"
+                 class="p-2 rounded-full w-10 h-10 flex justify-center items-center text-xl">
+                ${size}
+              </div>`,
+      className: "custom-cluster-icon",
+      iconSize: L.point(40, 40),
+    });
+  };
+
+  //heatmap
+  const HeatmapLayer: React.FC<{ showHeatmap: boolean; data: any }> = ({
+    showHeatmap,
+    data,
+  }) => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (!map || !showHeatmap || !data) return;
+
+      const heatmapLayer = L.heatLayer(
+        data.features
+          .map((feature: any) => {
+            const { geometry, properties } = feature;
+            if (!geometry || !geometry.coordinates) return null;
+
+            const lat = geometry.coordinates[1];
+            const lng = geometry.coordinates[0];
+            const intensity = properties.nasledky_ve_vozidle.length + 1; // váha podle následků
+
+            return [lat, lng, intensity];
+          })
+          .filter(Boolean),
+        {
+          radius: 20,
+          blur: 15,
+          maxZoom: 17,
+        }
+      );
+
+      heatmapLayer.addTo(map);
+
+      return () => {
+        map.removeLayer(heatmapLayer);
+      };
+    }, [map, showHeatmap, data]);
+
+    return null;
+  };
   return (
     <div className="flex flex-col items-start w-full relative">
       {/* Kontejner pro mapu */}
       <div className="map">
         {/* Sekce filtrů s možností skrytí/odkrytí */}
-        <div className="absolute top-[40%] left-5 z-[1000]">
+        <div className="absolute top-1/2 left-5 z-[1000] -translate-y-1/2">
           <FilterSection
             showRadarData={showRadarData}
             setShowRadarData={setShowRadarData}
             showAccidentData={showAccidentData}
             setShowAccidentData={setShowAccidentData}
-            showOtherData={showOtherDataFilter}
-            setShowOtherData={setShowOtherDataFilter}
+            showTrafficData={showTrafficData}
+            setShowTrafficData={setShowTrafficData}
             isFiltersVisible={showFilters}
+            selectedYear={selectedYear}
+            setSelectedYear={setSelectedYear}
+            selectedMonth={selectedMonth}
+            setSelectedMonth={setSelectedMonth}
+            selectedDay={selectedDay}
+            setSelectedDay={setSelectedDay}
+            alcoholFilter={alcoholFilter}
+            setAlcoholFilter={setAlcoholFilter}
+            drugsFilter={drugsFilter}
+            setDrugsFilter={setDrugsFilter}
+            pedestrianFilter={pedestrianFilter}
+            setPedestrianFilter={setPedestrianFilter}
             onUpdateData={uploadData}
             //onUpdateData={handleUpdateData}
+            realAngle={realAngle}
+            setRealAngle={setRealAngle}
+            showHeatmap={showHeatmap}
+            setShowHeatmap={setShowHeatmap}
           />
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button
@@ -171,7 +383,12 @@ const Map: React.FC = () => {
         </div>
 
         <div className="absolute bottom-10 right-5 z-[1000]">
-          <LegendSection isLegendVisible={showLegend} />
+          <LegendSection
+            isLegendVisible={showLegend}
+            showTrafficData={showTrafficData}
+            showAccidentData={showAccidentData}
+            showRadarData={showRadarData}
+          />
           {/* Tlačítko pro zobrazení a skrytí legendy */}
           <button
             onClick={() => setShowLegend(!showLegend)}
@@ -204,29 +421,42 @@ const Map: React.FC = () => {
           scrollWheelZoom={true}
           style={{ width: "100%", height: "100%" }}
         >
-          <TileLayer
-            attribution={""}
-            url={tileLayerUrl}
-            //url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}" // saletitní
-            //url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" // normalni
-            //url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" // idk jaká
-          />
-          {/* GeoJSON data */}
+          <TileLayer attribution={""} url={tileLayerUrl} />
+
+          {/* radary */}
           {showRadarData && RadarsData && (
-            <GeoJSON data={RadarsData} pointToLayer={pointToLayerRadars} />
+            <MarkerClusterGroup
+              iconCreateFunction={(cluster: L.MarkerCluster) =>
+                customClusterIcon(cluster, "red")
+              }
+            >
+              <GeoJSON data={RadarsData} pointToLayer={pointToLayerRadars} />
+            </MarkerClusterGroup>
           )}
-          {showAccidentData && AccidentsData && (
-            <GeoJSON
-              data={AccidentsData}
-              pointToLayer={pointToLayerAccidents}
+
+          {showHeatmap && (
+            <HeatmapLayer
+              showHeatmap={showHeatmap}
+              data={filteredAccidentsData}
             />
           )}
-          {showOtherDataFilter && otherGeoJsonData && (
-            <GeoJSON
-              data={otherGeoJsonData}
-              pointToLayer={pointToLayerOthers}
-            />
+
+          {/** nehody */}
+          {!showHeatmap && showAccidentData && filteredAccidentsData && (
+            <MarkerClusterGroup
+              iconCreateFunction={(cluster: L.MarkerCluster) =>
+                customClusterIcon(cluster, "black")
+              }
+            >
+              <GeoJSON
+                data={filteredAccidentsData}
+                pointToLayer={pointToLayerAccidents}
+              />
+            </MarkerClusterGroup>
           )}
+
+          {/** dopravni situace */}
+          {showTrafficData && <TileLayer url={tomTomTileUrl} />}
         </MapContainer>
       </div>
     </div>
