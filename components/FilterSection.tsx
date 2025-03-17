@@ -12,6 +12,7 @@ import {
   drugsOptions,
   pedestrianOptions,
   consequenceOptions,
+  activeRadarOptions,
 } from "@/utils/selectOptions";
 
 interface FilterSectionProps {
@@ -37,10 +38,14 @@ interface FilterSectionProps {
   deadFilter: string;
   setDeadFilter: (value: string) => void;
   onUpdateData?: () => void;
-  realAngle: boolean;
-  setRealAngle: (value: boolean) => void;
+  realAngle: boolean; // smazat
+  setRealAngle: (value: boolean) => void; // smazat
+  isRadarActive: string;
+  setIsRadarActive: (value: string) => void;
   showHeatmap: boolean;
   setShowHeatmap: (value: boolean) => void;
+  numberOfRadars: number;
+  numberOfAccidents: number;
 }
 
 const FilterSection: React.FC<FilterSectionProps> = ({
@@ -66,10 +71,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   deadFilter,
   setDeadFilter,
   onUpdateData,
-  realAngle,
-  setRealAngle,
+  realAngle, // smazat
+  setRealAngle, // smazat
+  isRadarActive,
+  setIsRadarActive,
   showHeatmap,
   setShowHeatmap,
+  numberOfRadars,
+  numberOfAccidents,
 }) => {
   const [days, setDays] = useState<string[]>([]);
   const [accidentsFilter, setAccidentsFilter] = useState(false); // podrobnější nehody
@@ -132,12 +141,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             showData={showRadarData}
             toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
             toggleDetailVisibility={() => setRadarsFilter(!radarsFilter)}
+            rotation={radarsFilter}
+            count={numberOfRadars}
             label="Radary"
           />
           {/** smazat směr button*/}
-          <button onClick={() => setRealAngle(!realAngle)}>
+          {/*<button onClick={() => setRealAngle(!realAngle)}>
             {realAngle ? "směr: ano" : "směr: ne"}
-          </button>
+          </button>*/}
         </div>
         {/** detail radaru */}
         <AnimatePresence>
@@ -154,11 +165,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 <label htmlFor="aktivita-radaru">Aktivní radary:</label>
                 <select
                   id="aktivita-radaru"
-                  value={deadFilter}
-                  onChange={(e) => setDeadFilter(e.target.value)}
+                  value={isRadarActive}
+                  onChange={(e) => setIsRadarActive(e.target.value)}
                   className="border rounded w-20"
                 >
-                  {consequenceOptions.map((option) => (
+                  {activeRadarOptions.map((option) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
@@ -175,7 +186,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
           toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
           toggleHeatmapVisibility={() => setShowHeatmap(!showHeatmap)}
-          accidentFilter={accidentsFilter}
+          rotation={accidentsFilter}
+          count={numberOfAccidents}
           label="Nehody"
         />
 

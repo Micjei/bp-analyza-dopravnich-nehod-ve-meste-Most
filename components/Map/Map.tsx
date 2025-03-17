@@ -47,6 +47,7 @@ const Map: React.FC = () => {
   const [RadarsData, setRadarsData] = useState<any>(null);
   const [AccidentsData, setAccidentsData] = useState<any>(null);
   const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null); // filtrovane nehody
+  const [filteredRadarsData, setFilteredRadarsData] = useState<any>(null); // filtrovane radary
 
   const [showFilters, setShowFilters] = useState(true);
   const [showLegend, setShowLegend] = useState(true);
@@ -71,12 +72,15 @@ const Map: React.FC = () => {
   const [deadFilter, setDeadFilter] = useState<string>("-");
 
   const [realAngle, setRealAngle] = useState(false);
+  const [isRadarActive, setIsRadarActive] = useState<string>("-");
 
   //tomtom api
   const apiKey = process.env.NEXT_PUBLIC_TOMTOM_API_KEY;
   const tomTomTileUrl = `https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key=${apiKey}`;
 
   const [showHeatmap, setShowHeatmap] = useState(false); // heatmap
+  const [numberOfRadars, setNumberOfRadars] = useState(0); // pocet radarů
+  const [numberOfAccidents, setNumberOfAccidents] = useState(0); // pocet nehod
 
   useEffect(() => {
     const loadData = async () => {
@@ -93,7 +97,7 @@ const Map: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (AccidentsData) {
+    if (showAccidentData) {
       const filtered = {
         type: "FeatureCollection",
         features: AccidentsData.features.filter((feature: any) => {
@@ -134,7 +138,10 @@ const Map: React.FC = () => {
           );
         }),
       };
+      setNumberOfAccidents(filtered.features.length);
       setFilteredAccidentsData(filtered);
+    } else {
+      setNumberOfAccidents(0);
     }
 
     if (showAccidentData) {
@@ -149,15 +156,30 @@ const Map: React.FC = () => {
     drugsFilter,
     pedestrianFilter,
     deadFilter,
-    AccidentsData,
+    showAccidentData,
   ]);
 
   useEffect(() => {
     if (showRadarData) {
+      const filtered = {
+        type: "FeatureCollection",
+        features: RadarsData.features.filter((feature: any) => {
+          // v provozu
+          const aktivita = feature.properties?.v_provozu;
+          // TODO null hodnoty
+          return isRadarActive === "-" || isRadarActive === aktivita;
+        }),
+      };
+      setNumberOfRadars(filtered.features.length);
+      setFilteredRadarsData(filtered);
+    } else {
+      setNumberOfRadars(0);
+    }
+    if (showRadarData) {
       setShowRadarData(false);
       setTimeout(() => setShowRadarData(true), 0);
     }
-  }, [realAngle]); // Když se změní realAngle, triggeruj překreslení radarů
+  }, [realAngle, isRadarActive, showRadarData]); // Když se změní realAngle, triggeruj překreslení radarů
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
     const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
@@ -167,6 +189,7 @@ const Map: React.FC = () => {
     } as L.MarkerOptions);
 
     (marker as any).setRotationAngle(rotation);
+
     marker.bindPopup(`
       <b>ID:</b> ${feature.properties.id}<br/>
       <div style="display: flex; align-items: center; gap: 8px;">
@@ -182,7 +205,7 @@ const Map: React.FC = () => {
     return marker;
   };
 
-  // zobrazeni nehod, pokud je v tom chodec, tak je červeně
+  // zobrazeni nehod
   const pointToLayerAccidents = (feature: any, latlng: LatLngExpression) => {
     const pedestrians = feature.properties.chodci; // Pole chodců
     const consequences = feature.properties.nasledky_ve_vozidle; // Pole následků
@@ -246,6 +269,11 @@ const Map: React.FC = () => {
     try {
       const datasets = [
         { name: "radary", file: "radary.geojson", api: "/api/uploadRadars" },
+        {
+          name: "mereni",
+          file: "mereni.geojson",
+          api: "/api/uploadMeasurements",
+        },
         { name: "nehody", file: "nehody.geojson", api: "/api/uploadAccidents" },
         {
           name: "vozidla",
@@ -302,8 +330,6 @@ const Map: React.FC = () => {
   const customClusterIcon = (cluster: L.MarkerCluster, color: string) => {
     const markers = cluster.getAllChildMarkers();
     const size = markers.length;
-    console.log("Leaflet object:", L);
-    console.log("heatLayer exists?", L.heatLayer);
 
     return L.divIcon({
       html: `<div style="color: ${color}; border: 2px solid ${color}; background-color: white;"
@@ -354,6 +380,7 @@ const Map: React.FC = () => {
 
     return null;
   };
+
   return (
     <div className="flex flex-col items-start w-full relative">
       {/* Kontejner pro mapu */}
@@ -386,8 +413,12 @@ const Map: React.FC = () => {
             //onUpdateData={handleUpdateData}
             realAngle={realAngle}
             setRealAngle={setRealAngle}
+            isRadarActive={isRadarActive}
+            setIsRadarActive={setIsRadarActive}
             showHeatmap={showHeatmap}
             setShowHeatmap={setShowHeatmap}
+            numberOfRadars={numberOfRadars}
+            numberOfAccidents={numberOfAccidents}
           />
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button
@@ -440,13 +471,16 @@ const Map: React.FC = () => {
           <TileLayer attribution={""} url={tileLayerUrl} />
 
           {/* radary */}
-          {showRadarData && RadarsData && (
+          {showRadarData && showRadarData && filteredRadarsData && (
             <MarkerClusterGroup
               iconCreateFunction={(cluster: L.MarkerCluster) =>
                 customClusterIcon(cluster, "red")
               }
             >
-              <GeoJSON data={RadarsData} pointToLayer={pointToLayerRadars} />
+              <GeoJSON
+                data={filteredRadarsData}
+                pointToLayer={pointToLayerRadars}
+              />
             </MarkerClusterGroup>
           )}
 

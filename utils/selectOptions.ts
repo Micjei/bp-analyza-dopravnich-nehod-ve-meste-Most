@@ -68,3 +68,9 @@ export const consequenceOptions = [
   { label: "ano", value: "1" },
   { label: "ne", value: "0" },
 ];
+
+export const activeRadarOptions = [
+  { label: "-", value: "-" },
+  { label: "ano", value: "Ano" },
+  { label: "ne", value: "Ne" },
+];

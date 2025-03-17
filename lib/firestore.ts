@@ -171,3 +171,19 @@ export const saveConsequencesGeoJSON = async (geojson: any) => {
     console.error("❌ Chyba při ukládání do Firestore:", error);
   }
 };
+
+export const saveMeasurementGeoJSON = async (geojson: any) => {
+  try {
+    const measurementRef = collection(db, "mereni");
+
+    for (const feature of geojson.features) {
+      await addDoc(measurementRef, {
+        ...feature.properties,
+      });
+    }
+
+    console.log("✅ Všechna měření byla uložena do Firestore!");
+  } catch (error) {
+    console.error("❌ Chyba při ukládání měření do Firestore:", error);
+  }
+};

@@ -1,4 +1,5 @@
-import { button } from "framer-motion/client";
+import { motion } from "framer-motion";
+
 import React from "react";
 
 interface ButtonToggleProps {
@@ -6,7 +7,8 @@ interface ButtonToggleProps {
   toggleGeoJsonVisibility: () => void;
   toggleDetailVisibility?: () => void;
   toggleHeatmapVisibility?: () => void;
-  accidentFilter?: boolean;
+  rotation?: boolean;
+  count?: number;
   label: string;
 }
 
@@ -15,7 +17,8 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
   toggleGeoJsonVisibility,
   toggleDetailVisibility,
   toggleHeatmapVisibility,
-  accidentFilter,
+  rotation,
+  count,
   label,
 }) => {
   return (
@@ -31,25 +34,23 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
         ></div>
         <span>{label}</span>
       </div>
-
       {/** zobrazení detailů */}
       {toggleDetailVisibility && (
         <button
           onClick={toggleDetailVisibility}
           className="px-2 flex items-center hover:text-green-900 gap-1 transition-all"
         >
-          Detail
+          detail
           {/* Šipka dolů */}
           <span
-            className={`transform transition-transform ${
-              accidentFilter ? "rotate-180" : "rotate-0"
+            className={`transform transition-transform duration-[700ms] ${
+              rotation ? "rotate-[540deg]" : "rotate-0"
             }`}
           >
             &#8595;
           </span>
         </button>
       )}
-
       {/* Ikona pro HeatMap */}
       {toggleHeatmapVisibility && (
         <button
@@ -61,6 +62,8 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
           </div>
         </button>
       )}
+      {/** counter */}
+      {count}
     </div>
   );
 };
