@@ -184,11 +184,26 @@ const Map: React.FC = () => {
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
     const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
     const arrowRotation = feature.properties.smer - 90; // směr šipky - 90 protože originál směřuje doprava
+    const measurements = feature.properties.mereni; // Pole mereni
+
     const marker = L.marker(latlng, {
       icon: radarIcon,
     } as L.MarkerOptions);
 
     (marker as any).setRotationAngle(rotation);
+
+    const measurementsInfo =
+      measurements.length > 0
+        ? measurements
+            .map(
+              (m: any, index: number) =>
+                `<b>Měření ${index + 1}:</b> 
+                Rychlost: ${m.prekroceni_rychlost_soucet} km/h, 
+                Datum: ${m.datum}, 
+                Překročení: ${m.prekroceni_ve_smeru}<br/>`
+            )
+            .join("")
+        : "Žádná dostupná měření.";
 
     marker.bindPopup(`
       <b>ID:</b> ${feature.properties.id}<br/>
@@ -200,6 +215,9 @@ const Map: React.FC = () => {
       </div>
       <b>ulice:</b> ${feature.properties.lokalita}<br/>
       <b>v provozu:</b> ${feature.properties.v_provozu}<br/>
+      <b>Měření:</b>
+      <br/>
+      ${measurementsInfo}
     `);
 
     return marker;
