@@ -3,9 +3,32 @@ import { db } from "../lib/firebase";
 
 export const fetchRadarsData = async () => {
   try {
-    const querySnapshot = await getDocs(collection(db, "radary"));
-    const features = querySnapshot.docs.map((doc) => {
+    // Načtení měření a seskupení podle ID_LOKALITY
+    const measurementsSnapshot = await getDocs(collection(db, "mereni"));
+    const measurementsMap = new Map();
+
+    measurementsSnapshot.docs.forEach((doc) => {
       const data = doc.data();
+      const idLokalita = data.ID_LOKALITY;
+
+      if (!measurementsMap.has(idLokalita)) {
+        measurementsMap.set(idLokalita, []);
+      }
+
+      measurementsMap.get(idLokalita).push({
+        prekroceni_rychlost_soucet:
+          data.PREKROCENI_RYCHL_SOUCET || "nezjištěno", // edit
+        datum: data.OBDOBI_FORMATOVANE || "nezjištěno", // edit
+        prekroceni_ve_smeru: data.PREKROCENI_RYCHL_VE_SMERU || "nezjištěno", // edit
+      });
+    });
+
+    // Načtení radarů a propojení s měřeními
+    const radarsSnapshot = await getDocs(collection(db, "radary"));
+    const features = radarsSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      const measurementsData = measurementsMap.get(data.ID) || []; // Získá odpovídající měření podle ID_LOKALITY
+
       return {
         type: "Feature",
         geometry: {
@@ -20,6 +43,7 @@ export const fetchRadarsData = async () => {
           lokalita: data.lokalita,
           smer: data.smer,
           v_provozu: data.v_provozu === 1 ? "Ano" : "Ne",
+          mereni: measurementsData, // Pole měření pro daný radar
         },
       };
     });
@@ -29,7 +53,7 @@ export const fetchRadarsData = async () => {
       features: features,
     };
   } catch (error) {
-    console.error("Chyba při načítání radary dat:", error);
+    console.error("Chyba při načítání dat radarů:", error);
     return null;
   }
 };

@@ -78,7 +78,8 @@ const Map: React.FC = () => {
   const apiKey = process.env.NEXT_PUBLIC_TOMTOM_API_KEY;
   const tomTomTileUrl = `https://api.tomtom.com/traffic/map/4/tile/flow/relative0/{z}/{x}/{y}.png?key=${apiKey}`;
 
-  const [showHeatmap, setShowHeatmap] = useState(false); // heatmap
+  const [showAccidentsHeatmap, setShowAccidentsHeatmap] = useState(false); // heatmap nehody
+  const [showMeasureHeatmap, setShowMeasureHeatmap] = useState(false); // heatmap nehody
   const [numberOfRadars, setNumberOfRadars] = useState(0); // pocet radarů
   const [numberOfAccidents, setNumberOfAccidents] = useState(0); // pocet nehod
 
@@ -97,7 +98,7 @@ const Map: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (showAccidentData) {
+    if (showAccidentData && AccidentsData) {
       const filtered = {
         type: "FeatureCollection",
         features: AccidentsData.features.filter((feature: any) => {
@@ -157,10 +158,11 @@ const Map: React.FC = () => {
     pedestrianFilter,
     deadFilter,
     showAccidentData,
+    AccidentsData,
   ]);
 
   useEffect(() => {
-    if (showRadarData) {
+    if (RadarsData && showRadarData) {
       const filtered = {
         type: "FeatureCollection",
         features: RadarsData.features.filter((feature: any) => {
@@ -174,21 +176,38 @@ const Map: React.FC = () => {
       setFilteredRadarsData(filtered);
     } else {
       setNumberOfRadars(0);
+      setFilteredRadarsData(RadarsData);
     }
     if (showRadarData) {
       setShowRadarData(false);
       setTimeout(() => setShowRadarData(true), 0);
     }
-  }, [realAngle, isRadarActive, showRadarData]); // Když se změní realAngle, triggeruj překreslení radarů
+  }, [realAngle, isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
     const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
     const arrowRotation = feature.properties.smer - 90; // směr šipky - 90 protože originál směřuje doprava
+    const measurements = feature.properties.mereni; // Pole mereni
+
     const marker = L.marker(latlng, {
       icon: radarIcon,
     } as L.MarkerOptions);
 
     (marker as any).setRotationAngle(rotation);
+
+    const measurementsInfo =
+      measurements.length > 0
+        ? measurements
+            .slice(0, 5) // Omezí počet zobrazených měření na 5
+            .map(
+              (m: any, index: number) =>
+                `<b>Měření ${index + 1}:</b> 
+            Rychlost: ${m.prekroceni_rychlost_soucet} km/h, 
+            Datum: ${m.datum}, 
+            Překročení: ${m.prekroceni_ve_smeru}<br/>`
+            )
+            .join("") + (measurements.length > 5 ? "<b>A další...</b>" : "")
+        : "";
 
     marker.bindPopup(`
       <b>ID:</b> ${feature.properties.id}<br/>
@@ -200,6 +219,7 @@ const Map: React.FC = () => {
       </div>
       <b>ulice:</b> ${feature.properties.lokalita}<br/>
       <b>v provozu:</b> ${feature.properties.v_provozu}<br/>
+      ${measurementsInfo}
     `);
 
     return marker;
@@ -342,10 +362,11 @@ const Map: React.FC = () => {
   };
 
   //heatmap
-  const HeatmapLayer: React.FC<{ showHeatmap: boolean; data: any }> = ({
-    showHeatmap,
-    data,
-  }) => {
+  const HeatmapLayer: React.FC<{
+    showHeatmap: boolean;
+    data: any;
+    intensityType: "accidents" | "radars";
+  }> = ({ showHeatmap, data, intensityType }) => {
     const map = useMap();
 
     useEffect(() => {
@@ -359,7 +380,12 @@ const Map: React.FC = () => {
 
             const lat = geometry.coordinates[1];
             const lng = geometry.coordinates[0];
-            const intensity = properties.nasledky_ve_vozidle.length + 1; // váha podle následků
+            let intensity = 0;
+            if (intensityType === "accidents") {
+              intensity = properties.nasledky_ve_vozidle.length + 10; // váha podle následků edit
+            } else {
+              intensity = properties.mereni.length; // edit?
+            }
 
             return [lat, lng, intensity];
           })
@@ -415,8 +441,10 @@ const Map: React.FC = () => {
             setRealAngle={setRealAngle}
             isRadarActive={isRadarActive}
             setIsRadarActive={setIsRadarActive}
-            showHeatmap={showHeatmap}
-            setShowHeatmap={setShowHeatmap}
+            showAccidentsHeatmap={showAccidentsHeatmap}
+            setShowAccidentsHeatmap={setShowAccidentsHeatmap}
+            showMeasureHeatmap={showMeasureHeatmap}
+            setShowMeasureHeatmap={setShowMeasureHeatmap}
             numberOfRadars={numberOfRadars}
             numberOfAccidents={numberOfAccidents}
           />
@@ -471,7 +499,7 @@ const Map: React.FC = () => {
           <TileLayer attribution={""} url={tileLayerUrl} />
 
           {/* radary */}
-          {showRadarData && showRadarData && filteredRadarsData && (
+          {showRadarData && filteredRadarsData && (
             <MarkerClusterGroup
               iconCreateFunction={(cluster: L.MarkerCluster) =>
                 customClusterIcon(cluster, "red")
@@ -484,26 +512,40 @@ const Map: React.FC = () => {
             </MarkerClusterGroup>
           )}
 
-          {showHeatmap && (
+          {/** radary heatmap */}
+          {showMeasureHeatmap && (
             <HeatmapLayer
-              showHeatmap={showHeatmap}
-              data={filteredAccidentsData}
+              showHeatmap={showMeasureHeatmap}
+              data={filteredRadarsData}
+              intensityType="radars"
             />
           )}
 
           {/** nehody */}
-          {!showHeatmap && showAccidentData && filteredAccidentsData && (
-            <MarkerClusterGroup
-              iconCreateFunction={(cluster: L.MarkerCluster) =>
-                customClusterIcon(cluster, "black")
-              }
-            >
-              <GeoJSON
+          {!showAccidentsHeatmap &&
+            showAccidentData &&
+            filteredAccidentsData && (
+              <MarkerClusterGroup
+                iconCreateFunction={(cluster: L.MarkerCluster) =>
+                  customClusterIcon(cluster, "black")
+                }
+              >
+                <GeoJSON
+                  data={filteredAccidentsData}
+                  pointToLayer={pointToLayerAccidents}
+                />
+              </MarkerClusterGroup>
+            )}
+          {/** nehody heatmap */}
+          {showAccidentData &&
+            filteredAccidentsData &&
+            showAccidentsHeatmap && (
+              <HeatmapLayer
+                showHeatmap={showAccidentsHeatmap}
                 data={filteredAccidentsData}
-                pointToLayer={pointToLayerAccidents}
+                intensityType="accidents"
               />
-            </MarkerClusterGroup>
-          )}
+            )}
 
           {/** dopravni situace */}
           {showTrafficData && <TileLayer url={tomTomTileUrl} />}
