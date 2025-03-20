@@ -14,6 +14,8 @@ import {
   consequenceOptions,
   activeRadarOptions,
 } from "@/utils/selectOptions";
+import { Button } from "primereact/button";
+import "primeicons/primeicons.css";
 
 interface FilterSectionProps {
   showRadarData: boolean;
@@ -42,8 +44,10 @@ interface FilterSectionProps {
   setRealAngle: (value: boolean) => void; // smazat
   isRadarActive: string;
   setIsRadarActive: (value: string) => void;
-  showHeatmap: boolean;
-  setShowHeatmap: (value: boolean) => void;
+  showAccidentsHeatmap: boolean;
+  setShowAccidentsHeatmap: (value: boolean) => void;
+  showMeasureHeatmap: boolean;
+  setShowMeasureHeatmap: (value: boolean) => void;
   numberOfRadars: number;
   numberOfAccidents: number;
 }
@@ -75,15 +79,17 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   setRealAngle, // smazat
   isRadarActive,
   setIsRadarActive,
-  showHeatmap,
-  setShowHeatmap,
+  showAccidentsHeatmap,
+  setShowAccidentsHeatmap,
+  showMeasureHeatmap,
+  setShowMeasureHeatmap,
   numberOfRadars,
   numberOfAccidents,
 }) => {
   const [days, setDays] = useState<string[]>([]);
   const [accidentsFilter, setAccidentsFilter] = useState(false); // podrobnější nehody
   const [radarsFilter, setRadarsFilter] = useState(false); // podrobnější radary
-
+  const [resetRotating, setResetRotating] = useState(false);
   // Funkce pro aktualizaci počtu dnů při změně měsíce nebo roku
   useEffect(() => {
     const month = parseInt(selectedMonth);
@@ -106,6 +112,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     "all",
     ...Array.from({ length: 12 }, (_, i) => (i + 1).toString()),
   ];
+
+  // reset filtru pro nehody
+  const resetAccidentsFilter = () => {
+    setDeadFilter("-");
+    setPedestrianFilter("-");
+    setDrugsFilter("-");
+    setAlcoholFilter("-");
+    setSelectedMonth("all");
+    setSelectedDay("all");
+    setSelectedYear(new Date().getFullYear().toString());
+    setShowAccidentsHeatmap(false);
+  };
 
   return (
     <div
@@ -141,6 +159,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             showData={showRadarData}
             toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
             toggleDetailVisibility={() => setRadarsFilter(!radarsFilter)}
+            toggleHeatmapVisibility={() =>
+              setShowMeasureHeatmap(!showMeasureHeatmap)
+            }
             rotation={radarsFilter}
             count={numberOfRadars}
             label="Radary"
@@ -185,11 +206,16 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           showData={showAccidentData}
           toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
           toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
-          toggleHeatmapVisibility={() => setShowHeatmap(!showHeatmap)}
+          toggleHeatmapVisibility={() =>
+            setShowAccidentsHeatmap(!showAccidentsHeatmap)
+          }
           rotation={accidentsFilter}
           count={numberOfAccidents}
           label="Nehody"
         />
+
+        {/** edit vzhled */}
+        <button onClick={resetAccidentsFilter}>reset</button>
 
         {/* detail nehod */}
         <AnimatePresence>
