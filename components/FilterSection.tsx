@@ -16,7 +16,7 @@ import {
 } from "@/utils/selectOptions";
 import "primeicons/primeicons.css";
 interface CustomSelectProps {
-  options: string[]; // Explicitní typ pro pole možností (můžeš změnit typ dle potřeby)
+  options: string[] | { label: string; value: string }[]; // Může být pole stringů nebo objektů { label, value }
   value: string | null;
   onChange: (value: string) => void;
 }
@@ -29,51 +29,83 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  const handleClick = (option: string) => {
-    onChange(option);
+  // Funkce pro získání labelu z option (pokud je to objekt)
+  const getLabel = (option: string | { label: string; value: string }) => {
+    if (typeof option === "string") {
+      return option; // Pokud je option string, vrátíme ji přímo
+    }
+    return option.label; // Pokud je option objekt, vrátíme label
+  };
+
+  // Funkce pro zjištění, zda je option objekt (s label a value) nebo string
+  const isOptionObject = (
+    option: string | { label: string; value: string }
+  ): option is { label: string; value: string } => {
+    return typeof option !== "string";
+  };
+
+  const handleClick = (option: string | { label: string; value: string }) => {
+    if (typeof option === "string") {
+      onChange(option); // Pokud je option string, předáme ho přímo
+    } else {
+      onChange(option.value); // Pokud je option objekt, předáme value
+    }
     setIsOpen(false);
+  };
+
+  // Funkce pro získání labelu pro aktuálně vybranou hodnotu
+  const getSelectedLabel = () => {
+    // Zde upravujeme logiku pro "mm" nebo "dd", když je selectedMonth nebo selectedDay "all"
+    if (value === "mm" || value === "dd") {
+      return value === "mm" ? "mm" : "dd"; // Pokud je value "mm" nebo "dd", vrátí odpovídající label
+    }
+
+    if (!value) return ""; // Pokud není vybraná žádná hodnota, vrátí prázdný text
+
+    const selectedOption = options.find(
+      (option) => (typeof option === "string" ? option : option.value) === value
+    );
+    return selectedOption ? getLabel(selectedOption) : ""; // Pokud nenalezne hodnotu, vrátí prázdný text
   };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
-        setIsOpen(false); // Zavření selectu
+        setIsOpen(false);
       }
     };
 
-    // Přidání event listeneru
     document.addEventListener("mousedown", handleClickOutside);
 
-    // Vyčištění listeneru
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   return (
     <div ref={selectRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="border-2 border-[#ffffff] rounded px-2 text-left hover:bg-slate-50"
+        className="border-2 border-[#ffffff] rounded px-2 text-left hover:bg-slate-50 active:bg-gray-300 active:scale-95"
       >
-        {value || "Vyberte možnost"}
+        {getSelectedLabel()} {/* Zobrazení labelu podle value */}
       </button>
 
       {isOpen && (
         <div
-          className="fixed flex items-center justify-center"
+          className="fixed flex items-center justify-center z-[1000]"
           onClick={() => setIsOpen(false)} // Zavření při kliknutí mimo
         >
           <div
             className="w-max bg-white border rounded shadow-lg p-2"
-            onClick={(e) => e.stopPropagation()} // Zabrání zavření při kliknutí uvnitř
+            onClick={(e) => e.stopPropagation()}
           >
             <div
               className="grid gap-2"
               style={{
-                gridTemplateColumns: `repeat(${Math.min(
-                  options.length,
-                  7
-                )}, minmax(40px, 1fr))`,
+                gridTemplateColumns: isOptionObject(options[0])
+                  ? `repeat(${Math.min(options.length, 3)}, minmax(40px, 1fr))`
+                  : `repeat(${Math.min(options.length, 7)}, minmax(40px, 1fr))`,
               }}
             >
               {options.map((option, index) => (
@@ -82,7 +114,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   onClick={() => handleClick(option)}
                   className="border rounded p-2 text-center hover:bg-gray-200"
                 >
-                  {option}
+                  {getLabel(option)} {/* Zobrazení labelu */}
                 </button>
               ))}
             </div>
@@ -165,7 +197,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   const [days, setDays] = useState<string[]>([]);
   const [accidentsFilter, setAccidentsFilter] = useState(false); // podrobnější nehody
   const [radarsFilter, setRadarsFilter] = useState(false); // podrobnější radary
-  const [resetRotating, setResetRotating] = useState(false);
+
   // Funkce pro aktualizaci počtu dnů při změně měsíce nebo roku
   useEffect(() => {
     const month = parseInt(selectedMonth);
@@ -199,6 +231,12 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     setSelectedDay("all");
     setSelectedYear(new Date().getFullYear().toString());
     setShowAccidentsHeatmap(false);
+  };
+
+  const [rotation, setRotation] = useState(0);
+  const handleClick = () => {
+    setRotation((prev) => prev - 360);
+    resetAccidentsFilter();
   };
 
   return (
@@ -290,9 +328,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           label="Nehody"
         />
 
-        {/** edit vzhled */}
-        <button onClick={resetAccidentsFilter}>reset</button>
-
         {/* detail nehod */}
         <AnimatePresence>
           {accidentsFilter && (
@@ -315,7 +350,13 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 <CustomSelect
                   options={months}
                   value={selectedMonth === "all" ? "mm" : selectedMonth}
-                  onChange={(option) => setSelectedMonth(option)}
+                  onChange={(option) => {
+                    setSelectedMonth(option);
+                    if (option === "all") {
+                      setSelectedDay("all");
+                      setDays(["all"]);
+                    }
+                  }}
                 />
 
                 {/* Výběr dne */}
@@ -329,18 +370,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               {/* Alkohol u viníka */}
               <div className="flex items-center gap-2">
                 <label htmlFor="alkohol-u-vinika">Alkohol u viníka:</label>
-                <select
-                  id="alkohol-u-vinika"
-                  value={alcoholFilter}
-                  onChange={(e) => setAlcoholFilter(e.target.value)}
-                  className="border rounded w-20"
-                >
-                  {alcoholOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <CustomSelect
+                  options={alcoholOptions} // Možnosti obsahující { label, value }
+                  value={alcoholFilter} // Pokud je "all", zobrazíme "Vyberte alkohol"
+                  onChange={(option) => setAlcoholFilter(option)} // OnChange předává pouze value
+                />
               </div>
 
               {/* Drogy u viníka */}
@@ -393,6 +427,19 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                   ))}
                 </select>
               </div>
+
+              {/** edit vzhled */}
+              <button
+                onClick={handleClick}
+                className="p-2 hover:opacity-80 transition-transform"
+              >
+                <img
+                  src="/refresh.png"
+                  alt="Reset"
+                  className="w-6 h-6 transition-transform duration-700"
+                  style={{ transform: `rotate(${rotation}deg)` }}
+                />
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
