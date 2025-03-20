@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ButtonToggle from "./ButtonToggle";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // Téma pro slider
 import "primereact/resources/primereact.min.css"; // Základní styly pro všechny komponenty PrimeReact
@@ -14,8 +14,84 @@ import {
   consequenceOptions,
   activeRadarOptions,
 } from "@/utils/selectOptions";
-import { Button } from "primereact/button";
 import "primeicons/primeicons.css";
+interface CustomSelectProps {
+  options: string[]; // Explicitní typ pro pole možností (můžeš změnit typ dle potřeby)
+  value: string | null;
+  onChange: (value: string) => void;
+}
+
+const CustomSelect: React.FC<CustomSelectProps> = ({
+  options,
+  value,
+  onChange,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
+
+  const handleClick = (option: string) => {
+    onChange(option);
+    setIsOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+        setIsOpen(false); // Zavření selectu
+      }
+    };
+
+    // Přidání event listeneru
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Vyčištění listeneru
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  return (
+    <div ref={selectRef} className="relative">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="border-2 border-[#ffffff] rounded px-2 text-left hover:bg-slate-50"
+      >
+        {value || "Vyberte možnost"}
+      </button>
+
+      {isOpen && (
+        <div
+          className="fixed flex items-center justify-center"
+          onClick={() => setIsOpen(false)} // Zavření při kliknutí mimo
+        >
+          <div
+            className="w-max bg-white border rounded shadow-lg p-2"
+            onClick={(e) => e.stopPropagation()} // Zabrání zavření při kliknutí uvnitř
+          >
+            <div
+              className="grid gap-2"
+              style={{
+                gridTemplateColumns: `repeat(${Math.min(
+                  options.length,
+                  7
+                )}, minmax(40px, 1fr))`,
+              }}
+            >
+              {options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleClick(option)}
+                  className="border rounded p-2 text-center hover:bg-gray-200"
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 interface FilterSectionProps {
   showRadarData: boolean;
@@ -127,8 +203,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 ${
-        isFiltersVisible ? "max-w-[300px]" : "max-w-[10px]"
+      className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap transition-all duration-500 ${
+        isFiltersVisible ? "max-w-[350px]" : "max-w-[10px]"
       }`}
     >
       {/* Nadpis */}
@@ -227,43 +303,28 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               transition={{ duration: 0.2, ease: "easeInOut" }}
               className="ml-6 overflow-hidden"
             >
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="border rounded"
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+              <div className="flex flex-row gap-2">
+                {/* Výběr roku */}
+                <CustomSelect
+                  options={years.map(String)}
+                  value={selectedYear}
+                  onChange={(option) => setSelectedYear(option)}
+                />
 
-              {/* Výběr měsíce */}
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="border rounded"
-              >
-                {months.map((month) => (
-                  <option key={month} value={month}>
-                    {month === "all" ? "-" : `${month}`}
-                  </option>
-                ))}
-              </select>
+                {/* Výběr měsíce */}
+                <CustomSelect
+                  options={months}
+                  value={selectedMonth === "all" ? "mm" : selectedMonth}
+                  onChange={(option) => setSelectedMonth(option)}
+                />
 
-              {/* Výběr dne */}
-              <select
-                value={selectedDay}
-                onChange={(e) => setSelectedDay(e.target.value)}
-                className="border rounded"
-              >
-                {days.map((day) => (
-                  <option key={day} value={day}>
-                    {day === "all" ? "-" : `${day}`}
-                  </option>
-                ))}
-              </select>
+                {/* Výběr dne */}
+                <CustomSelect
+                  options={days}
+                  value={selectedDay === "all" ? "dd" : selectedDay}
+                  onChange={(option) => setSelectedDay(option)}
+                />
+              </div>
 
               {/* Alkohol u viníka */}
               <div className="flex items-center gap-2">

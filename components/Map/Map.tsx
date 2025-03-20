@@ -410,7 +410,7 @@ const Map: React.FC = () => {
   return (
     <div className="flex flex-col items-start w-full relative">
       {/* Kontejner pro mapu */}
-      <div className="map">
+      <div className="map relative">
         {/* Sekce filtrů s možností skrytí/odkrytí */}
         <div className="absolute top-1/2 left-5 z-[1000] -translate-y-1/2">
           <FilterSection
@@ -451,7 +451,7 @@ const Map: React.FC = () => {
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="absolute h-12 w-6 top-1/2 left-full -translate-y-1/2 -translate-x-[0.100rem] bg-[#aac9ab] text-[#388E3C] border-2 border-[#66BB6A] rounded-r-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80"
+            className="absolute h-12 w-6 top-1/2 left-full -translate-y-1/2 -translate-x-[0.100rem] bg-[#aac9ab] text-[#388E3C] border-2 border-[#66BB6A] rounded-r-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80 z-[-1]"
           >
             {showFilters ? "⮜" : "⮞"}
           </button>
