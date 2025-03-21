@@ -298,18 +298,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               {/** aktivita radaru TODO*/}
               <div className="flex items-center gap-2">
                 <label htmlFor="aktivita-radaru">Aktivní radary:</label>
-                <select
-                  id="aktivita-radaru"
+                <CustomSelect
+                  options={activeRadarOptions}
                   value={isRadarActive}
-                  onChange={(e) => setIsRadarActive(e.target.value)}
-                  className="border rounded w-20"
-                >
-                  {activeRadarOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(option) => setIsRadarActive(option)}
+                />
               </div>
             </motion.div>
           )}
@@ -371,61 +364,40 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               <div className="flex items-center gap-2">
                 <label htmlFor="alkohol-u-vinika">Alkohol u viníka:</label>
                 <CustomSelect
-                  options={alcoholOptions} // Možnosti obsahující { label, value }
-                  value={alcoholFilter} // Pokud je "all", zobrazíme "Vyberte alkohol"
-                  onChange={(option) => setAlcoholFilter(option)} // OnChange předává pouze value
+                  options={alcoholOptions}
+                  value={alcoholFilter}
+                  onChange={(option) => setAlcoholFilter(option)}
                 />
               </div>
 
               {/* Drogy u viníka */}
               <div className="flex items-center gap-2">
                 <label htmlFor="drogy-u-vinika">Drogy u viníka:</label>
-                <select
-                  id="drogy-u-vinika"
+                <CustomSelect
+                  options={drugsOptions}
                   value={drugsFilter}
-                  onChange={(e) => setDrugsFilter(e.target.value)}
-                  className="border rounded w-20"
-                >
-                  {drugsOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(option) => setDrugsFilter(option)}
+                />
               </div>
 
               {/* účast chodce */}
               <div className="flex items-center gap-2">
                 <label htmlFor="ucast-chodce">Účast chodce:</label>
-                <select
-                  id="ucast-chodce"
+                <CustomSelect
+                  options={pedestrianOptions}
                   value={pedestrianFilter}
-                  onChange={(e) => setPedestrianFilter(e.target.value)}
-                  className="border rounded w-20"
-                >
-                  {pedestrianOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(option) => setPedestrianFilter(option)}
+                />
               </div>
 
               {/* smrtelná nehoda */}
               <div className="flex items-center gap-2">
                 <label htmlFor="smrtelna-nehoda">Smrtelná nehoda:</label>
-                <select
-                  id="smrtelna-nehoda"
+                <CustomSelect
+                  options={consequenceOptions}
                   value={deadFilter}
-                  onChange={(e) => setDeadFilter(e.target.value)}
-                  className="border rounded w-20"
-                >
-                  {consequenceOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(option) => setDeadFilter(option)}
+                />
               </div>
 
               {/** edit vzhled */}
