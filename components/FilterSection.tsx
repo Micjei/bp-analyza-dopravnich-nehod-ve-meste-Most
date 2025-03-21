@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import ButtonToggle from "./ButtonToggle";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // Téma pro slider
 import "primereact/resources/primereact.min.css"; // Základní styly pro všechny komponenty PrimeReact
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, view } from "framer-motion";
 import {
   getCurrentYear,
   years,
@@ -12,118 +12,11 @@ import {
   drugsOptions,
   pedestrianOptions,
   consequenceOptions,
+  viewOptions,
   activeRadarOptions,
 } from "@/utils/selectOptions";
 import "primeicons/primeicons.css";
-interface CustomSelectProps {
-  options: string[] | { label: string; value: string }[]; // Může být pole stringů nebo objektů { label, value }
-  value: string | null;
-  onChange: (value: string) => void;
-}
-
-const CustomSelect: React.FC<CustomSelectProps> = ({
-  options,
-  value,
-  onChange,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const selectRef = useRef<HTMLDivElement>(null);
-
-  // Funkce pro získání labelu z option (pokud je to objekt)
-  const getLabel = (option: string | { label: string; value: string }) => {
-    if (typeof option === "string") {
-      return option; // Pokud je option string, vrátíme ji přímo
-    }
-    return option.label; // Pokud je option objekt, vrátíme label
-  };
-
-  // Funkce pro zjištění, zda je option objekt (s label a value) nebo string
-  const isOptionObject = (
-    option: string | { label: string; value: string }
-  ): option is { label: string; value: string } => {
-    return typeof option !== "string";
-  };
-
-  const handleClick = (option: string | { label: string; value: string }) => {
-    if (typeof option === "string") {
-      onChange(option); // Pokud je option string, předáme ho přímo
-    } else {
-      onChange(option.value); // Pokud je option objekt, předáme value
-    }
-    setIsOpen(false);
-  };
-
-  // Funkce pro získání labelu pro aktuálně vybranou hodnotu
-  const getSelectedLabel = () => {
-    // Zde upravujeme logiku pro "mm" nebo "dd", když je selectedMonth nebo selectedDay "all"
-    if (value === "mm" || value === "dd") {
-      return value === "mm" ? "mm" : "dd"; // Pokud je value "mm" nebo "dd", vrátí odpovídající label
-    }
-
-    if (!value) return ""; // Pokud není vybraná žádná hodnota, vrátí prázdný text
-
-    const selectedOption = options.find(
-      (option) => (typeof option === "string" ? option : option.value) === value
-    );
-    return selectedOption ? getLabel(selectedOption) : ""; // Pokud nenalezne hodnotu, vrátí prázdný text
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  return (
-    <div ref={selectRef} className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="border-2 border-[#ffffff] rounded px-2 text-left hover:bg-slate-50 active:bg-gray-300 active:scale-95"
-      >
-        {getSelectedLabel()} {/* Zobrazení labelu podle value */}
-      </button>
-
-      {isOpen && (
-        <div
-          className="fixed flex items-center justify-center z-[1000]"
-          onClick={() => setIsOpen(false)} // Zavření při kliknutí mimo
-        >
-          <div
-            className="w-max bg-white border rounded shadow-lg p-2"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              className="grid gap-2"
-              style={{
-                gridTemplateColumns: isOptionObject(options[0])
-                  ? `repeat(${Math.min(options.length, 3)}, minmax(40px, 1fr))`
-                  : `repeat(${Math.min(options.length, 7)}, minmax(40px, 1fr))`,
-              }}
-            >
-              {options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleClick(option)}
-                  className="border rounded p-2 text-center hover:bg-gray-200"
-                >
-                  {getLabel(option)} {/* Zobrazení labelu */}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
+import CustomSelect from "./CustomSelect";
 
 interface FilterSectionProps {
   showRadarData: boolean;
@@ -235,13 +128,13 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   const [rotation, setRotation] = useState(0);
   const handleClick = () => {
-    setRotation((prev) => prev - 360);
+    setRotation((prev) => prev - 720);
     resetAccidentsFilter();
   };
 
   return (
     <div
-      className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap transition-all duration-500 ${
+      className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 ${
         isFiltersVisible ? "max-w-[350px]" : "max-w-[10px]"
       }`}
     >
@@ -313,9 +206,6 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           showData={showAccidentData}
           toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
           toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
-          toggleHeatmapVisibility={() =>
-            setShowAccidentsHeatmap(!showAccidentsHeatmap)
-          }
           rotation={accidentsFilter}
           count={numberOfAccidents}
           label="Nehody"
@@ -400,18 +290,33 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 />
               </div>
 
-              {/** edit vzhled */}
-              <button
-                onClick={handleClick}
-                className="p-2 hover:opacity-80 transition-transform"
-              >
-                <img
-                  src="/refresh.png"
-                  alt="Reset"
-                  className="w-6 h-6 transition-transform duration-700"
-                  style={{ transform: `rotate(${rotation}deg)` }}
+              {/* zobrazení */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="heat-map">Zobrazení:</label>
+                <CustomSelect
+                  options={viewOptions}
+                  value={showAccidentsHeatmap ? "heatmapa" : "normální"}
+                  onChange={(option) =>
+                    setShowAccidentsHeatmap(option === "heatmapa")
+                  }
                 />
-              </button>
+              </div>
+
+              {/** edit vzhled */}
+              <div className="w-fit mt-2 flex flex-col justify-center items-center border-2 border-[#66BB6A] rounded-[30px] shadow-md hover:bg-slate-100">
+                <button
+                  onClick={handleClick}
+                  className="p-2 hover:opacity-80 transition-transform flex flex-row items-center gap-2"
+                >
+                  <span>Resetovat filtry</span>
+                  <img
+                    src="/refresh.png"
+                    alt="Reset"
+                    className="w-6 h-6 transition-transform duration-700"
+                    style={{ transform: `rotate(${rotation}deg)` }}
+                  />
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
