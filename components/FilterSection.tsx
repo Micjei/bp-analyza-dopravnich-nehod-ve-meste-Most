@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ButtonToggle from "./ButtonToggle";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // Téma pro slider
 import "primereact/resources/primereact.min.css"; // Základní styly pro všechny komponenty PrimeReact
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, view } from "framer-motion";
 import {
   getCurrentYear,
   years,
@@ -12,10 +12,11 @@ import {
   drugsOptions,
   pedestrianOptions,
   consequenceOptions,
+  viewOptions,
   activeRadarOptions,
 } from "@/utils/selectOptions";
-import { Button } from "primereact/button";
 import "primeicons/primeicons.css";
+import CustomSelect from "./CustomSelect";
 
 interface FilterSectionProps {
   showRadarData: boolean;
@@ -89,7 +90,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   const [days, setDays] = useState<string[]>([]);
   const [accidentsFilter, setAccidentsFilter] = useState(false); // podrobnější nehody
   const [radarsFilter, setRadarsFilter] = useState(false); // podrobnější radary
-  const [resetRotating, setResetRotating] = useState(false);
+
   // Funkce pro aktualizaci počtu dnů při změně měsíce nebo roku
   useEffect(() => {
     const month = parseInt(selectedMonth);
@@ -125,10 +126,16 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     setShowAccidentsHeatmap(false);
   };
 
+  const [rotation, setRotation] = useState(0);
+  const handleClick = () => {
+    setRotation((prev) => prev - 720);
+    resetAccidentsFilter();
+  };
+
   return (
     <div
       className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 ${
-        isFiltersVisible ? "max-w-[300px]" : "max-w-[10px]"
+        isFiltersVisible ? "max-w-[350px]" : "max-w-[10px]"
       }`}
     >
       {/* Nadpis */}
@@ -184,18 +191,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               {/** aktivita radaru TODO*/}
               <div className="flex items-center gap-2">
                 <label htmlFor="aktivita-radaru">Aktivní radary:</label>
-                <select
-                  id="aktivita-radaru"
+                <CustomSelect
+                  options={activeRadarOptions}
                   value={isRadarActive}
-                  onChange={(e) => setIsRadarActive(e.target.value)}
-                  className="border rounded w-20"
-                >
-                  {activeRadarOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(option) => setIsRadarActive(option)}
+                />
               </div>
             </motion.div>
           )}
@@ -206,16 +206,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           showData={showAccidentData}
           toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
           toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
-          toggleHeatmapVisibility={() =>
-            setShowAccidentsHeatmap(!showAccidentsHeatmap)
-          }
           rotation={accidentsFilter}
           count={numberOfAccidents}
           label="Nehody"
         />
-
-        {/** edit vzhled */}
-        <button onClick={resetAccidentsFilter}>reset</button>
 
         {/* detail nehod */}
         <AnimatePresence>
@@ -227,110 +221,101 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               transition={{ duration: 0.2, ease: "easeInOut" }}
               className="ml-6 overflow-hidden"
             >
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(e.target.value)}
-                className="border rounded"
-              >
-                {years.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+              <div className="flex flex-row gap-2">
+                {/* Výběr roku */}
+                <CustomSelect
+                  options={years.map(String)}
+                  value={selectedYear}
+                  onChange={(option) => setSelectedYear(option)}
+                />
 
-              {/* Výběr měsíce */}
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="border rounded"
-              >
-                {months.map((month) => (
-                  <option key={month} value={month}>
-                    {month === "all" ? "-" : `${month}`}
-                  </option>
-                ))}
-              </select>
+                {/* Výběr měsíce */}
+                <CustomSelect
+                  options={months}
+                  value={selectedMonth === "all" ? "mm" : selectedMonth}
+                  onChange={(option) => {
+                    setSelectedMonth(option);
+                    if (option === "all") {
+                      setSelectedDay("all");
+                      setDays(["all"]);
+                    }
+                  }}
+                />
 
-              {/* Výběr dne */}
-              <select
-                value={selectedDay}
-                onChange={(e) => setSelectedDay(e.target.value)}
-                className="border rounded"
-              >
-                {days.map((day) => (
-                  <option key={day} value={day}>
-                    {day === "all" ? "-" : `${day}`}
-                  </option>
-                ))}
-              </select>
+                {/* Výběr dne */}
+                <CustomSelect
+                  options={days}
+                  value={selectedDay === "all" ? "dd" : selectedDay}
+                  onChange={(option) => setSelectedDay(option)}
+                />
+              </div>
 
               {/* Alkohol u viníka */}
               <div className="flex items-center gap-2">
                 <label htmlFor="alkohol-u-vinika">Alkohol u viníka:</label>
-                <select
-                  id="alkohol-u-vinika"
+                <CustomSelect
+                  options={alcoholOptions}
                   value={alcoholFilter}
-                  onChange={(e) => setAlcoholFilter(e.target.value)}
-                  className="border rounded w-20"
-                >
-                  {alcoholOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(option) => setAlcoholFilter(option)}
+                />
               </div>
 
               {/* Drogy u viníka */}
               <div className="flex items-center gap-2">
                 <label htmlFor="drogy-u-vinika">Drogy u viníka:</label>
-                <select
-                  id="drogy-u-vinika"
+                <CustomSelect
+                  options={drugsOptions}
                   value={drugsFilter}
-                  onChange={(e) => setDrugsFilter(e.target.value)}
-                  className="border rounded w-20"
-                >
-                  {drugsOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(option) => setDrugsFilter(option)}
+                />
               </div>
 
               {/* účast chodce */}
               <div className="flex items-center gap-2">
                 <label htmlFor="ucast-chodce">Účast chodce:</label>
-                <select
-                  id="ucast-chodce"
+                <CustomSelect
+                  options={pedestrianOptions}
                   value={pedestrianFilter}
-                  onChange={(e) => setPedestrianFilter(e.target.value)}
-                  className="border rounded w-20"
-                >
-                  {pedestrianOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(option) => setPedestrianFilter(option)}
+                />
               </div>
 
               {/* smrtelná nehoda */}
               <div className="flex items-center gap-2">
                 <label htmlFor="smrtelna-nehoda">Smrtelná nehoda:</label>
-                <select
-                  id="smrtelna-nehoda"
+                <CustomSelect
+                  options={consequenceOptions}
                   value={deadFilter}
-                  onChange={(e) => setDeadFilter(e.target.value)}
-                  className="border rounded w-20"
+                  onChange={(option) => setDeadFilter(option)}
+                />
+              </div>
+
+              {/* zobrazení */}
+              <div className="flex items-center gap-2">
+                <label htmlFor="heat-map">Zobrazení:</label>
+                <CustomSelect
+                  options={viewOptions}
+                  value={showAccidentsHeatmap ? "heatmapa" : "normální"}
+                  onChange={(option) =>
+                    setShowAccidentsHeatmap(option === "heatmapa")
+                  }
+                />
+              </div>
+
+              {/** edit vzhled */}
+              <div className="w-fit mt-2 flex flex-col justify-center items-center border-2 border-[#66BB6A] rounded-[30px] shadow-md hover:bg-slate-100">
+                <button
+                  onClick={handleClick}
+                  className="p-2 hover:opacity-80 transition-transform flex flex-row items-center gap-2"
                 >
-                  {consequenceOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  <span>Resetovat filtry</span>
+                  <img
+                    src="/refresh.png"
+                    alt="Reset"
+                    className="w-6 h-6 transition-transform duration-700"
+                    style={{ transform: `rotate(${rotation}deg)` }}
+                  />
+                </button>
               </div>
             </motion.div>
           )}

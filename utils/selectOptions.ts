@@ -69,6 +69,11 @@ export const consequenceOptions = [
   { label: "ne", value: "0" },
 ];
 
+export const viewOptions = [
+  { label: "normální", value: "normální" },
+  { label: "heatmapa", value: "heatmapa" },
+];
+
 export const activeRadarOptions = [
   { label: "-", value: "-" },
   { label: "ano", value: "Ano" },
