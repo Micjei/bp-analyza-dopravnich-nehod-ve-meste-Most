@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-
+import { useTranslation } from "react-i18next";
+import "@/i18n"; // Import konfigurace i18n
 interface HeaderProps {
-  headerText: string;
   onLayerChange: (url: string) => void;
   onSettingsClick?: () => void;
 }
 
 const HeaderSection: React.FC<HeaderProps> = ({
-  headerText,
   onLayerChange,
   onSettingsClick,
 }) => {
+  const { t, i18n } = useTranslation();
   const [showDropdown, setShowDropdown] = useState(false);
 
   const mapLayers = [
@@ -29,19 +29,34 @@ const HeaderSection: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <div className="absolute top-0 w-full flex flex-row items-center justify-between p-5 bg-[#66BB6A] border-2 border-[#66BB6A] shadow-md text-[#ffffff] opacity-80 whitespace-nowrap">
+    <div className="absolute top-0 w-full h-20 flex flex-row items-center justify-between p-5 bg-[#66BB6A] border-2 border-[#66BB6A] shadow-md text-[#ffffff] opacity-80 whitespace-nowrap">
       <h3 className="transition-opacity duration-300 text-3xl font-bold tracking-wide italic">
-        {headerText}
+        {`${t("title")}`}
       </h3>
 
-      <div className="flex flex-row items-center space-x-2">
+      <div className="flex flex-row items-center space-x-2 gap-2">
+        {/** vlajky - změna jazyka */}
+        <div className="ml-4 flex flex-row gap-2">
+          <button onClick={() => i18n.changeLanguage("cz")}>
+            <img
+              src="/czech-republic.png"
+              className="w-14 h-auto transition-transform duration-700"
+            />
+          </button>
+          <button onClick={() => i18n.changeLanguage("en")}>
+            <img
+              src="/united-kingdom.png"
+              className="w-14 h-auto transition-transform duration-700"
+            />
+          </button>
+        </div>
         {/* Tlačítko pro výběr mapy */}
         <div className="relative">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
             className="bg-transparent text-[#ffffff] px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-[#388E3C]"
           >
-            Vybrat mapu
+            {`${t("select_map")}`}
           </button>
           {showDropdown && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg text-[#388E3C]">
@@ -66,7 +81,7 @@ const HeaderSection: React.FC<HeaderProps> = ({
           onClick={() => onSettingsClick && onSettingsClick()}
           className="bg-transparent text-[#ffffff] px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-[#388E3C]"
         >
-          Nastavení
+          {`${t("settings")}`}
         </button>
       </div>
     </div>

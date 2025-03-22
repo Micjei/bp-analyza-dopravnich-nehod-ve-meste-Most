@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import ButtonToggle from "./ButtonToggle";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // Téma pro slider
 import "primereact/resources/primereact.min.css"; // Základní styly pro všechny komponenty PrimeReact
@@ -17,6 +17,8 @@ import {
 } from "@/utils/selectOptions";
 import "primeicons/primeicons.css";
 import CustomSelect from "./CustomSelect";
+import { useTranslation } from "react-i18next";
+import "@/i18n"; // Import konfigurace i18n
 
 interface FilterSectionProps {
   showRadarData: boolean;
@@ -90,6 +92,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   const [days, setDays] = useState<string[]>([]);
   const [accidentsFilter, setAccidentsFilter] = useState(false); // podrobnější nehody
   const [radarsFilter, setRadarsFilter] = useState(false); // podrobnější radary
+  const { t } = useTranslation();
 
   // Funkce pro aktualizaci počtu dnů při změně měsíce nebo roku
   useEffect(() => {
@@ -144,7 +147,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           isFiltersVisible ? "opacity-100" : "opacity-0"
         }`}
       >
-        Filtry
+        {`${t("filter_title")}`}
       </h3>
 
       {/* Zelená čára pod nadpisem */}
@@ -171,7 +174,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             }
             rotation={radarsFilter}
             count={numberOfRadars}
-            label="Radary"
+            label={`${t("radars")}`}
           />
           {/** smazat směr button*/}
           {/*<button onClick={() => setRealAngle(!realAngle)}>
@@ -190,9 +193,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             >
               {/** aktivita radaru TODO*/}
               <div className="flex items-center gap-2">
-                <label htmlFor="aktivita-radaru">Aktivní radary:</label>
+                <label htmlFor="aktivita-radaru">
+                  {`${t("active_radars")}`}:
+                </label>
                 <CustomSelect
-                  options={activeRadarOptions}
+                  options={activeRadarOptions(t)}
                   value={isRadarActive}
                   onChange={(option) => setIsRadarActive(option)}
                 />
@@ -208,7 +213,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
           rotation={accidentsFilter}
           count={numberOfAccidents}
-          label="Nehody"
+          label={`${t("accidents")}`}
         />
 
         {/* detail nehod */}
@@ -252,9 +257,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
               {/* Alkohol u viníka */}
               <div className="flex items-center gap-2">
-                <label htmlFor="alkohol-u-vinika">Alkohol u viníka:</label>
+                <label htmlFor="alkohol-u-vinika">{`${t("alcohol")}`}:</label>
                 <CustomSelect
-                  options={alcoholOptions}
+                  options={alcoholOptions(t)}
                   value={alcoholFilter}
                   onChange={(option) => setAlcoholFilter(option)}
                 />
@@ -262,9 +267,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
               {/* Drogy u viníka */}
               <div className="flex items-center gap-2">
-                <label htmlFor="drogy-u-vinika">Drogy u viníka:</label>
+                <label htmlFor="drogy-u-vinika">{`${t("drugs")}`}:</label>
                 <CustomSelect
-                  options={drugsOptions}
+                  options={drugsOptions(t)}
                   value={drugsFilter}
                   onChange={(option) => setDrugsFilter(option)}
                 />
@@ -272,9 +277,11 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
               {/* účast chodce */}
               <div className="flex items-center gap-2">
-                <label htmlFor="ucast-chodce">Účast chodce:</label>
+                <label htmlFor="ucast-chodce">
+                  {`${t("pedestrian_participation")}`}:
+                </label>
                 <CustomSelect
-                  options={pedestrianOptions}
+                  options={pedestrianOptions(t)}
                   value={pedestrianFilter}
                   onChange={(option) => setPedestrianFilter(option)}
                 />
@@ -282,9 +289,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
               {/* smrtelná nehoda */}
               <div className="flex items-center gap-2">
-                <label htmlFor="smrtelna-nehoda">Smrtelná nehoda:</label>
+                <label htmlFor="smrtelna-nehoda">{`${t("fatal")}`}:</label>
                 <CustomSelect
-                  options={consequenceOptions}
+                  options={consequenceOptions(t)}
                   value={deadFilter}
                   onChange={(option) => setDeadFilter(option)}
                 />
@@ -292,12 +299,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
               {/* zobrazení */}
               <div className="flex items-center gap-2">
-                <label htmlFor="heat-map">Zobrazení:</label>
+                <label htmlFor="heat-map">{`${t("display")}`}:</label>
                 <CustomSelect
-                  options={viewOptions}
-                  value={showAccidentsHeatmap ? "heatmapa" : "normální"}
+                  options={viewOptions(t)}
+                  value={
+                    showAccidentsHeatmap ? `${t("heatmap")}` : `${t("normal")}`
+                  }
                   onChange={(option) =>
-                    setShowAccidentsHeatmap(option === "heatmapa")
+                    setShowAccidentsHeatmap(option === `${t("heatmap")}`)
                   }
                 />
               </div>
@@ -308,7 +317,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                   onClick={handleClick}
                   className="p-2 hover:opacity-80 transition-transform flex flex-row items-center gap-2"
                 >
-                  <span>Resetovat filtry</span>
+                  <span>{`${t("reset")}`}</span>
                   <img
                     src="/refresh.png"
                     alt="Reset"
@@ -324,7 +333,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         <ButtonToggle
           showData={showTrafficData}
           toggleGeoJsonVisibility={() => setShowTrafficData(!showTrafficData)}
-          label="Dopravní situace"
+          label={`${t("traffic_situation")}`}
         />
         {/* Tlačítko pro aktualizaci dat TODO*/}
         <button

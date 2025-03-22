@@ -42,6 +42,9 @@ import {
   getPedestrianDescription,
 } from "@/utils/popupDescription";
 
+import { useTranslation } from "react-i18next";
+import "@/i18n"; // Import konfigurace i18n
+
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
   const [RadarsData, setRadarsData] = useState<any>(null);
@@ -83,6 +86,7 @@ const Map: React.FC = () => {
   const [numberOfRadars, setNumberOfRadars] = useState(0); // pocet radarů
   const [numberOfAccidents, setNumberOfAccidents] = useState(0); // pocet nehod
 
+  const { t, i18n } = useTranslation();
   useEffect(() => {
     const loadData = async () => {
       const radars = await fetchRadarsData();
@@ -201,12 +205,12 @@ const Map: React.FC = () => {
             .slice(0, 5) // Omezí počet zobrazených měření na 5
             .map(
               (m: any, index: number) =>
-                `<b>Měření ${index + 1}:</b> 
-            Rychlost: ${m.prekroceni_rychlost_soucet} km/h, 
-            Datum: ${m.datum}, 
-            Překročení: ${m.prekroceni_ve_smeru}<br/>`
+                `<b>${t("measurement")}: ${index + 1}:</b> 
+            ${t("speed")}: ${m.prekroceni_rychlost_soucet} km/h, 
+            ${t("date")}: ${m.datum}, 
+            ${t("speeding")}: ${m.prekroceni_ve_smeru}<br/>`
             )
-            .join("") + (measurements.length > 5 ? "<b>A další...</b>" : "")
+            .join("") + (measurements.length > 5 ? `<b>${t("more")}</b>` : "")
         : "";
 
     marker.bindPopup(`
@@ -407,6 +411,24 @@ const Map: React.FC = () => {
     return null;
   };
 
+  // upravit možná? je tam problik
+  useEffect(() => {
+    if (showRadarData) {
+      setShowRadarData(false);
+
+      setTimeout(() => {
+        setShowRadarData(true);
+      }, 0);
+    }
+    if (showAccidentData) {
+      setShowAccidentData(false);
+
+      setTimeout(() => {
+        setShowAccidentData(true);
+      }, 0);
+    }
+  }, [i18n.language]);
+
   return (
     <div className="flex flex-col items-start w-full relative">
       {/* Kontejner pro mapu */}
@@ -475,10 +497,7 @@ const Map: React.FC = () => {
 
         {/* header */}
         <div className="w-full absolute top-0 z-[1000]">
-          <HeaderSection
-            headerText="Interaktivní Dopravní Mapa"
-            onLayerChange={setTileLayerUrl}
-          />
+          <HeaderSection onLayerChange={setTileLayerUrl} />
         </div>
 
         {/* footer */}
