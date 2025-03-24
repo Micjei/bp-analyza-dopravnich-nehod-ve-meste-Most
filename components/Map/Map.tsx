@@ -67,8 +67,8 @@ const Map: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   );
-  const [selectedMonth, setSelectedMonth] = useState<string>("all");
-  const [selectedDay, setSelectedDay] = useState<string>("all");
+  const [selectedMonth, setSelectedMonth] = useState<string>("-");
+  const [selectedDay, setSelectedDay] = useState<string>("-");
   const [alcoholFilter, setAlcoholFilter] = useState<string>("-");
   const [drugsFilter, setDrugsFilter] = useState<string>("-");
   const [pedestrianFilter, setPedestrianFilter] = useState<string>("-");
@@ -126,9 +126,9 @@ const Map: React.FC = () => {
           // TODO null hodnoty
           return (
             rok === selectedYear &&
-            (selectedMonth === "all" ||
+            (selectedMonth === "-" ||
               parseInt(mesic, 10) === parseInt(selectedMonth, 10)) &&
-            (selectedDay === "all" ||
+            (selectedDay === "-" ||
               parseInt(den, 10) === parseInt(selectedDay, 10)) &&
             (alcoholFilter === "-" ||
               parseInt(alkohol, 10) === parseInt(alcoholFilter, 10)) &&
@@ -166,7 +166,7 @@ const Map: React.FC = () => {
   ]);
 
   useEffect(() => {
-    if (RadarsData && showRadarData) {
+    if (RadarsData) {
       const filtered = {
         type: "FeatureCollection",
         features: RadarsData.features.filter((feature: any) => {
@@ -180,11 +180,12 @@ const Map: React.FC = () => {
       setFilteredRadarsData(filtered);
     } else {
       setNumberOfRadars(0);
-      setFilteredRadarsData(RadarsData);
     }
     if (showRadarData) {
       setShowRadarData(false);
       setTimeout(() => setShowRadarData(true), 0);
+    } else {
+      setNumberOfRadars(0);
     }
   }, [realAngle, isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
 

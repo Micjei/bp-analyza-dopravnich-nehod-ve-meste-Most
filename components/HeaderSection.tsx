@@ -15,7 +15,7 @@ const HeaderSection: React.FC<HeaderProps> = ({
 
   const mapLayers = [
     {
-      name: "Satelitní",
+      name: `${t("satellite")}`,
       url: "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
     },
     {

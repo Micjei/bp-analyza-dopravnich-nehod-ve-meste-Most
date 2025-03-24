@@ -1,6 +1,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useTranslation } from "react-i18next";
+import "@/i18n";
 interface LegendSectionProps {
   isLegendVisible: boolean;
   showTrafficData: boolean;
@@ -14,6 +16,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
   showAccidentData,
   showRadarData,
 }) => {
+  const { t } = useTranslation();
   return (
     <div
       className={`bottom-0 right-0 flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 w-auto ${
@@ -26,7 +29,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
           isLegendVisible ? "opacity-100" : "opacity-0"
         }`}
       >
-        Legenda
+        {`${t("legend_title")}`}
       </h3>
 
       {/* Zelená čára pod nadpisem */}
@@ -54,7 +57,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 className="flex items-center space-x-2 mb-2"
               >
                 <Image src="/camera.png" alt="Radar" width={24} height={24} />
-                <span>Radar</span>
+                <span>{`${t("radars")}`}</span>
               </motion.div>
             )}
 
@@ -74,7 +77,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                     width={24}
                     height={24}
                   />
-                  <span>Dopravní nehoda</span>
+                  <span>{`${t("car_accidents")}`}</span>
                 </motion.div>
 
                 <motion.div
@@ -90,7 +93,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                     width={24}
                     height={24}
                   />
-                  <span>Nehoda s chodcem</span>
+                  <span>{`${t("pedestrian_accidents")}`}</span>
                 </motion.div>
               </div>
             )}
@@ -106,7 +109,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <div className="w-12 h-2 bg-red-500"></div>{" "}
                   {/* Červená čára */}
-                  <span>Zácpa</span> {/* Popis */}
+                  <span>{`${t("traffic_jam")}`}</span> {/* Popis */}
                 </motion.div>
 
                 <motion.div
@@ -118,7 +121,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <div className="w-12 h-2 bg-orange-500"></div>{" "}
                   {/* Oranžová čára */}
-                  <span>Pomalý provoz</span> {/* Popis */}
+                  <span>{`${t("slow_traffic")}`}</span> {/* Popis */}
                 </motion.div>
 
                 <motion.div
@@ -130,7 +133,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <div className="w-12 h-2 bg-yellow-500"></div>{" "}
                   {/* Žlutá čára */}
-                  <span>Snížená rychlost</span> {/* Popis */}
+                  <span>{`${t("reduced_speed")}`}</span> {/* Popis */}
                 </motion.div>
 
                 <motion.div
@@ -142,7 +145,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <div className="w-12 h-2 bg-green-500"></div>{" "}
                   {/* Zelená čára */}
-                  <span>Plynulý provoz</span> {/* Popis */}
+                  <span>{`${t("smooth_traffic")}`}</span> {/* Popis */}
                 </motion.div>
               </div>
             )}

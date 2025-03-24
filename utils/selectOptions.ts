@@ -79,3 +79,8 @@ export const activeRadarOptions = (t: (key: string) => string) => [
   { label: `${t("yes")}`, value: "Ano" },
   { label: `${t("no")}`, value: "Ne" },
 ];
+
+export const measureViewOptions = (t: (key: string) => string) => [
+  { label: `${t("yes")}`, value: `${t("yes")}` },
+  { label: `${t("no")}`, value: `${t("no")}` },
+];

@@ -8,9 +8,8 @@ interface ButtonToggleProps {
   showData: boolean;
   toggleGeoJsonVisibility: () => void;
   toggleDetailVisibility?: () => void;
-  toggleHeatmapVisibility?: () => void;
+  toggleHeatmapVisibility?: () => void; // smazat
   rotation?: boolean;
-  count?: number;
   label: string;
 }
 
@@ -18,9 +17,8 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
   showData,
   toggleGeoJsonVisibility,
   toggleDetailVisibility,
-  toggleHeatmapVisibility,
+  toggleHeatmapVisibility, // smazat
   rotation,
-  count,
   label,
 }) => {
   const { t } = useTranslation();
@@ -65,8 +63,6 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
           </div>
         </button>
       )}
-      {/** counter */}
-      {count}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 {
   "heatmap": "Heatmap",
-  "normal": "Normal",
+  "normal": "Markers",
   "language": "Language",
   "measurement": "Measurement",
   "speed": "Speed",
@@ -16,6 +16,7 @@
   "title": "Interactive Traffic Map",
   "filter_title": "Filters",
   "active_radars": "Active radars",
+  "display_measure": "Display measure",
   "alcohol": "Alcohol at the culprit",
   "drugs": "Drugs at the culprit",
   "pedestrian_participation": "Pedestrian participation",
@@ -28,5 +29,16 @@
   "to": "to",
   "measurement_rejected": "measurement rejected",
   "not_detected": "not detected",
-  "and_more": "and more"
+  "and_more": "and more",
+  "legend_title": "Legend",
+  "car_accidents": "Car accident",
+  "pedestrian_accidents": "Accident with pedestrian",
+  "traffic_jam": "Traffic jam",
+  "slow_traffic": "Slow traffic",
+  "reduced_speed": "Reduced speed",
+  "smooth_traffic": "Smooth traffic",
+  "update": "Update",
+  "satellite": "Satellite",
+  "all": "all",
+  "view_number": "Number of units"
 }

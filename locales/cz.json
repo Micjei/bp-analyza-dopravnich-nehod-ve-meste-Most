@@ -1,6 +1,6 @@
 {
   "heatmap": "Heatmapa",
-  "normal": "Normální",
+  "normal": "Markery",
   "language": "Jazyk",
   "measurement": "Měření",
   "speed": "Rychlost",
@@ -16,6 +16,7 @@
   "title": "Interaktivní Dopravní Mapa",
   "filter_title": "Filtry",
   "active_radars": "Aktivní Radary",
+  "display_measure": "Zobrazit měření",
   "alcohol": "Alkohol u viníka",
   "drugs": "Drogy u viníka",
   "pedestrian_participation": "Účast chodce",
@@ -28,5 +29,16 @@
   "to": "do",
   "measurement_rejected": "měření odmítnuto",
   "not_detected": "nezjišťeno",
-  "and_more": "a více"
+  "and_more": "a více",
+  "legend_title": "Legenda",
+  "car_accidents": "Dopravní nehody",
+  "pedestrian_accidents": "Nehoda s chodcem",
+  "traffic_jam": "Zácpa",
+  "slow_traffic": "Pomalý provoz",
+  "reduced_speed": "Snížená rychlost",
+  "smooth_traffic": "Plynulý provoz",
+  "update": "Aktualizovat",
+  "satellite": "Satelitní",
+  "all": "vše",
+  "view_number": "Počet zobrazených dat"
 }
