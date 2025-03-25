@@ -48,12 +48,12 @@ export const drugsOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
   { label: `${t("no")}`, value: "0" },
   { label: `${t("measurement_rejected")}`, value: "7" },
-  { label: "THC (tetrahydrokanabinol)", value: "1" },
-  { label: "AMP (amfetamin)", value: "2" },
-  { label: "MET (metamfetamin)", value: "3" },
-  { label: "OPI (opiáty)", value: "4" },
-  { label: "benzodiazepin", value: "5" },
-  { label: "jiné", value: "6" },
+  { label: `${t("THC")}`, value: "1" },
+  { label: `${t("AMP")}`, value: "2" },
+  { label: `${t("MET")}`, value: "3" },
+  { label: `${t("OP")}`, value: "4" },
+  { label: `${t("BZD")}`, value: "5" },
+  { label: `${t("others")}`, value: "6" },
   { label: `${t("not_detected")}`, value: "8" },
 ];
 

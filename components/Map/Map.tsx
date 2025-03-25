@@ -189,6 +189,24 @@ const Map: React.FC = () => {
     }
   }, [realAngle, isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
 
+  // upravit možná? je tam problik. Useefect pro změnu jazyka
+  useEffect(() => {
+    if (showRadarData) {
+      setShowRadarData(false);
+
+      setTimeout(() => {
+        setShowRadarData(true);
+      }, 0);
+    }
+    if (showAccidentData) {
+      setShowAccidentData(false);
+
+      setTimeout(() => {
+        setShowAccidentData(true);
+      }, 0);
+    }
+  }, [i18n.language]);
+
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
     const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
     const arrowRotation = feature.properties.smer - 90; // směr šipky - 90 protože originál směřuje doprava
@@ -217,13 +235,13 @@ const Map: React.FC = () => {
     marker.bindPopup(`
       <b>ID:</b> ${feature.properties.id}<br/>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <b>směr:</b> ${feature.properties.smer}°
+        <b>${t("direction")}:</b> ${feature.properties.smer}°
         <img src="${arrowIcon.options.iconUrl}" 
              style="width: 20px; height: 20px; transform: rotate(${arrowRotation}deg);" 
              alt="Radar směr"/>
       </div>
-      <b>ulice:</b> ${feature.properties.lokalita}<br/>
-      <b>v provozu:</b> ${feature.properties.v_provozu}<br/>
+      <b>${t("street")}:</b> ${feature.properties.lokalita}<br/>
+      <b>${t("in_operation")}:</b> ${feature.properties.v_provozu}<br/>
       ${measurementsInfo}
     `);
 
@@ -252,9 +270,9 @@ const Map: React.FC = () => {
         ? pedestrians
             .map(
               (p: any, index: number) =>
-                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(
+                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(t)(
                   p.kategorie
-                )}, následky: ${getConsequenceDescription(
+                )}, následky: ${getConsequenceDescription(t)(
                   p.nasledky_chodci
                 )}, věk: ${p.vek}<br/>`
             )
@@ -267,21 +285,21 @@ const Map: React.FC = () => {
         ? consequences
             .map(
               (c: any, index: number) =>
-                `<b>Následek ${index + 1}:</b> ${getConsequenceDescription(
-                  c.nasledky_vozidlo
-                )}<br/>` // ve vozidle následky?
+                `<b>${t("consequence")} ${
+                  index + 1
+                }:</b> ${getConsequenceDescription(t)(c.nasledky_vozidlo)}<br/>` // ve vozidle následky?
             )
             .join("")
         : "";
 
     marker.bindPopup(`
-      <b>ID nehody:</b> ${feature.properties.id}<br/>
-      <b>Alkohol u viníka:</b> ${getAlcoholDescription(
-        feature.properties.alkohol
-      )}<br/>
-      <b>Drogy u viníka:</b> ${getDrugsDescription(
-        feature.properties.drogy
-      )}<br/>
+      <b>ID:</b> ${feature.properties.id}<br/>
+      <b>${t("alcohol")}:</b> ${getAlcoholDescription(t)(
+      feature.properties.alkohol
+    )}<br/>
+      <b>${t("drugs")}:</b> ${getDrugsDescription(t)(
+      feature.properties.drogy
+    )}<br/>
       ${pedestriansInfo}
       ${consequencesInfo}
     `);
@@ -389,7 +407,7 @@ const Map: React.FC = () => {
             if (intensityType === "accidents") {
               intensity = properties.nasledky_ve_vozidle.length + 10; // váha podle následků edit
             } else {
-              intensity = properties.mereni.length; // edit?
+              intensity = Math.log2(properties.mereni.length + 1); // edit?
             }
 
             return [lat, lng, intensity];
@@ -411,24 +429,6 @@ const Map: React.FC = () => {
 
     return null;
   };
-
-  // upravit možná? je tam problik
-  useEffect(() => {
-    if (showRadarData) {
-      setShowRadarData(false);
-
-      setTimeout(() => {
-        setShowRadarData(true);
-      }, 0);
-    }
-    if (showAccidentData) {
-      setShowAccidentData(false);
-
-      setTimeout(() => {
-        setShowAccidentData(true);
-      }, 0);
-    }
-  }, [i18n.language]);
 
   return (
     <div className="flex flex-col items-start w-full relative">
