@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import ButtonToggle from "./ButtonToggle";
+import ResetButton from "./ResetButton";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // Téma pro slider
 import "primereact/resources/primereact.min.css"; // Základní styly pro všechny komponenty PrimeReact
 import { motion, AnimatePresence, view } from "framer-motion";
@@ -14,9 +15,12 @@ import {
   consequenceOptions,
   viewOptions,
   activeRadarOptions,
+  measureViewOptions,
 } from "@/utils/selectOptions";
 import "primeicons/primeicons.css";
 import CustomSelect from "./CustomSelect";
+import { useTranslation } from "react-i18next";
+import "@/i18n"; // Import konfigurace i18n
 
 interface FilterSectionProps {
   showRadarData: boolean;
@@ -90,6 +94,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   const [days, setDays] = useState<string[]>([]);
   const [accidentsFilter, setAccidentsFilter] = useState(false); // podrobnější nehody
   const [radarsFilter, setRadarsFilter] = useState(false); // podrobnější radary
+  const { t } = useTranslation();
 
   // Funkce pro aktualizaci počtu dnů při změně měsíce nebo roku
   useEffect(() => {
@@ -99,43 +104,44 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
     // Generování seznamu dnů na základě měsíce a roku
     const daysList = [
-      "all",
+      "-",
       ...Array.from({ length: numberOfDays }, (_, i) => (i + 1).toString()),
     ];
     setDays(daysList);
 
     if (parseInt(selectedDay) > numberOfDays) {
-      setSelectedDay("all");
+      setSelectedDay("-");
     }
   }, [selectedMonth, selectedYear, selectedDay, setSelectedDay]);
 
   const months = [
-    "all",
+    "-",
     ...Array.from({ length: 12 }, (_, i) => (i + 1).toString()),
   ];
 
   // reset filtru pro nehody
-  const resetAccidentsFilter = () => {
+  const handleAccidentReset = () => {
     setDeadFilter("-");
     setPedestrianFilter("-");
     setDrugsFilter("-");
     setAlcoholFilter("-");
-    setSelectedMonth("all");
-    setSelectedDay("all");
+    setSelectedMonth("-");
+    setSelectedDay("-");
     setSelectedYear(new Date().getFullYear().toString());
     setShowAccidentsHeatmap(false);
   };
 
-  const [rotation, setRotation] = useState(0);
-  const handleClick = () => {
-    setRotation((prev) => prev - 720);
-    resetAccidentsFilter();
+  const handleRadarReset = () => {
+    setIsRadarActive("-");
+    setShowMeasureHeatmap(false);
   };
 
   return (
     <div
-      className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 ${
-        isFiltersVisible ? "max-w-[350px]" : "max-w-[10px]"
+      className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
+        isFiltersVisible
+          ? "max-w-[30vw] max-h-[70vh]"
+          : "max-w-[3vw] max-h-[70vh]"
       }`}
     >
       {/* Nadpis */}
@@ -144,7 +150,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           isFiltersVisible ? "opacity-100" : "opacity-0"
         }`}
       >
-        Filtry
+        {`${t("filter_title")}`}
       </h3>
 
       {/* Zelená čára pod nadpisem */}
@@ -155,9 +161,12 @@ const FilterSection: React.FC<FilterSectionProps> = ({
       ></div>
 
       {/* Obsah */}
+
       <div
         className={`transition-opacity duration-300 ${
-          isFiltersVisible ? "opacity-100" : "opacity-0"
+          isFiltersVisible
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
       >
         {/** radary */}
@@ -166,17 +175,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             showData={showRadarData}
             toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
             toggleDetailVisibility={() => setRadarsFilter(!radarsFilter)}
-            toggleHeatmapVisibility={() =>
-              setShowMeasureHeatmap(!showMeasureHeatmap)
-            }
-            rotation={radarsFilter}
-            count={numberOfRadars}
-            label="Radary"
+            rotation={radarsFilter} // detaily šipka
+            label={`${t("radars")}`}
           />
-          {/** smazat směr button*/}
-          {/*<button onClick={() => setRealAngle(!realAngle)}>
-            {realAngle ? "směr: ano" : "směr: ne"}
-          </button>*/}
         </div>
         {/** detail radaru */}
         <AnimatePresence>
@@ -190,12 +191,38 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             >
               {/** aktivita radaru TODO*/}
               <div className="flex items-center gap-2">
-                <label htmlFor="aktivita-radaru">Aktivní radary:</label>
                 <CustomSelect
-                  options={activeRadarOptions}
+                  options={activeRadarOptions(t)}
                   value={isRadarActive}
                   onChange={(option) => setIsRadarActive(option)}
                 />
+                <label htmlFor="aktivita-radaru">
+                  - {`${t("active_radars")}`}
+                </label>
+              </div>
+              {/** měření */}
+              <div className="flex items-center gap-2">
+                <CustomSelect
+                  options={measureViewOptions(t)}
+                  value={showMeasureHeatmap ? `${t("yes")}` : `${t("no")}`}
+                  onChange={(option) =>
+                    setShowMeasureHeatmap(option === `${t("yes")}`)
+                  }
+                />
+                <label htmlFor="measure-heat-map">
+                  - {`${t("display_measure")}`}
+                </label>
+              </div>
+              {/**počet zobrazených dat */}
+              <div className="flex flex-row gap-2">
+                <div className="border-2 border-[#ffffff] rounded px-2 text-left ">
+                  {numberOfRadars}
+                </div>
+                - {`${t("view_number")}`}
+              </div>
+              {/** reset button */}
+              <div className="justify-items-end">
+                <ResetButton onClick={handleRadarReset} />
               </div>
             </motion.div>
           )}
@@ -207,8 +234,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           toggleGeoJsonVisibility={() => setShowAccidentData(!showAccidentData)}
           toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
           rotation={accidentsFilter}
-          count={numberOfAccidents}
-          label="Nehody"
+          label={`${t("accidents")}`}
         />
 
         {/* detail nehod */}
@@ -232,12 +258,12 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 {/* Výběr měsíce */}
                 <CustomSelect
                   options={months}
-                  value={selectedMonth === "all" ? "mm" : selectedMonth}
+                  value={selectedMonth === "-" ? "mm" : selectedMonth}
                   onChange={(option) => {
                     setSelectedMonth(option);
-                    if (option === "all") {
-                      setSelectedDay("all");
-                      setDays(["all"]);
+                    if (option === "-") {
+                      setSelectedDay("-");
+                      setDays(["-"]);
                     }
                   }}
                 />
@@ -245,77 +271,71 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 {/* Výběr dne */}
                 <CustomSelect
                   options={days}
-                  value={selectedDay === "all" ? "dd" : selectedDay}
+                  value={selectedDay === "-" ? "dd" : selectedDay}
                   onChange={(option) => setSelectedDay(option)}
                 />
               </div>
-
               {/* Alkohol u viníka */}
               <div className="flex items-center gap-2">
-                <label htmlFor="alkohol-u-vinika">Alkohol u viníka:</label>
                 <CustomSelect
-                  options={alcoholOptions}
+                  options={alcoholOptions(t)}
                   value={alcoholFilter}
                   onChange={(option) => setAlcoholFilter(option)}
                 />
+                <label htmlFor="alkohol-u-vinika">- {`${t("alcohol")}`}</label>
               </div>
-
               {/* Drogy u viníka */}
               <div className="flex items-center gap-2">
-                <label htmlFor="drogy-u-vinika">Drogy u viníka:</label>
                 <CustomSelect
-                  options={drugsOptions}
+                  options={drugsOptions(t)}
                   value={drugsFilter}
                   onChange={(option) => setDrugsFilter(option)}
                 />
+                <label htmlFor="drogy-u-vinika">- {`${t("drugs")}`}</label>
               </div>
-
               {/* účast chodce */}
               <div className="flex items-center gap-2">
-                <label htmlFor="ucast-chodce">Účast chodce:</label>
                 <CustomSelect
-                  options={pedestrianOptions}
+                  options={pedestrianOptions(t)}
                   value={pedestrianFilter}
                   onChange={(option) => setPedestrianFilter(option)}
                 />
+                <label htmlFor="ucast-chodce">
+                  - {`${t("pedestrian_participation")}`}
+                </label>
               </div>
-
               {/* smrtelná nehoda */}
               <div className="flex items-center gap-2">
-                <label htmlFor="smrtelna-nehoda">Smrtelná nehoda:</label>
                 <CustomSelect
-                  options={consequenceOptions}
+                  options={consequenceOptions(t)}
                   value={deadFilter}
                   onChange={(option) => setDeadFilter(option)}
                 />
+                <label htmlFor="smrtelna-nehoda">- {`${t("fatal")}`}</label>
               </div>
-
               {/* zobrazení */}
               <div className="flex items-center gap-2">
-                <label htmlFor="heat-map">Zobrazení:</label>
                 <CustomSelect
-                  options={viewOptions}
-                  value={showAccidentsHeatmap ? "heatmapa" : "normální"}
+                  options={viewOptions(t)}
+                  value={
+                    showAccidentsHeatmap ? `${t("heatmap")}` : `${t("normal")}`
+                  }
                   onChange={(option) =>
-                    setShowAccidentsHeatmap(option === "heatmapa")
+                    setShowAccidentsHeatmap(option === `${t("heatmap")}`)
                   }
                 />
+                <label htmlFor="heat-map">- {`${t("display")}`}</label>
               </div>
-
-              {/** edit vzhled */}
-              <div className="w-fit mt-2 flex flex-col justify-center items-center border-2 border-[#66BB6A] rounded-[30px] shadow-md hover:bg-slate-100">
-                <button
-                  onClick={handleClick}
-                  className="p-2 hover:opacity-80 transition-transform flex flex-row items-center gap-2"
-                >
-                  <span>Resetovat filtry</span>
-                  <img
-                    src="/refresh.png"
-                    alt="Reset"
-                    className="w-6 h-6 transition-transform duration-700"
-                    style={{ transform: `rotate(${rotation}deg)` }}
-                  />
-                </button>
+              {/**počet zobrazených dat */}
+              <div className="flex flex-row gap-2">
+                <div className="border-2 border-[#ffffff] rounded px-2 text-left ">
+                  {numberOfAccidents}
+                </div>
+                - {`${t("view_number")}`}
+              </div>
+              {/** reset button */}
+              <div className="justify-items-end">
+                <ResetButton onClick={handleAccidentReset} />
               </div>
             </motion.div>
           )}
@@ -324,14 +344,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         <ButtonToggle
           showData={showTrafficData}
           toggleGeoJsonVisibility={() => setShowTrafficData(!showTrafficData)}
-          label="Dopravní situace"
+          label={`${t("traffic_situation")}`}
         />
         {/* Tlačítko pro aktualizaci dat TODO*/}
         <button
           onClick={onUpdateData}
           className="mt-4 bg-[#66BB6A] text-white px-4 py-2 rounded-[30px] shadow hover:bg-[#558b55] w-full"
         >
-          Aktualizovat
+          {`${t("update")}`}
         </button>
       </div>
     </div>

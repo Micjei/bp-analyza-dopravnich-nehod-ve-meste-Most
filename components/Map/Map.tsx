@@ -42,6 +42,9 @@ import {
   getPedestrianDescription,
 } from "@/utils/popupDescription";
 
+import { useTranslation } from "react-i18next";
+import "@/i18n"; // Import konfigurace i18n
+
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
   const [RadarsData, setRadarsData] = useState<any>(null);
@@ -64,8 +67,8 @@ const Map: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   );
-  const [selectedMonth, setSelectedMonth] = useState<string>("all");
-  const [selectedDay, setSelectedDay] = useState<string>("all");
+  const [selectedMonth, setSelectedMonth] = useState<string>("-");
+  const [selectedDay, setSelectedDay] = useState<string>("-");
   const [alcoholFilter, setAlcoholFilter] = useState<string>("-");
   const [drugsFilter, setDrugsFilter] = useState<string>("-");
   const [pedestrianFilter, setPedestrianFilter] = useState<string>("-");
@@ -83,6 +86,7 @@ const Map: React.FC = () => {
   const [numberOfRadars, setNumberOfRadars] = useState(0); // pocet radarů
   const [numberOfAccidents, setNumberOfAccidents] = useState(0); // pocet nehod
 
+  const { t, i18n } = useTranslation();
   useEffect(() => {
     const loadData = async () => {
       const radars = await fetchRadarsData();
@@ -122,9 +126,9 @@ const Map: React.FC = () => {
           // TODO null hodnoty
           return (
             rok === selectedYear &&
-            (selectedMonth === "all" ||
+            (selectedMonth === "-" ||
               parseInt(mesic, 10) === parseInt(selectedMonth, 10)) &&
-            (selectedDay === "all" ||
+            (selectedDay === "-" ||
               parseInt(den, 10) === parseInt(selectedDay, 10)) &&
             (alcoholFilter === "-" ||
               parseInt(alkohol, 10) === parseInt(alcoholFilter, 10)) &&
@@ -162,7 +166,7 @@ const Map: React.FC = () => {
   ]);
 
   useEffect(() => {
-    if (RadarsData && showRadarData) {
+    if (RadarsData) {
       const filtered = {
         type: "FeatureCollection",
         features: RadarsData.features.filter((feature: any) => {
@@ -176,13 +180,32 @@ const Map: React.FC = () => {
       setFilteredRadarsData(filtered);
     } else {
       setNumberOfRadars(0);
-      setFilteredRadarsData(RadarsData);
     }
     if (showRadarData) {
       setShowRadarData(false);
       setTimeout(() => setShowRadarData(true), 0);
+    } else {
+      setNumberOfRadars(0);
     }
   }, [realAngle, isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
+
+  // upravit možná? je tam problik. Useefect pro změnu jazyka
+  useEffect(() => {
+    if (showRadarData) {
+      setShowRadarData(false);
+
+      setTimeout(() => {
+        setShowRadarData(true);
+      }, 0);
+    }
+    if (showAccidentData) {
+      setShowAccidentData(false);
+
+      setTimeout(() => {
+        setShowAccidentData(true);
+      }, 0);
+    }
+  }, [i18n.language]);
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
     const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
@@ -201,24 +224,24 @@ const Map: React.FC = () => {
             .slice(0, 5) // Omezí počet zobrazených měření na 5
             .map(
               (m: any, index: number) =>
-                `<b>Měření ${index + 1}:</b> 
-            Rychlost: ${m.prekroceni_rychlost_soucet} km/h, 
-            Datum: ${m.datum}, 
-            Překročení: ${m.prekroceni_ve_smeru}<br/>`
+                `<b>${t("measurement")}: ${index + 1}:</b> 
+            ${t("speed")}: ${m.prekroceni_rychlost_soucet} km/h, 
+            ${t("date")}: ${m.datum}, 
+            ${t("speeding")}: ${m.prekroceni_ve_smeru}<br/>`
             )
-            .join("") + (measurements.length > 5 ? "<b>A další...</b>" : "")
+            .join("") + (measurements.length > 5 ? `<b>${t("more")}</b>` : "")
         : "";
 
     marker.bindPopup(`
       <b>ID:</b> ${feature.properties.id}<br/>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <b>směr:</b> ${feature.properties.smer}°
+        <b>${t("direction")}:</b> ${feature.properties.smer}°
         <img src="${arrowIcon.options.iconUrl}" 
              style="width: 20px; height: 20px; transform: rotate(${arrowRotation}deg);" 
              alt="Radar směr"/>
       </div>
-      <b>ulice:</b> ${feature.properties.lokalita}<br/>
-      <b>v provozu:</b> ${feature.properties.v_provozu}<br/>
+      <b>${t("street")}:</b> ${feature.properties.lokalita}<br/>
+      <b>${t("in_operation")}:</b> ${feature.properties.v_provozu}<br/>
       ${measurementsInfo}
     `);
 
@@ -247,9 +270,9 @@ const Map: React.FC = () => {
         ? pedestrians
             .map(
               (p: any, index: number) =>
-                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(
+                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(t)(
                   p.kategorie
-                )}, následky: ${getConsequenceDescription(
+                )}, následky: ${getConsequenceDescription(t)(
                   p.nasledky_chodci
                 )}, věk: ${p.vek}<br/>`
             )
@@ -262,21 +285,21 @@ const Map: React.FC = () => {
         ? consequences
             .map(
               (c: any, index: number) =>
-                `<b>Následek ${index + 1}:</b> ${getConsequenceDescription(
-                  c.nasledky_vozidlo
-                )}<br/>` // ve vozidle následky?
+                `<b>${t("consequence")} ${
+                  index + 1
+                }:</b> ${getConsequenceDescription(t)(c.nasledky_vozidlo)}<br/>` // ve vozidle následky?
             )
             .join("")
         : "";
 
     marker.bindPopup(`
-      <b>ID nehody:</b> ${feature.properties.id}<br/>
-      <b>Alkohol u viníka:</b> ${getAlcoholDescription(
-        feature.properties.alkohol
-      )}<br/>
-      <b>Drogy u viníka:</b> ${getDrugsDescription(
-        feature.properties.drogy
-      )}<br/>
+      <b>ID:</b> ${feature.properties.id}<br/>
+      <b>${t("alcohol")}:</b> ${getAlcoholDescription(t)(
+      feature.properties.alkohol
+    )}<br/>
+      <b>${t("drugs")}:</b> ${getDrugsDescription(t)(
+      feature.properties.drogy
+    )}<br/>
       ${pedestriansInfo}
       ${consequencesInfo}
     `);
@@ -384,7 +407,7 @@ const Map: React.FC = () => {
             if (intensityType === "accidents") {
               intensity = properties.nasledky_ve_vozidle.length + 10; // váha podle následků edit
             } else {
-              intensity = properties.mereni.length; // edit?
+              intensity = Math.log2(properties.mereni.length + 1); // edit?
             }
 
             return [lat, lng, intensity];
@@ -475,10 +498,7 @@ const Map: React.FC = () => {
 
         {/* header */}
         <div className="w-full absolute top-0 z-[1000]">
-          <HeaderSection
-            headerText="Interaktivní Dopravní Mapa"
-            onLayerChange={setTileLayerUrl}
-          />
+          <HeaderSection onLayerChange={setTileLayerUrl} />
         </div>
 
         {/* footer */}

@@ -1,14 +1,15 @@
 import { motion } from "framer-motion";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
+import "@/i18n"; // Import konfigurace i18n
 
 interface ButtonToggleProps {
   showData: boolean;
   toggleGeoJsonVisibility: () => void;
   toggleDetailVisibility?: () => void;
-  toggleHeatmapVisibility?: () => void;
+  toggleHeatmapVisibility?: () => void; // smazat
   rotation?: boolean;
-  count?: number;
   label: string;
 }
 
@@ -16,11 +17,11 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
   showData,
   toggleGeoJsonVisibility,
   toggleDetailVisibility,
-  toggleHeatmapVisibility,
+  toggleHeatmapVisibility, // smazat
   rotation,
-  count,
   label,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex items-center cursor-pointer mb-1 gap-2 ">
       <div
@@ -40,7 +41,7 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
           onClick={toggleDetailVisibility}
           className="px-2 flex items-center hover:text-green-900 gap-1 transition-all"
         >
-          detail
+          {`${t("details")}`}
           {/* Šipka dolů */}
           <span
             className={`transform transition-transform duration-[700ms] ${
@@ -62,8 +63,6 @@ const ButtonToggle: React.FC<ButtonToggleProps> = ({
           </div>
         </button>
       )}
-      {/** counter */}
-      {count}
     </div>
   );
 };

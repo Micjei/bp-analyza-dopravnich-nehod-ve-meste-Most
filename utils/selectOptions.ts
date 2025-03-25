@@ -30,52 +30,57 @@ export const getDaysInMonth = (month: number, year: number) => {
   return daysInMonth[month - 1];
 };
 
-export const alcoholOptions = [
+export const alcoholOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
-  { label: "ne", value: "2" },
-  { label: "měření odmítnuto", value: "4" },
-  { label: "do 0,24 ‰", value: "1" },
-  { label: "od 0,24 do 0,5 ‰", value: "3" },
+  { label: `${t("no")}`, value: "2" },
+  { label: `${t("measurement_rejected")}`, value: "4" },
+  { label: `${t("from")} 0,24 ‰`, value: "1" },
+  { label: `${t("from")} 0,24 ${t("to")} 0,5 ‰`, value: "3" },
   //{ label: "", value: "5" },
-  { label: "od 0,5 do 0,8 ‰", value: "6" },
-  { label: "od 0,8 do 1,0 ‰", value: "7" },
-  { label: "od 1,0 do 1,5 ‰", value: "8" },
-  { label: "1,5 ‰ a více", value: "9" },
-  { label: "nezjišťováno", value: "0" },
+  { label: `${t("from")} 0,5 ${t("to")} 0,8 ‰`, value: "6" },
+  { label: `${t("from")} 0,8 ${t("to")} 1,0 ‰`, value: "7" },
+  { label: `${t("from")} 1,0 ${t("to")} 1,5 ‰`, value: "8" },
+  { label: `1,5 ‰ ${t("and_more")}`, value: "9" },
+  { label: `${t("not_detected")}`, value: "0" },
 ];
 
-export const drugsOptions = [
+export const drugsOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
-  { label: "ne", value: "0" },
-  { label: "měření odmítnuto", value: "7" },
-  { label: "THC (tetrahydrokanabinol)", value: "1" },
-  { label: "AMP (amfetamin)", value: "2" },
-  { label: "MET (metamfetamin)", value: "3" },
-  { label: "OPI (opiáty)", value: "4" },
-  { label: "benzodiazepin", value: "5" },
-  { label: "jiné", value: "6" },
-  { label: "nezjišťováno", value: "8" },
+  { label: `${t("no")}`, value: "0" },
+  { label: `${t("measurement_rejected")}`, value: "7" },
+  { label: `${t("THC")}`, value: "1" },
+  { label: `${t("AMP")}`, value: "2" },
+  { label: `${t("MET")}`, value: "3" },
+  { label: `${t("OP")}`, value: "4" },
+  { label: `${t("BZD")}`, value: "5" },
+  { label: `${t("others")}`, value: "6" },
+  { label: `${t("not_detected")}`, value: "8" },
 ];
 
-export const pedestrianOptions = [
+export const pedestrianOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
-  { label: "ano", value: "ano" },
-  { label: "ne", value: "ne" },
+  { label: `${t("yes")}`, value: "ano" },
+  { label: `${t("no")}`, value: "ne" },
 ];
 
-export const consequenceOptions = [
+export const consequenceOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
-  { label: "ano", value: "1" },
-  { label: "ne", value: "0" },
+  { label: `${t("yes")}`, value: "1" },
+  { label: `${t("no")}`, value: "0" },
 ];
 
-export const viewOptions = [
-  { label: "normální", value: "normální" },
-  { label: "heatmapa", value: "heatmapa" },
+export const viewOptions = (t: (key: string) => string) => [
+  { label: `${t("normal")}`, value: `${t("normal")}` },
+  { label: `${t("heatmap")}`, value: `${t("heatmap")}` },
 ];
 
-export const activeRadarOptions = [
+export const activeRadarOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
-  { label: "ano", value: "Ano" },
-  { label: "ne", value: "Ne" },
+  { label: `${t("yes")}`, value: "Ano" },
+  { label: `${t("no")}`, value: "Ne" },
+];
+
+export const measureViewOptions = (t: (key: string) => string) => [
+  { label: `${t("yes")}`, value: `${t("yes")}` },
+  { label: `${t("no")}`, value: `${t("no")}` },
 ];
