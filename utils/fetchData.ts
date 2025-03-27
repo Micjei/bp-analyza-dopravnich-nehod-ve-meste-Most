@@ -116,6 +116,8 @@ export const fetchAccidentsData = async () => {
           chodci: pedestriansData, // Pole chodců
           nasledky_ve_vozidle: consequencesData, // Pole následků
           smrt: data.usmrceno_osob,
+          tezce_zraneno_osob: data.tezce_zraneno_osob,
+          lehce_zraneno_osob: data.lehce_zraneno_osob,
         },
       };
     });

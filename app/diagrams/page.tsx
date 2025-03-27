@@ -39,8 +39,8 @@ export default function DashboardPage() {
   const [accidentsData, setAccidentsData] = useState<any>(null);
   const [filteredRadarsData, setFilteredRadarsData] = useState<any>(null); // filtered radars data
   const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null); // filtered accidents data
-  const [selectedRadarYear, setSelectedRadarYear] = useState("2022");
-  const [selectedAccidentYear, setSelectedAccidentYear] = useState("2022");
+  const [selectedRadarYear, setSelectedRadarYear] = useState("2023");
+  const [selectedAccidentYear, setSelectedAccidentYear] = useState("2023");
   const [lastUpdate, setLastUpdate] = useState<string>("");
 
   useEffect(() => {
@@ -116,55 +116,48 @@ export default function DashboardPage() {
     const filteredData = filteredAccidentsData?.features;
     if (!filteredData) return { labels: [], datasets: [] };
 
-    const labels = filteredData.map((feature: any) => feature.properties.datum);
-    const smrt = filteredData.map(
-      (feature: any) => Math.floor(feature.properties.smrt) || 0
-    );
-    const lehkeZraneni = filteredData.map(
-      (feature: any) => Math.floor(feature.properties.smrt) || 0
-    );
-    const tezkeZraneni = filteredData.map(
-      (feature: any) => Math.floor(feature.properties.smrt) || 0
-    );
-
-    // Spojení všech kategorií do jednoho pole
-    const combinedData = [...smrt, ...lehkeZraneni, ...tezkeZraneni];
-
-    // Vytvoření odpovídajících barev pro každou kategorii
-    const backgroundColors = [
-      ...new Array(smrt.length).fill("black"), // Barva pro smrt
-      ...new Array(lehkeZraneni.length).fill("green"), // Barva pro lehké zranění
-      ...new Array(tezkeZraneni.length).fill("orange"), // Barva pro těžké zranění
+    // Definování popisů místo datumu
+    const labels = [
+      "Smrtelná zranění",
+      "Lehce zraněné osoby",
+      "Těžce zraněné osoby",
     ];
 
+    const smrt = filteredData.reduce(
+      (sum: number, feature: any) =>
+        sum + (parseInt(feature.properties.smrt, 10) || 0),
+      0
+    );
+    const lehkeZraneni = filteredData.reduce(
+      (sum: number, feature: any) =>
+        sum + (parseInt(feature.properties.lehce_zraneno_osob, 10) || 0),
+      0
+    );
+    const tezkeZraneni = filteredData.reduce(
+      (sum: number, feature: any) =>
+        sum + (parseInt(feature.properties.tezce_zraneno_osob, 10) || 0),
+      0
+    );
+
     return {
-      labels,
+      labels, // Použití popisů místo dat
       datasets: [
         {
-          label: "Počet mrtvých osob při nehodách",
-          data: combinedData,
-          backgroundColor: backgroundColors, // Barvy podle kategorií
-          borderColor: "black",
+          label: "Počet osob",
+          data: [smrt, lehkeZraneni, tezkeZraneni],
+          backgroundColor: ["black", "green", "orange"],
+          borderColor: "red",
           borderWidth: 1,
         },
       ],
       options: {
         scales: {
           x: {
-            title: { display: true, text: "Datum nehody" },
-            ticks: {
-              autoSkip: true, // Skryje některé popisky
-              maxTicksLimit: 10, // Zobrazí max. 10 popisků
-            },
+            title: { display: true, text: "Typ zranění" },
           },
           y: {
-            title: { display: true, text: "Počet mrtvých" },
+            title: { display: true, text: "Počet osob" },
             beginAtZero: true,
-            ticks: {
-              stepSize: 1, // Vynutí celá čísla
-              callback: (value: number) =>
-                Number.isInteger(value) ? value : null, // Skryje desetinné hodnoty
-            },
           },
         },
       },
