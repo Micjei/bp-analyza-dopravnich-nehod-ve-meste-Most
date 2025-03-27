@@ -170,15 +170,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         }`}
       >
         {/** radary */}
-        <div className="flex flex-row items-center gap-2">
-          <ButtonToggle
-            showData={showRadarData}
-            toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
-            toggleDetailVisibility={() => setRadarsFilter(!radarsFilter)}
-            rotation={radarsFilter} // detaily šipka
-            label={`${t("radars")}`}
-          />
-        </div>
+        <ButtonToggle
+          showData={showRadarData}
+          toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
+          toggleDetailVisibility={() => setRadarsFilter(!radarsFilter)}
+          rotation={radarsFilter} // detaily šipka
+          label={`${t("radars")}`}
+          onReset={handleRadarReset}
+        />
         {/** detail radaru */}
         <AnimatePresence>
           {radarsFilter && (
@@ -215,18 +214,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               </div>
               {/**počet zobrazených dat */}
               <div className="flex flex-row gap-2">
-                <div className="border-2 border-[#ffffff] rounded px-2 text-left ">
-                  {numberOfRadars}
-                </div>
-                - {`${t("view_number")}`}
-              </div>
-              {/** reset button */}
-              <div className="justify-items-end">
-                <ResetButton onClick={handleRadarReset} />
+                <div className="px-2 text-left ">{numberOfRadars}</div>-{" "}
+                {`${t("view_number")}`}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+
+        <div
+          className={`w-full justify-self-center -mx-5  border-b-2 border-[#66BB6A] mb-3 mt-3 transition-opacity duration-300 ${
+            isFiltersVisible ? "opacity-100" : "opacity-0"
+          }`}
+        ></div>
 
         {/** nehody */}
         <ButtonToggle
@@ -235,6 +234,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
           rotation={accidentsFilter}
           label={`${t("accidents")}`}
+          onReset={handleAccidentReset}
         />
 
         {/* detail nehod */}
@@ -328,18 +328,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               </div>
               {/**počet zobrazených dat */}
               <div className="flex flex-row gap-2">
-                <div className="border-2 border-[#ffffff] rounded px-2 text-left ">
-                  {numberOfAccidents}
-                </div>
-                - {`${t("view_number")}`}
-              </div>
-              {/** reset button */}
-              <div className="justify-items-end">
-                <ResetButton onClick={handleAccidentReset} />
+                <div className=" px-2 text-left ">{numberOfAccidents}</div>-{" "}
+                {`${t("view_number")}`}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+
+        <div
+          className={`w-full justify-self-center -mx-5  border-b-2 border-[#66BB6A] mb-3 mt-3 transition-opacity duration-300 ${
+            isFiltersVisible ? "opacity-100" : "opacity-0"
+          }`}
+        ></div>
 
         <ButtonToggle
           showData={showTrafficData}

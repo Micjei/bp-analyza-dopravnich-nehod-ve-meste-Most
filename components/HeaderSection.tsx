@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import "@/i18n"; // Import konfigurace i18n
+import { usePathname } from "next/navigation";
+
 interface HeaderProps {
-  onLayerChange: (url: string) => void;
+  onLayerChange?: (url: string) => void;
   onSettingsClick?: () => void;
 }
 
@@ -12,7 +16,9 @@ const HeaderSection: React.FC<HeaderProps> = ({
 }) => {
   const { t, i18n } = useTranslation();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
+  const currentPath = usePathname();
   const mapLayers = [
     {
       name: `${t("satellite")}`,
@@ -27,6 +33,20 @@ const HeaderSection: React.FC<HeaderProps> = ({
       url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
     },
   ];
+  useEffect(() => {
+    setIsClient(true); // Nastaví stav na true, jakmile je komponenta na klientovi
+  }, []);
+
+  if (!isClient) {
+    return null; // Na serveru nebudeme renderovat, dokud komponenta nebude hydratována
+  }
+
+  let linkHref = "/diagrams";
+  let pageButton = "Zobrazit grafy";
+  if (currentPath === "/diagrams") {
+    linkHref = "/";
+    pageButton = "Zobrazit mapu";
+  }
 
   return (
     <div className="absolute top-0 w-full h-20 flex flex-row items-center justify-between p-5 bg-[#66BB6A] border-2 border-[#66BB6A] shadow-md text-[#ffffff] opacity-80 whitespace-nowrap">
@@ -52,19 +72,24 @@ const HeaderSection: React.FC<HeaderProps> = ({
         </div>
         {/* Tlačítko pro výběr mapy */}
         <div className="relative">
-          <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="bg-transparent text-[#ffffff] px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-[#388E3C]"
-          >
-            {`${t("select_map")}`}
-          </button>
+          {onLayerChange && (
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="bg-transparent text-[#ffffff] px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-[#388E3C]"
+            >
+              {`${t("select_map")}`}
+            </button>
+          )}
+
           {showDropdown && (
             <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg text-[#388E3C]">
               {mapLayers.map((layer) => (
                 <button
                   key={layer.url}
                   onClick={() => {
-                    onLayerChange(layer.url);
+                    if (onLayerChange) {
+                      onLayerChange(layer.url);
+                    }
                     setShowDropdown(false);
                   }}
                   className="block w-full text-left px-4 py-2 hover:bg-gray-100"
@@ -76,6 +101,12 @@ const HeaderSection: React.FC<HeaderProps> = ({
           )}
         </div>
 
+        {/* Tlačítko Analýza s Link */}
+        <Link href={`${linkHref}`}>
+          <button className="bg-transparent text-[#ffffff] px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-[#388E3C]">
+            {`${pageButton}`}
+          </button>
+        </Link>
         {/* Tlačítko pro nastavení */}
         <button
           onClick={() => onSettingsClick && onSettingsClick()}
