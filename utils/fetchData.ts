@@ -3,12 +3,19 @@ import { db } from "../lib/firebase";
 
 export const fetchRadarsData = async () => {
   try {
-    // Načtení měření a seskupení podle ID_LOKALITY
-    const measurementsSnapshot = await getDocs(collection(db, "mereni"));
-    const measurementsMap = new Map();
+    // Fetch dat z našeho backendu
+    const response = await fetch("/api/downloadRadars");
 
-    measurementsSnapshot.docs.forEach((doc) => {
-      const data = doc.data();
+    if (!response.ok) {
+      throw new Error("Nepodařilo se načíst data z backendu.");
+    }
+
+    const { measurements, radars } = await response.json();
+
+    // Seskupení měření podle ID_LOKALITY
+    const measurementsMap = new Map();
+    measurements.features.forEach((feature: any) => {
+      const data = feature.properties;
       const idLokalita = data.ID_LOKALITY;
 
       if (!measurementsMap.has(idLokalita)) {
@@ -16,34 +23,30 @@ export const fetchRadarsData = async () => {
       }
 
       measurementsMap.get(idLokalita).push({
-        prekroceni_rychlost_soucet:
-          data.PREKROCENI_RYCHL_SOUCET || "nezjištěno", // edit
-        datum: data.OBDOBI_FORMATOVANE || "nezjištěno", // edit
-        prekroceni_ve_smeru: data.PREKROCENI_RYCHL_VE_SMERU || "nezjištěno", // edit
+        prekroceni_rychl_ve_smeru:
+          data.PREKROCENI_RYCHL_VE_SMERU || "nezjištěno",
+        datum: data.OBDOBI_FORMATOVANE || "nezjištěno",
+        datum_text: data.DEN_TEXT || "nezjištěno",
+        prekroceni_rychl_v_protismeru:
+          data.PREKROCENI_RYCHL_V_PROTISMERU || "nezjištěno",
+        prekroceni_rychl_soucet: data.PREKROCENI_RYCHL_SOUCET || "nezjištěno",
       });
     });
 
-    // Načtení radarů a propojení s měřeními
-    const radarsSnapshot = await getDocs(collection(db, "radary"));
-    const features = radarsSnapshot.docs.map((doc) => {
-      const data = doc.data();
-      const measurementsData = measurementsMap.get(data.ID) || []; // Získá odpovídající měření podle ID_LOKALITY
+    // Propojení radarů s měřeními
+    const features = radars.features.map((feature: any) => {
+      const data = feature.properties;
+      const measurements = measurementsMap.get(data.ID) || [];
 
       return {
         type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [
-            data.geometry.coordinates[0],
-            data.geometry.coordinates[1],
-          ],
-        },
+        geometry: feature.geometry,
         properties: {
           id: data.ID,
-          lokalita: data.lokalita,
-          smer: data.smer,
-          v_provozu: data.v_provozu === 1 ? "Ano" : "Ne",
-          mereni: measurementsData, // Pole měření pro daný radar
+          lokalita: data.LOKALITA,
+          smer: data.SMER,
+          v_provozu: data.V_PROVOZU === 1 ? "Ano" : "Ne",
+          mereni: measurements,
         },
       };
     });

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 
 interface CustomSelectProps {
-  options: string[] | { label: string; value: string }[]; // Může být pole stringů nebo objektů { label, value }
+  options: string[] | { label: string; value: string }[];
   value: string | null;
   onChange: (value: string) => void;
 }
@@ -12,17 +12,16 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   onChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [clickPosition, setClickPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  // Funkce pro získání labelu z option (pokud je to objekt)
   const getLabel = (option: string | { label: string; value: string }) => {
-    if (typeof option === "string") {
-      return option; // Pokud je option string, vrátíme ji přímo
-    }
-    return option.label; // Pokud je option objekt, vrátíme label
+    return typeof option === "string" ? option : option.label;
   };
 
-  // Funkce pro zjištění, zda je option objekt (s label a value) nebo string
   const isOptionObject = (
     option: string | { label: string; value: string }
   ): option is { label: string; value: string } => {
@@ -30,27 +29,18 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   const handleClick = (option: string | { label: string; value: string }) => {
-    if (typeof option === "string") {
-      onChange(option); // Pokud je option string, předáme ho přímo
-    } else {
-      onChange(option.value); // Pokud je option objekt, předáme value
-    }
+    onChange(isOptionObject(option) ? option.value : option);
     setIsOpen(false);
   };
 
-  // Funkce pro získání labelu pro aktuálně vybranou hodnotu
   const getSelectedLabel = () => {
-    // Zde upravujeme logiku pro "mm" nebo "dd", když je selectedMonth nebo selectedDay "all"
-    if (value === "mm" || value === "dd") {
-      return value === "mm" ? "mm" : "dd"; // Pokud je value "mm" nebo "dd", vrátí odpovídající label
-    }
-
-    if (!value) return ""; // Pokud není vybraná žádná hodnota, vrátí prázdný text
+    if (value === "mm" || value === "dd") return value;
+    if (!value) return "";
 
     const selectedOption = options.find(
       (option) => (typeof option === "string" ? option : option.value) === value
     );
-    return selectedOption ? getLabel(selectedOption) : ""; // Pokud nenalezne hodnotu, vrátí prázdný text
+    return selectedOption ? getLabel(selectedOption) : "";
   };
 
   useEffect(() => {
@@ -61,25 +51,29 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <div ref={selectRef} className="relative py-1">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={(e) => {
+          setIsOpen(!isOpen);
+          setClickPosition({ x: e.clientX, y: e.clientY });
+        }}
         className="border-2 border-[#ffffff] rounded px-2 text-left hover:bg-slate-50 active:bg-gray-300 active:scale-95"
       >
-        {getSelectedLabel()} {/* Zobrazení labelu podle value */}
+        {getSelectedLabel()}
       </button>
 
-      {isOpen && (
+      {isOpen && clickPosition && (
         <div
-          className="fixed flex items-center justify-center z-[1000]"
-          onClick={() => setIsOpen(false)} // Zavření při kliknutí mimo
+          className="fixed z-[1000]"
+          style={{
+            top: clickPosition.y + 10,
+            left: clickPosition.x + 10,
+          }}
+          onClick={() => setIsOpen(false)}
         >
           <div
             className="w-max bg-white border rounded shadow-lg p-2"
@@ -99,7 +93,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                   onClick={() => handleClick(option)}
                   className="border rounded p-2 text-center hover:bg-gray-200"
                 >
-                  {getLabel(option)} {/* Zobrazení labelu */}
+                  {getLabel(option)}
                 </button>
               ))}
             </div>
