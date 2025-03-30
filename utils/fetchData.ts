@@ -1,5 +1,6 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { convertCoordinates } from "../utils/coordinateUtils";
 
 export const fetchRadarsData = async () => {
   try {
@@ -63,22 +64,110 @@ export const fetchRadarsData = async () => {
 
 export const fetchAccidentsData = async () => {
   try {
+    const response = await fetch("/api/downloadAccidents");
+
+    if (!response.ok) {
+      throw new Error("Nepodařilo se načíst data z backendu.");
+    }
+
+    const { vehicles, accidents, consequences, pedestrians } =
+      await response.json();
+
+    // Mapování chodců podle ID nehody
+    const pedestriansMap = new Map();
+    pedestrians.features.forEach((feature: any) => {
+      const data = feature.properties;
+      const accidentId = data.p1;
+
+      if (!pedestriansMap.has(accidentId)) {
+        pedestriansMap.set(accidentId, []);
+      }
+
+      pedestriansMap.get(accidentId).push({
+        kategorie: data.p29 || "neznámé", //kategorie_chodce || "neznámé",
+        vek: data.p33d || "neznámé", // vek || "neznámé",
+        nasledky_chodci: data.p33g || "neznámé", // nasledky || "neznámé",
+      });
+    });
+
+    // Mapování následků podle ID nehody
+    const consequencesMap = new Map();
+    consequences.features.forEach((feature: any) => {
+      const data = feature.properties;
+      const accidentId = data.p1;
+
+      if (!consequencesMap.has(accidentId)) {
+        consequencesMap.set(accidentId, []);
+      }
+
+      consequencesMap.get(accidentId).push({
+        nasledky_vozidlo: data.p59g || "neznámé", //nasledky || "neznámé",
+      });
+    });
+
+    // Zpracování nehod
+    const features = accidents.features.map((feature: any) => {
+      const data = feature.properties;
+      const chodci = pedestriansMap.get(data.p1) || [];
+      const nasledky = consequencesMap.get(data.p1) || [];
+      const [x, y] = feature.geometry.coordinates;
+      const { latitude, longitude } = convertCoordinates(x, y);
+      return {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [longitude, latitude],
+        },
+        properties: {
+          id: data.p1,
+          datum: data.p2a, //datum,
+          alkohol: data.p11, //alkohol_u_vinika || "neznámé",
+          drogy: data.p11a || "neznámé", //drogy_u_vinika || "neznámé",
+          smrt: data.p13a || 0, //usmrceno_osob || 0,
+          tezce_zraneno_osob: data.p13b || 0, //tezce_zraneno_osob || 0,
+          lehce_zraneno_osob: data.p13c || 0, //lehce_zraneno_osob || 0,
+          chodci,
+          nasledky_ve_vozidle: nasledky,
+        },
+      };
+    });
+
+    const result = {
+      type: "FeatureCollection",
+      features,
+    };
+
+    // ✅ Výpis až po načtení a zpracování všech dat
+    console.log("✅ Data o nehodách byla úspěšně načtena a zpracována:");
+    console.log("Celkový počet nehod:", result.features.length);
+    console.log("Ukázka nehody:", result.features[0]);
+
+    return result;
+  } catch (error) {
+    console.error("Chyba při načítání dat nehod:", error);
+    return null;
+  }
+};
+
+// pro jistotu
+/*export const fetchAccidentsData = async () => {
+  try {
     // Načtení chodců do mapy (seskupení podle ID nehody)
     const pedestriansSnapshot = await getDocs(collection(db, "chodci"));
     const pedestriansMap = new Map();
 
     pedestriansSnapshot.docs.forEach((doc) => {
       const data = doc.data();
-      const kategorie = data.kategorie_chodce;
-      const nasledky_chodci = data.nasledky;
+      const kategorie = data.kategorie_chodce; // p29
+      const nasledky_chodci = data.nasledky; // p33g
 
       if (!pedestriansMap.has(data.ID)) {
         pedestriansMap.set(data.ID, []);
       }
       pedestriansMap.get(data.ID).push({
-        kategorie: kategorie,
-        vek: data.vek,
-        nasledky_chodci: nasledky_chodci,
+        kategorie: kategorie, // p29
+        vek: data.vek, // p33d
+        nasledky_chodci: nasledky_chodci, // p33g
       });
     });
 
@@ -88,13 +177,13 @@ export const fetchAccidentsData = async () => {
 
     consequencesSnapshot.docs.forEach((doc) => {
       const data = doc.data();
-      const nasledky_vozidlo = data.nasledky;
+      const nasledky_vozidlo = data.nasledky; // p59g
 
       if (!consequencesMap.has(data.ID)) {
         consequencesMap.set(data.ID, []);
       }
       consequencesMap.get(data.ID).push({
-        nasledky_vozidlo: nasledky_vozidlo,
+        nasledky_vozidlo: nasledky_vozidlo, // p59g
       });
     });
 
@@ -133,4 +222,4 @@ export const fetchAccidentsData = async () => {
     console.error("Chyba při načítání dat:", error);
     return null;
   }
-};
+};*/

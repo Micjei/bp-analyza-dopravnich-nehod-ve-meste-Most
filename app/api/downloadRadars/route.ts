@@ -25,7 +25,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const measurementsData = await measurementsResponse.json();
     const radarsData = await radarsResponse.json();
 
-    console.log("✅ Data načtena úspěšně.");
+    console.log("✅ Data načtena úspěšně (radary).");
 
     return NextResponse.json(
       { measurements: measurementsData, radars: radarsData },
