@@ -63,7 +63,6 @@ const Map: React.FC = () => {
     "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   );
 
-  const [lastUpdate, setLastUpdate] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   );
@@ -94,8 +93,6 @@ const Map: React.FC = () => {
 
       const accidents = await fetchAccidentsData();
       setAccidentsData(accidents);
-
-      setLastUpdate(new Date().toLocaleString());
     };
 
     loadData();
@@ -364,12 +361,6 @@ const Map: React.FC = () => {
     }
   };
 
-  const handleUpdateData = () => {
-    // TODO logika pro stažení a uložení nových dat
-
-    setLastUpdate(new Date().toLocaleString());
-  };
-
   // cluster
   const customClusterIcon = (cluster: L.MarkerCluster, color: string) => {
     const markers = cluster.getAllChildMarkers();
@@ -504,10 +495,7 @@ const Map: React.FC = () => {
 
         {/* footer */}
         <div className="w-full absolute bottom-0 z-[1000]">
-          <FooterSection
-            footerText="Čas poslední aktualizace:"
-            lastUpdate={lastUpdate}
-          />
+          <FooterSection />
         </div>
 
         <MapContainer

@@ -138,10 +138,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
-        isFiltersVisible
-          ? "max-w-[30vw] max-h-[70vh]"
-          : "max-w-[3vw] max-h-[70vh]"
+      className={`flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
+        isFiltersVisible ? "w-[35vw] max-h-[70vh]" : "w-[3vw] max-h-[70vh]"
       }`}
     >
       {/* Nadpis */}
@@ -155,7 +153,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
       {/* Zelená čára pod nadpisem */}
       <div
-        className={`w-[calc(100%+2.5rem)] -mx-5  border-b-2 border-[#66BB6A] mb-5 mt-2 transition-opacity duration-300 ${
+        className={`w-[calc(100%+2.5rem)] -mx-5  border-b-2 border-filters-border mb-5 mt-2 transition-opacity duration-300 ${
           isFiltersVisible ? "opacity-100" : "opacity-0"
         }`}
       ></div>
@@ -163,7 +161,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
       {/* Obsah */}
 
       <div
-        className={`transition-opacity duration-300 ${
+        className={`transition-opacity duration-300 w-full ${
           isFiltersVisible
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -222,7 +220,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         </AnimatePresence>
 
         <div
-          className={`w-full justify-self-center -mx-5  border-b-2 border-[#66BB6A] mb-3 mt-3 transition-opacity duration-300 ${
+          className={`w-full justify-self-center -mx-5  border-b-2 border-filters-border mb-3 mt-3 transition-opacity duration-300 ${
             isFiltersVisible ? "opacity-100" : "opacity-0"
           }`}
         ></div>
@@ -336,7 +334,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         </AnimatePresence>
 
         <div
-          className={`w-full justify-self-center -mx-5  border-b-2 border-[#66BB6A] mb-3 mt-3 transition-opacity duration-300 ${
+          className={`w-full justify-self-center -mx-5  border-b-2 border-filters-border mb-3 mt-3 transition-opacity duration-300 ${
             isFiltersVisible ? "opacity-100" : "opacity-0"
           }`}
         ></div>
@@ -347,12 +345,12 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           label={`${t("traffic_situation")}`}
         />
         {/* Tlačítko pro aktualizaci dat TODO*/}
-        <button
+        {/*<button
           onClick={onUpdateData}
           className="mt-4 bg-[#66BB6A] text-white px-4 py-2 rounded-[30px] shadow hover:bg-[#558b55] w-full"
         >
           {`${t("update")}`}
-        </button>
+        </button>*/}
       </div>
     </div>
   );

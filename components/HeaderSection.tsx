@@ -47,7 +47,7 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
   }
 
   return (
-    <div className="absolute top-0 w-full h-20 flex flex-row items-center justify-between p-5 bg-[#66BB6A] border-2 border-[#66BB6A] shadow-md text-[#ffffff] opacity-80 whitespace-nowrap">
+    <div className="absolute top-0 w-full h-20 flex flex-row items-center justify-between p-5 bg-header-bg border-2 border-header-border shadow-md text-header-text opacity-80 whitespace-nowrap">
       <h3 className="transition-opacity duration-300 text-3xl font-bold tracking-wide italic">
         {`${t("title")}`}
       </h3>
@@ -68,13 +68,13 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
           <div className="relative">
             <button
               onClick={() => setShowMapDropdown(!showMapDropdown)}
-              className="bg-transparent text-white px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-green-800"
+              className="bg-transparent text-header-text px-4 py-2 rounded-md shadow-md hover:bg-header-bg-hover hover:text-header-text-hover"
             >
               {t("select_map")}
             </button>
 
             {showMapDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg text-[#388E3C] z-50">
+              <div className="absolute right-0 mt-2 w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
                 {mapLayers.map((layer) => (
                   <button
                     key={layer.url}
@@ -82,7 +82,7 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
                       onLayerChange(layer.url);
                       setShowMapDropdown(false);
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover"
                   >
                     {layer.name}
                   </button>
@@ -94,7 +94,7 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
 
         {/* Odkaz na druhou stránku */}
         <Link href={linkHref}>
-          <button className="bg-transparent text-white px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-green-800">
+          <button className="bg-transparent text-header-text px-4 py-2 rounded-md shadow-md hover:bg-header-bg-hover hover:text-header-text-hover">
             {pageButton}
           </button>
         </Link>
@@ -103,16 +103,16 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
         <div className="relative">
           <button
             onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
-            className="bg-transparent text-white px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-green-800"
+            className="bg-transparent text-header-text px-4 py-2 rounded-md shadow-md hover:bg-header-bg-hover hover:text-header-text-hover"
           >
             {t("settings")}
           </button>
 
           {showSettingsDropdown && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg text-[#388E3C] z-50">
+            <div className="absolute right-0 mt-2 w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
               <button
                 onClick={toggleTheme}
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover"
               >
                 {isDark ? "☀️ Světlý režim" : "🌙 Tmavý režim"}
               </button>

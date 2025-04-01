@@ -49,8 +49,6 @@ export default function DashboardPage() {
   const [showSecondAccidentsStats, setShowSecondAccidentsStats] =
     useState(false);
 
-  const [lastUpdate, setLastUpdate] = useState<string>("");
-
   useEffect(() => {
     const loadData = async () => {
       const radars = await fetchRadarsData();
@@ -58,8 +56,6 @@ export default function DashboardPage() {
 
       const accidents = await fetchAccidentsData();
       setAccidentsData(accidents);
-
-      setLastUpdate(new Date().toLocaleString());
     };
 
     loadData();
@@ -202,7 +198,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="mb-5">
+    <div className="mb-5 font-[family-name:var(--font-geist-sans)]">
       <HeaderSection />
       <h1 className="text-2xl font-bold mt-24">Dashboard</h1>
       <h2 className="text-xl mt-8">Radarová a nehodová data</h2>
@@ -329,10 +325,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <FooterSection
-        footerText="Čas poslední aktualizace:"
-        lastUpdate={lastUpdate}
-      />
+      <FooterSection />
     </div>
   );
 }

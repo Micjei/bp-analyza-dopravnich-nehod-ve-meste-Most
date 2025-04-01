@@ -19,7 +19,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
   const { t } = useTranslation();
   return (
     <div
-      className={`bottom-0 right-0 flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 w-auto ${
+      className={`bottom-0 right-0 flex flex-col items-start p-5 bg-legend-bg border-2 border-legend-border rounded-[30px] shadow-md text-legend-text opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 w-auto ${
         isLegendVisible ? "max-h-80" : "max-h-2"
       }`}
     >
@@ -34,7 +34,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
 
       {/* Zelená čára pod nadpisem */}
       <div
-        className={`w-[calc(100%+2.5rem)] -mx-5 border-b-2 border-[#66BB6A] mb-5 mt-2 transition-opacity duration-300 ${
+        className={`w-[calc(100%+2.5rem)] -mx-5 border-b-2 border-legend-border mb-5 mt-2 transition-opacity duration-300 ${
           isLegendVisible ? "opacity-100" : "opacity-0"
         }`}
       ></div>
@@ -109,7 +109,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <div className="w-12 h-2 bg-red-500"></div>{" "}
                   {/* Červená čára */}
-                  <span>{`${t("traffic_jam")}`}</span> {/* Popis */}
+                  <span>{`${t("traffic_jam")}`}</span>
                 </motion.div>
 
                 <motion.div
@@ -121,7 +121,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <div className="w-12 h-2 bg-orange-500"></div>{" "}
                   {/* Oranžová čára */}
-                  <span>{`${t("slow_traffic")}`}</span> {/* Popis */}
+                  <span>{`${t("slow_traffic")}`}</span>
                 </motion.div>
 
                 <motion.div
@@ -133,7 +133,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <div className="w-12 h-2 bg-yellow-500"></div>{" "}
                   {/* Žlutá čára */}
-                  <span>{`${t("reduced_speed")}`}</span> {/* Popis */}
+                  <span>{`${t("reduced_speed")}`}</span>
                 </motion.div>
 
                 <motion.div
@@ -145,7 +145,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <div className="w-12 h-2 bg-green-500"></div>{" "}
                   {/* Zelená čára */}
-                  <span>{`${t("smooth_traffic")}`}</span> {/* Popis */}
+                  <span>{`${t("smooth_traffic")}`}</span>
                 </motion.div>
               </div>
             )}

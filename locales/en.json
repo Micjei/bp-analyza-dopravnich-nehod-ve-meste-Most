@@ -59,5 +59,6 @@
   "woman": "woman",
   "child": "child (under 15 years)",
   "group_of_children": "group of children",
-  "other_group": "other group"
+  "other_group": "other group",
+  "last_update": "Last updated time"
 }
