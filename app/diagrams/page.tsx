@@ -33,14 +33,17 @@ ChartJS.register(
   Legend,
   RadialLinearScale
 );
+import { useData } from "@/components/DataContext";
 
 export default function DashboardPage() {
-  const [radarsData, setRadarsData] = useState<any>(null);
+  const { RadarsData, AccidentsData } = useData();
+
+  //const [RadarsData, setRadarsData] = useState<any>(null);
   const [selectedRadarYear, setSelectedRadarYear] = useState("2023");
   const [selectedRadarYear2, setSelectedRadarYear2] = useState("2023");
   const [showSecondRadarsStats, setShowSecondRadarsStats] = useState(false);
 
-  const [accidentsData, setAccidentsData] = useState<any>(null);
+  //const [AccidentsData, setAccidentsData] = useState<any>(null);
   const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null);
   const [filteredAccidentsData2, setFilteredAccidentsData2] =
     useState<any>(null);
@@ -49,7 +52,7 @@ export default function DashboardPage() {
   const [showSecondAccidentsStats, setShowSecondAccidentsStats] =
     useState(false);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const loadData = async () => {
       const radars = await fetchRadarsData();
       setRadarsData(radars);
@@ -59,32 +62,32 @@ export default function DashboardPage() {
     };
 
     loadData();
-  }, []);
+  }, []);*/
 
   useEffect(() => {
-    if (accidentsData) {
-      const filtered = accidentsData.features.filter((feature: any) => {
+    if (AccidentsData) {
+      const filtered = AccidentsData.features.filter((feature: any) => {
         const date = feature.properties?.datum;
         return date && date.endsWith(selectedAccidentYear);
       });
 
       setFilteredAccidentsData({ features: filtered });
     }
-  }, [selectedAccidentYear, accidentsData]);
+  }, [selectedAccidentYear, AccidentsData]);
 
   useEffect(() => {
-    if (accidentsData) {
-      const filtered = accidentsData.features.filter((feature: any) => {
+    if (AccidentsData) {
+      const filtered = AccidentsData.features.filter((feature: any) => {
         const date = feature.properties?.datum;
         return date && date.endsWith(selectedAccidentYear2);
       });
 
       setFilteredAccidentsData2({ features: filtered });
     }
-  }, [selectedAccidentYear2, accidentsData]);
+  }, [selectedAccidentYear2, AccidentsData]);
 
   const getStackedRadarChartData = (year: string) => {
-    const filtered = radarsData?.features?.map((feature: any) => {
+    const filtered = RadarsData?.features?.map((feature: any) => {
       const measurements = feature.properties?.mereni || [];
 
       const matching = measurements.filter((m: any) => {
@@ -212,7 +215,7 @@ export default function DashboardPage() {
               value={selectedRadarYear}
               onChange={setSelectedRadarYear}
             />
-            {radarsData ? (
+            {RadarsData ? (
               <Bar
                 data={getStackedRadarChartData(selectedRadarYear)}
                 options={{
@@ -250,7 +253,7 @@ export default function DashboardPage() {
                 value={selectedRadarYear2}
                 onChange={setSelectedRadarYear2}
               />
-              {radarsData ? (
+              {RadarsData ? (
                 <Bar
                   data={getStackedRadarChartData(selectedRadarYear2)}
                   options={{

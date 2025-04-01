@@ -45,10 +45,13 @@ import {
 import { useTranslation } from "react-i18next";
 import "@/i18n"; // Import konfigurace i18n
 
+import { useData } from "@/components/DataContext";
+
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
-  const [RadarsData, setRadarsData] = useState<any>(null);
-  const [AccidentsData, setAccidentsData] = useState<any>(null);
+  const { RadarsData, AccidentsData } = useData();
+  //const [RadarsData, setRadarsData] = useState<any>(null);
+  //const [AccidentsData, setAccidentsData] = useState<any>(null);
   const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null); // filtrovane nehody
   const [filteredRadarsData, setFilteredRadarsData] = useState<any>(null); // filtrovane radary
 
@@ -86,7 +89,7 @@ const Map: React.FC = () => {
   const [numberOfAccidents, setNumberOfAccidents] = useState(0); // pocet nehod
 
   const { t, i18n } = useTranslation();
-  useEffect(() => {
+  /*useEffect(() => {
     const loadData = async () => {
       const radars = await fetchRadarsData();
       setRadarsData(radars);
@@ -96,7 +99,7 @@ const Map: React.FC = () => {
     };
 
     loadData();
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     if (showAccidentData && AccidentsData) {
