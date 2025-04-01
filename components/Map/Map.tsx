@@ -45,7 +45,7 @@ import {
 import { useTranslation } from "react-i18next";
 import "@/i18n"; // Import konfigurace i18n
 
-import { useData } from "@/components/DataContext";
+import { useData } from "@/context/DataContext";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
@@ -430,7 +430,7 @@ const Map: React.FC = () => {
       {/* Kontejner pro mapu */}
       <div className="map relative">
         {/* Sekce filtrů s možností skrytí/odkrytí */}
-        <div className="absolute top-1/2 left-5 z-[1000] -translate-y-1/2">
+        <div className="absolute left-5 top-28 z-[1000]">
           <FilterSection
             showRadarData={showRadarData}
             setShowRadarData={setShowRadarData}

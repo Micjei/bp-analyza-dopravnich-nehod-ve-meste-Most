@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import "@/i18n";
+
 interface LegendSectionProps {
   isLegendVisible: boolean;
   showTrafficData: boolean;
@@ -17,6 +18,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
   showRadarData,
 }) => {
   const { t } = useTranslation();
+
   return (
     <div
       className={`bottom-0 right-0 flex flex-col items-start p-5 bg-legend-bg border-2 border-legend-border rounded-[30px] shadow-md text-legend-text opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 w-auto ${
@@ -42,12 +44,12 @@ const LegendSection: React.FC<LegendSectionProps> = ({
       <AnimatePresence>
         {isLegendVisible && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
+            initial={{ opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
-            {/** radary */}
+            {/* Radary */}
             {showRadarData && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -61,7 +63,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
               </motion.div>
             )}
 
-            {/** Dopravní nehody */}
+            {/* Dopravní nehody */}
             {showAccidentData && (
               <div className="flex flex-col">
                 <motion.div
@@ -97,6 +99,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 </motion.div>
               </div>
             )}
+
             {/* Dopravní situace */}
             {showTrafficData && (
               <div className="flex flex-col">

@@ -12,10 +12,10 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   onChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [clickPosition, setClickPosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
+  const [clickPosition, setClickPosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
   const selectRef = useRef<HTMLDivElement>(null);
 
   const getLabel = (option: string | { label: string; value: string }) => {
@@ -43,6 +43,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     return selectedOption ? getLabel(selectedOption) : "";
   };
 
+  // click mimo
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
@@ -54,29 +55,29 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleButtonClick = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    setClickPosition({ x: clientX, y: clientY });
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div ref={selectRef} className="relative py-1">
       <button
-        onClick={(e) => {
-          setIsOpen(!isOpen);
-          setClickPosition({ x: e.clientX, y: e.clientY });
-        }}
-        className="border-2 border-[#ffffff] rounded px-2 text-left hover:bg-slate-50 active:bg-gray-300 active:scale-95"
+        onClick={handleButtonClick} // Přidání kliknutí pro získání pozice
+        className="border-2 border-dropdown-border rounded px-2 text-left hover:bg-drop active:bg-dropdown-bg-active active:scale-95"
       >
         {getSelectedLabel()}
       </button>
 
-      {isOpen && clickPosition && (
+      {isOpen && (
         <div
           className="fixed z-[1000]"
-          style={{
-            top: clickPosition.y + 10,
-            left: clickPosition.x + 10,
-          }}
+          style={{ left: clickPosition.x + 10, top: clickPosition.y + 10 }}
           onClick={() => setIsOpen(false)}
         >
           <div
-            className="w-max bg-white border rounded shadow-lg p-2"
+            className="w-max bg-dropdown-bg border rounded shadow-lg p-2"
             onClick={(e) => e.stopPropagation()}
           >
             <div
@@ -91,7 +92,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                 <button
                   key={index}
                   onClick={() => handleClick(option)}
-                  className="border rounded p-2 text-center hover:bg-gray-200"
+                  className="border rounded p-2 text-center hover:bg-dropdown-bg-hover"
                 >
                   {getLabel(option)}
                 </button>

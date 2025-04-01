@@ -29,6 +29,7 @@ export default {
         "dropdown-border": "var(--dropdown-border)",
         "dropdown-bg-hover": "var(--dropdown-bg-hover)",
         "dropdown-text-hover": "var(--dropdown-text-hover)",
+        "dropdown-bg-active": "var(--dropdown-bg-active)",
       },
     },
   },

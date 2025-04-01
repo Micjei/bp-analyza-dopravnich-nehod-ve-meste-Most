@@ -29,6 +29,7 @@
   --dropdown-border: #e5e7eb;
   --dropdown-bg-hover: #d0d1d4;
   --dropdown-text-hover: #388e3c;
+  --dropdown-bg-active: #abacad;
   /*--legend-bg: #f1f8f6;
   --legend-text: #1b5e20;
   --legend-border: #388e3c;
@@ -65,7 +66,6 @@ body::-webkit-scrollbar {
 }
 
 .map {
-  position: relative;
   width: 100vw;
   height: 100vh;
   display: block;

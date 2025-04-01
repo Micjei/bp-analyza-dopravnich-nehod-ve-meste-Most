@@ -1,10 +1,9 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import "@/i18n";
 import { usePathname } from "next/navigation";
-import { useTheme } from "./ThemeContext";
+import { useTheme } from "@/context/ThemeContext";
 
 interface HeaderProps {
   onLayerChange?: (url: string) => void;
@@ -37,6 +36,22 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
     setIsClient(true);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+
+      if (target && !target.closest(".dropdown")) {
+        setShowMapDropdown(false);
+        setShowSettingsDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   if (!isClient) return null;
 
   let linkHref = "/diagrams";
@@ -55,17 +70,22 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
       <div className="flex flex-row items-center space-x-2 gap-2">
         {/* Jazykové přepínače */}
         <div className="ml-4 flex flex-row gap-2">
-          <button onClick={() => i18n.changeLanguage("cz")}>
-            <img src="/czech-republic.png" className="w-14 h-auto" />
-          </button>
-          <button onClick={() => i18n.changeLanguage("en")}>
-            <img src="/united-kingdom.png" className="w-14 h-auto" />
-          </button>
+          {/* Podmíněně zobrazení vlajky podle aktuálního jazyka */}
+          {i18n.language !== "cz" && (
+            <button onClick={() => i18n.changeLanguage("cz")}>
+              <img src="/czech-republic.png" className="w-14 h-auto" />
+            </button>
+          )}
+          {i18n.language !== "en" && (
+            <button onClick={() => i18n.changeLanguage("en")}>
+              <img src="/united-kingdom.png" className="w-14 h-auto" />
+            </button>
+          )}
         </div>
 
         {/* Výběr mapy */}
         {onLayerChange && (
-          <div className="relative">
+          <div className="relative dropdown">
             <button
               onClick={() => setShowMapDropdown(!showMapDropdown)}
               className="bg-transparent text-header-text px-4 py-2 rounded-md shadow-md hover:bg-header-bg-hover hover:text-header-text-hover"
@@ -100,7 +120,7 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
         </Link>
 
         {/* Nastavení + přepínač tématu */}
-        <div className="relative">
+        <div className="relative dropdown">
           <button
             onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
             className="bg-transparent text-header-text px-4 py-2 rounded-md shadow-md hover:bg-header-bg-hover hover:text-header-text-hover"
@@ -111,12 +131,15 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
           {showSettingsDropdown && (
             <div className="absolute right-0 mt-2 w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
               <button
-                onClick={toggleTheme}
+                onClick={() => {
+                  toggleTheme();
+                  setShowSettingsDropdown(false);
+                }}
                 className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover"
               >
                 {isDark ? "☀️ Světlý režim" : "🌙 Tmavý režim"}
               </button>
-              {/* Další nastavení može byt */}
+              {/* Další nastavení může být */}
             </div>
           )}
         </div>

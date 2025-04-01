@@ -184,7 +184,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="ml-6 overflow-hidden"
+              className="ml-6 overflow-visible"
             >
               {/** aktivita radaru TODO*/}
               <div className="flex items-center gap-2">
@@ -243,7 +243,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="ml-6 overflow-hidden"
+              className="ml-6 overflow-visible"
             >
               <div className="flex flex-row gap-2">
                 {/* Výběr roku */}

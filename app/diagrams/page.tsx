@@ -33,7 +33,7 @@ ChartJS.register(
   Legend,
   RadialLinearScale
 );
-import { useData } from "@/components/DataContext";
+import { useData } from "@/context/DataContext";
 
 export default function DashboardPage() {
   const { RadarsData, AccidentsData } = useData();
