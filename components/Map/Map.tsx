@@ -218,6 +218,7 @@ const Map: React.FC = () => {
 
     (marker as any).setRotationAngle(rotation);
 
+    // upravit info
     const measurementsInfo =
       measurements.length > 0
         ? measurements

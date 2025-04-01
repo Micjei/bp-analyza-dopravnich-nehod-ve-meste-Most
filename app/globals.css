@@ -5,13 +5,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  --legend-bg: #c8e6c9;
+  --legend-text: #388e3c;
+  --legend-border: #66bb6a;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #ffffff;
-    --foreground: #000000;
-  }
+.dark {
+  --background: #ff0000;
+  --foreground: #00f6ea;
+
+  --legend-bg: #2e7d32;
+  --legend-text: #a5d6a7;
+  --legend-border: #81c784;
 }
 
 body {
