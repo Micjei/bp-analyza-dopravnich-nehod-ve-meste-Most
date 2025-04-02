@@ -41,6 +41,8 @@ export default function DashboardPage() {
   //const [RadarsData, setRadarsData] = useState<any>(null);
   const [selectedRadarYear, setSelectedRadarYear] = useState("2023");
   const [selectedRadarYear2, setSelectedRadarYear2] = useState("2023");
+  const [selectedRadarMonth, setSelectedRadarMonth] = useState("-");
+  const [selectedRadarMonth2, setSelectedRadarMonth2] = useState("-");
   const [showSecondRadarsStats, setShowSecondRadarsStats] = useState(false);
 
   //const [AccidentsData, setAccidentsData] = useState<any>(null);
@@ -85,8 +87,6 @@ export default function DashboardPage() {
           (selectedAccidentMonth === "-" ||
             parseInt(mesic, 10) === parseInt(selectedAccidentMonth, 10))
         );
-
-        //return date && date.endsWith(selectedAccidentYear);
       });
 
       setFilteredAccidentsData({ features: filtered });
@@ -107,20 +107,71 @@ export default function DashboardPage() {
           (selectedAccidentMonth2 === "-" ||
             parseInt(mesic, 10) === parseInt(selectedAccidentMonth2, 10))
         );
-
-        //return date && date.endsWith(selectedAccidentYear);
       });
       setFilteredAccidentsData2({ features: filtered });
     }
   }, [selectedAccidentYear2, selectedAccidentMonth2, AccidentsData]);
 
-  const getStackedRadarChartData = (year: string) => {
+  /*const getStackedRadarChartData = (year: string) => {
     const filtered = RadarsData?.features?.map((feature: any) => {
       const measurements = feature.properties?.mereni || [];
 
       const matching = measurements.filter((m: any) => {
         return (
           typeof m.datum_text === "string" && m.datum_text.startsWith(year)
+        );
+      });
+
+      const veSmeru = matching.reduce(
+        (sum: number, m: any) =>
+          sum + (parseInt(m.prekroceni_rychl_ve_smeru, 10) || 0),
+        0
+      );
+
+      const vProtismeru = matching.reduce(
+        (sum: number, m: any) =>
+          sum + (parseInt(m.prekroceni_rychl_v_protismeru, 10) || 0),
+        0
+      );
+
+      return {
+        lokalita: feature.properties.lokalita,
+        veSmeru,
+        vProtismeru,
+      };
+    });
+
+    const labels = filtered?.map((f: any) => f.lokalita);
+    const dataVeSmeru = filtered?.map((f: any) => f.veSmeru);
+    const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru);
+
+    return {
+      labels,
+      datasets: [
+        { label: "Ve směru", data: dataVeSmeru, backgroundColor: "#3b82f6" },
+        {
+          label: "V protisměru",
+          data: dataVProtismeru,
+          backgroundColor: "#ef4444",
+        },
+      ],
+    };
+  };*/
+  const getStackedRadarChartData = (year: string, month: string) => {
+    const filtered = RadarsData?.features?.map((feature: any) => {
+      const measurements = feature.properties?.mereni || [];
+
+      const matching = measurements.filter((m: any) => {
+        const datumText = m.datum_text; // Datum v textovém formátu
+        const yearFromData = datumText.slice(0, 4); // Vybereme první 4 znaky jako rok
+        const monthFromData = datumText.slice(4, 6); // Vybereme 5. až 6. znak jako měsíc
+
+        // Filtrace podle roku a měsíce
+        if (month === "6") console.log(monthFromData, month);
+        return (
+          typeof datumText === "string" &&
+          (year === "-" || yearFromData === year) && // Filtrovat podle roku
+          (month === "-" || parseInt(monthFromData, 10) === parseInt(month, 10)) //
         );
       });
 
@@ -238,14 +289,26 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-8 w-8/12">
           <div>
             <label>Vyber rok pro radary: </label>
-            <CustomSelect
-              options={years.map(String)}
-              value={selectedRadarYear}
-              onChange={setSelectedRadarYear}
-            />
+            <div className="flex flex-row gap-2">
+              <CustomSelect
+                options={["-", ...years.map(String)]}
+                value={selectedRadarYear === "-" ? "yy" : selectedRadarYear}
+                onChange={setSelectedRadarYear}
+              />
+              <CustomSelect
+                options={months}
+                value={selectedRadarMonth === "-" ? "mm" : selectedRadarMonth}
+                onChange={(option) => {
+                  setSelectedRadarMonth(option);
+                }}
+              />
+            </div>
             {RadarsData ? (
               <Bar
-                data={getStackedRadarChartData(selectedRadarYear)}
+                data={getStackedRadarChartData(
+                  selectedRadarYear,
+                  selectedRadarMonth
+                )}
                 options={{
                   responsive: true,
                   plugins: {
@@ -276,14 +339,28 @@ export default function DashboardPage() {
           {showSecondRadarsStats && (
             <div>
               <label>Vyber druhý rok pro radary: </label>
-              <CustomSelect
-                options={years.map(String)}
-                value={selectedRadarYear2}
-                onChange={setSelectedRadarYear2}
-              />
+              <div className="flex flex-row gap-2">
+                <CustomSelect
+                  options={["-", ...years.map(String)]}
+                  value={selectedRadarYear2 === "-" ? "yy" : selectedRadarYear2}
+                  onChange={setSelectedRadarYear2}
+                />
+                <CustomSelect
+                  options={months}
+                  value={
+                    selectedRadarMonth2 === "-" ? "mm" : selectedRadarMonth2
+                  }
+                  onChange={(option) => {
+                    setSelectedRadarMonth2(option);
+                  }}
+                />
+              </div>
               {RadarsData ? (
                 <Bar
-                  data={getStackedRadarChartData(selectedRadarYear2)}
+                  data={getStackedRadarChartData(
+                    selectedRadarYear2,
+                    selectedRadarMonth2
+                  )}
                   options={{
                     responsive: true,
                     plugins: {
