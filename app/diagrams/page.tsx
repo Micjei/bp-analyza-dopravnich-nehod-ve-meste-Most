@@ -49,8 +49,15 @@ export default function DashboardPage() {
     useState<any>(null);
   const [selectedAccidentYear, setSelectedAccidentYear] = useState("2023");
   const [selectedAccidentYear2, setSelectedAccidentYear2] = useState("2023");
+  const [selectedAccidentMonth, setSelectedAccidentMonth] = useState("-");
+  const [selectedAccidentMonth2, setSelectedAccidentMonth2] = useState("-");
+  //const selectedAccidentDay = "1"; // smazat
   const [showSecondAccidentsStats, setShowSecondAccidentsStats] =
     useState(false);
+  const months = [
+    "-",
+    ...Array.from({ length: 12 }, (_, i) => (i + 1).toString()),
+  ];
 
   /*useEffect(() => {
     const loadData = async () => {
@@ -67,24 +74,45 @@ export default function DashboardPage() {
   useEffect(() => {
     if (AccidentsData) {
       const filtered = AccidentsData.features.filter((feature: any) => {
-        const date = feature.properties?.datum;
-        return date && date.endsWith(selectedAccidentYear);
+        const datum = feature.properties?.datum;
+        const parts = datum.split("/");
+        if (parts.length !== 3) return false;
+        const mesic = parts[1];
+        const rok = parts[2];
+        return (
+          (selectedAccidentYear === "-" ||
+            parseInt(rok) === parseInt(selectedAccidentYear)) &&
+          (selectedAccidentMonth === "-" ||
+            parseInt(mesic, 10) === parseInt(selectedAccidentMonth, 10))
+        );
+
+        //return date && date.endsWith(selectedAccidentYear);
       });
 
       setFilteredAccidentsData({ features: filtered });
     }
-  }, [selectedAccidentYear, AccidentsData]);
+  }, [selectedAccidentYear, selectedAccidentMonth, AccidentsData]);
 
   useEffect(() => {
     if (AccidentsData) {
       const filtered = AccidentsData.features.filter((feature: any) => {
-        const date = feature.properties?.datum;
-        return date && date.endsWith(selectedAccidentYear2);
-      });
+        const datum = feature.properties?.datum;
+        const parts = datum.split("/");
+        if (parts.length !== 3) return false;
+        const mesic = parts[1];
+        const rok = parts[2];
+        return (
+          (selectedAccidentYear2 === "-" ||
+            parseInt(rok) === parseInt(selectedAccidentYear2)) &&
+          (selectedAccidentMonth2 === "-" ||
+            parseInt(mesic, 10) === parseInt(selectedAccidentMonth2, 10))
+        );
 
+        //return date && date.endsWith(selectedAccidentYear);
+      });
       setFilteredAccidentsData2({ features: filtered });
     }
-  }, [selectedAccidentYear2, AccidentsData]);
+  }, [selectedAccidentYear2, selectedAccidentMonth2, AccidentsData]);
 
   const getStackedRadarChartData = (year: string) => {
     const filtered = RadarsData?.features?.map((feature: any) => {
@@ -281,11 +309,24 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-8 w-1/4">
           <div>
             <label>Vyber rok pro nehody: </label>
-            <CustomSelect
-              options={years.map(String)}
-              value={selectedAccidentYear}
-              onChange={setSelectedAccidentYear}
-            />
+            <div className="flex flex-row gap-2">
+              <CustomSelect
+                options={["-", ...years.map(String)]}
+                value={
+                  selectedAccidentYear === "-" ? "yy" : selectedAccidentYear
+                }
+                onChange={(option) => setSelectedAccidentYear(option)}
+              />
+              <CustomSelect
+                options={months}
+                value={
+                  selectedAccidentMonth === "-" ? "mm" : selectedAccidentMonth
+                }
+                onChange={(option) => {
+                  setSelectedAccidentMonth(option);
+                }}
+              />
+            </div>
             {filteredAccidentsData ? (
               (() => {
                 const { data, options } = getAccidentsChartData(
@@ -308,11 +349,24 @@ export default function DashboardPage() {
           {showSecondAccidentsStats && (
             <div>
               <label>Vyber druhý rok pro nehody: </label>
-              <CustomSelect
-                options={years.map(String)}
-                value={selectedAccidentYear2}
-                onChange={setSelectedAccidentYear2}
-              />
+              <div className="flex flex-row gap-2">
+                <CustomSelect
+                  options={years.map(String)}
+                  value={selectedAccidentYear2}
+                  onChange={setSelectedAccidentYear2}
+                />
+                <CustomSelect
+                  options={months}
+                  value={
+                    selectedAccidentMonth2 === "-"
+                      ? "mm"
+                      : selectedAccidentMonth2
+                  }
+                  onChange={(option) => {
+                    setSelectedAccidentMonth2(option);
+                  }}
+                />
+              </div>
               {filteredAccidentsData2 ? (
                 (() => {
                   const { data, options } = getAccidentsChartData(

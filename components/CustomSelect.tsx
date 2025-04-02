@@ -34,7 +34,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   const getSelectedLabel = () => {
-    if (value === "mm" || value === "dd") return value;
+    if (value === "mm" || value === "dd" || value == "yy") return value;
     if (!value) return "";
 
     const selectedOption = options.find(
