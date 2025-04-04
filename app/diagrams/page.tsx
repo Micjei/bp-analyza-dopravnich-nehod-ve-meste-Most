@@ -19,6 +19,7 @@ import {
   Tooltip,
   Legend,
   RadialLinearScale,
+  LogarithmicScale,
 } from "chart.js";
 
 ChartJS.register(
@@ -31,9 +32,13 @@ ChartJS.register(
   BarElement,
   Tooltip,
   Legend,
-  RadialLinearScale
+  RadialLinearScale,
+  LogarithmicScale
 );
 import { useData } from "@/context/DataContext";
+import { div } from "framer-motion/client";
+import RadarChartSection from "@/components/RadarChartSection";
+import AccidentChartSection from "@/components/AccidentChartSection";
 
 export default function DashboardPage() {
   const { RadarsData, AccidentsData } = useData();
@@ -60,6 +65,13 @@ export default function DashboardPage() {
     "-",
     ...Array.from({ length: 12 }, (_, i) => (i + 1).toString()),
   ];
+
+  const [radarChartMode, setRadarChartMode] = useState<"souhrn" | "intervaly">(
+    "souhrn"
+  );
+  const [radarChartMode2, setRadarChartMode2] = useState<
+    "souhrn" | "intervaly"
+  >("souhrn");
 
   /*useEffect(() => {
     const loadData = async () => {
@@ -112,66 +124,23 @@ export default function DashboardPage() {
     }
   }, [selectedAccidentYear2, selectedAccidentMonth2, AccidentsData]);
 
-  /*const getStackedRadarChartData = (year: string) => {
-    const filtered = RadarsData?.features?.map((feature: any) => {
+  const getStackedRadarChartData = (
+    year: string,
+    month: string,
+    mode: string
+  ) => {
+    const raw = RadarsData?.features?.map((feature: any) => {
       const measurements = feature.properties?.mereni || [];
 
       const matching = measurements.filter((m: any) => {
-        return (
-          typeof m.datum_text === "string" && m.datum_text.startsWith(year)
-        );
-      });
+        const datumText = m.datum_text;
+        const yearFromData = datumText?.slice(0, 4);
+        const monthFromData = datumText?.slice(4, 6);
 
-      const veSmeru = matching.reduce(
-        (sum: number, m: any) =>
-          sum + (parseInt(m.prekroceni_rychl_ve_smeru, 10) || 0),
-        0
-      );
-
-      const vProtismeru = matching.reduce(
-        (sum: number, m: any) =>
-          sum + (parseInt(m.prekroceni_rychl_v_protismeru, 10) || 0),
-        0
-      );
-
-      return {
-        lokalita: feature.properties.lokalita,
-        veSmeru,
-        vProtismeru,
-      };
-    });
-
-    const labels = filtered?.map((f: any) => f.lokalita);
-    const dataVeSmeru = filtered?.map((f: any) => f.veSmeru);
-    const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru);
-
-    return {
-      labels,
-      datasets: [
-        { label: "Ve směru", data: dataVeSmeru, backgroundColor: "#3b82f6" },
-        {
-          label: "V protisměru",
-          data: dataVProtismeru,
-          backgroundColor: "#ef4444",
-        },
-      ],
-    };
-  };*/
-  const getStackedRadarChartData = (year: string, month: string) => {
-    const filtered = RadarsData?.features?.map((feature: any) => {
-      const measurements = feature.properties?.mereni || [];
-
-      const matching = measurements.filter((m: any) => {
-        const datumText = m.datum_text; // Datum v textovém formátu
-        const yearFromData = datumText.slice(0, 4); // Vybereme první 4 znaky jako rok
-        const monthFromData = datumText.slice(4, 6); // Vybereme 5. až 6. znak jako měsíc
-
-        // Filtrace podle roku a měsíce
-        if (month === "6") console.log(monthFromData, month);
         return (
           typeof datumText === "string" &&
-          (year === "-" || yearFromData === year) && // Filtrovat podle roku
-          (month === "-" || parseInt(monthFromData, 10) === parseInt(month, 10)) //
+          (year === "-" || yearFromData === year) &&
+          (month === "-" || parseInt(monthFromData, 10) === parseInt(month, 10))
         );
       });
 
@@ -187,28 +156,145 @@ export default function DashboardPage() {
         0
       );
 
+      const rychlostni_limit =
+        matching.find((m: any) => m.rychlostni_limit != null)
+          ?.rychlostni_limit || "nezjištěno";
+
+      const r30_40 = matching.reduce(
+        (sum: number, m: any) => sum + (parseFloat(m.r30_40_soucet) || 0),
+        0
+      );
+      const r40_50 = matching.reduce(
+        (sum: number, m: any) => sum + (parseFloat(m.r40_50_soucet) || 0),
+        0
+      );
+      const r50_60 = matching.reduce(
+        (sum: number, m: any) => sum + (parseFloat(m.r50_60_soucet) || 0),
+        0
+      );
+      const r60_70 = matching.reduce(
+        (sum: number, m: any) => sum + (parseFloat(m.r60_70_soucet) || 0),
+        0
+      );
+      const r70_80 = matching.reduce(
+        (sum: number, m: any) => sum + (parseFloat(m.r70_80_soucet) || 0),
+        0
+      );
+
       return {
         lokalita: feature.properties.lokalita,
         veSmeru,
         vProtismeru,
+        rychlostni_limit,
+        r30_40,
+        r40_50,
+        r50_60,
+        r60_70,
+        r70_80,
       };
     });
 
-    const labels = filtered?.map((f: any) => f.lokalita);
+    const filtered = raw?.filter(
+      (f: any) =>
+        f.veSmeru > 0 ||
+        f.vProtismeru > 0 ||
+        f.r30_40 > 0 ||
+        f.r40_50 > 0 ||
+        f.r50_60 > 0 ||
+        f.r60_70 > 0 ||
+        f.r70_80 > 0
+    );
+
+    // Původní data s názvy lokalit a rychlostmi
+    const lokalitaTooltipMap = filtered?.map(
+      (f: any) => `${f.lokalita} (${f.rychlostni_limit} km/h)`
+    );
+
+    // Do labels dáš jen čísla
+    const labels = lokalitaTooltipMap?.map((_: any, i: any) => `#${i + 1}`);
+
+    console.log(
+      "Legenda lokalit:",
+      labels?.map(
+        (label: string, index: number) =>
+          `${label}: ${lokalitaTooltipMap?.[index]}`
+      )
+    );
+
     const dataVeSmeru = filtered?.map((f: any) => f.veSmeru);
     const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru);
 
-    return {
-      labels,
-      datasets: [
-        { label: "Ve směru", data: dataVeSmeru, backgroundColor: "#3b82f6" },
-        {
-          label: "V protisměru",
-          data: dataVProtismeru,
-          backgroundColor: "#ef4444",
+    const r30_40 = filtered?.map((f: any) => f.r30_40);
+    const r40_50 = filtered?.map((f: any) => f.r40_50);
+    const r50_60 = filtered?.map((f: any) => f.r50_60);
+    const r60_70 = filtered?.map((f: any) => f.r60_70);
+    const r70_80 = filtered?.map((f: any) => f.r70_80);
+
+    const commonOptions = {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            title: (ctx: any) => {
+              const i = ctx[0].dataIndex;
+              return lokalitaTooltipMap?.[i] || "Neznámá lokalita";
+            },
+          },
         },
-      ],
+      },
     };
+
+    if (mode === "souhrn") {
+      return {
+        labels,
+        datasets: [
+          {
+            label: "Ve směru",
+            data: dataVeSmeru,
+            backgroundColor: "#3b82f6",
+          },
+          {
+            label: "V protisměru",
+            data: dataVProtismeru,
+            backgroundColor: "#ef4444",
+          },
+        ],
+        options: commonOptions,
+        lokalitaTooltipMap,
+      };
+    } else {
+      return {
+        labels,
+        datasets: [
+          {
+            label: "30–40 km/h",
+            data: r30_40,
+            backgroundColor: "#86efac",
+          },
+          {
+            label: "40–50 km/h",
+            data: r40_50,
+            backgroundColor: "#4ade80",
+          },
+          {
+            label: "50–60 km/h",
+            data: r50_60,
+            backgroundColor: "#facc15",
+          },
+          {
+            label: "60–70 km/h",
+            data: r60_70,
+            backgroundColor: "#f97316",
+          },
+          {
+            label: "70–80 km/h",
+            data: r70_80,
+            backgroundColor: "#ef4444",
+          },
+        ],
+        options: commonOptions,
+        lokalitaTooltipMap,
+      };
+    }
   };
 
   const getAccidentsChartData = (sourceData = filteredAccidentsData) => {
@@ -279,142 +365,78 @@ export default function DashboardPage() {
     };
   };
 
+  const radarChart = getStackedRadarChartData(
+    selectedRadarYear,
+    selectedRadarMonth,
+    radarChartMode
+  );
+
+  const radarChart2 = getStackedRadarChartData(
+    selectedRadarYear2,
+    selectedRadarMonth2,
+    radarChartMode2
+  );
   return (
     <div className="mb-5 font-[family-name:var(--font-geist-sans)]">
       <HeaderSection />
-      <h1 className="text-2xl font-bold mt-24">Dashboard</h1>
-      <h2 className="text-xl mt-8">Radarová a nehodová data</h2>
+      <h1 className="text-2xl font-bold mt-24 p-10">Dashboard</h1>
 
-      <div className="flex flex-row gap-8 mt-4 w-auto p-10">
-        <div className="flex flex-col gap-8 w-8/12">
-          <div>
-            <label>Vyber rok pro radary: </label>
-            <div className="flex flex-row gap-2">
-              <CustomSelect
-                options={["-", ...years.map(String)]}
-                value={selectedRadarYear === "-" ? "yy" : selectedRadarYear}
-                onChange={setSelectedRadarYear}
-              />
-              <CustomSelect
-                options={months}
-                value={selectedRadarMonth === "-" ? "mm" : selectedRadarMonth}
-                onChange={(option) => {
-                  setSelectedRadarMonth(option);
-                }}
-              />
-            </div>
-            {RadarsData ? (
-              <Bar
-                data={getStackedRadarChartData(
-                  selectedRadarYear,
-                  selectedRadarMonth
-                )}
-                options={{
-                  responsive: true,
-                  plugins: {
-                    legend: { position: "top" },
-                    title: {
-                      display: true,
-                      text: `Překročení rychlosti dle radarů (${selectedRadarYear})`,
-                    },
-                  },
-                  scales: {
-                    x: { stacked: true },
-                    y: { stacked: true, beginAtZero: true },
-                  },
-                }}
-              />
-            ) : (
-              <p>Načítání radarových dat...</p>
+      <div className="flex flex-row">
+        {/** levý sloupec */}
+        <div className="flex flex-col w-auto text-center">
+          <RadarChartSection
+            title="Vyber rok pro radary:"
+            year={selectedRadarYear}
+            month={selectedRadarMonth}
+            chartMode={radarChartMode}
+            onYearChange={setSelectedRadarYear}
+            onMonthChange={setSelectedRadarMonth}
+            onChartModeChange={setRadarChartMode}
+            chartData={getStackedRadarChartData(
+              selectedRadarYear,
+              selectedRadarMonth,
+              radarChartMode
             )}
-          </div>
+            months={months}
+          />
 
           <button
             className="border w-6 h-6 rounded bg-gray-200 hover:bg-gray-300"
-            onClick={() => setShowSecondRadarsStats((p) => !p)}
+            onClick={() => setShowSecondRadarsStats((prev) => !prev)}
           >
             {showSecondRadarsStats ? "-" : "+"}
           </button>
 
           {showSecondRadarsStats && (
-            <div>
-              <label>Vyber druhý rok pro radary: </label>
-              <div className="flex flex-row gap-2">
-                <CustomSelect
-                  options={["-", ...years.map(String)]}
-                  value={selectedRadarYear2 === "-" ? "yy" : selectedRadarYear2}
-                  onChange={setSelectedRadarYear2}
-                />
-                <CustomSelect
-                  options={months}
-                  value={
-                    selectedRadarMonth2 === "-" ? "mm" : selectedRadarMonth2
-                  }
-                  onChange={(option) => {
-                    setSelectedRadarMonth2(option);
-                  }}
-                />
-              </div>
-              {RadarsData ? (
-                <Bar
-                  data={getStackedRadarChartData(
-                    selectedRadarYear2,
-                    selectedRadarMonth2
-                  )}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      legend: { position: "top" },
-                      title: {
-                        display: true,
-                        text: `Překročení rychlosti dle radarů (${selectedRadarYear2})`,
-                      },
-                    },
-                    scales: {
-                      x: { stacked: true },
-                      y: { stacked: true, beginAtZero: true },
-                    },
-                  }}
-                />
-              ) : (
-                <p>Načítání radarových dat...</p>
+            <RadarChartSection
+              title="Vyber druhý rok pro radary:"
+              year={selectedRadarYear2}
+              month={selectedRadarMonth2}
+              chartMode={radarChartMode2}
+              onYearChange={setSelectedRadarYear2}
+              onMonthChange={setSelectedRadarMonth2}
+              onChartModeChange={setRadarChartMode2}
+              chartData={getStackedRadarChartData(
+                selectedRadarYear2,
+                selectedRadarMonth2,
+                radarChartMode2
               )}
-            </div>
+              months={months}
+            />
           )}
         </div>
 
-        <div className="flex flex-col gap-8 w-1/4">
-          <div>
-            <label>Vyber rok pro nehody: </label>
-            <div className="flex flex-row gap-2">
-              <CustomSelect
-                options={["-", ...years.map(String)]}
-                value={
-                  selectedAccidentYear === "-" ? "yy" : selectedAccidentYear
-                }
-                onChange={(option) => setSelectedAccidentYear(option)}
-              />
-              <CustomSelect
-                options={months}
-                value={
-                  selectedAccidentMonth === "-" ? "mm" : selectedAccidentMonth
-                }
-                onChange={(option) => {
-                  setSelectedAccidentMonth(option);
-                }}
-              />
-            </div>
-            {filteredAccidentsData ? (
-              (() => {
-                const { data, options } = getAccidentsChartData(
-                  filteredAccidentsData
-                );
-                return <Doughnut data={data} options={options} />;
-              })()
-            ) : (
-              <p>Načítání nehodových dat...</p>
-            )}
-          </div>
+        {/** pravý sloupec */}
+        <div className="flex flex-col gap-8 w-auto text-center">
+          <AccidentChartSection
+            title="Vyber rok pro nehody:"
+            year={selectedAccidentYear}
+            month={selectedAccidentMonth}
+            onYearChange={setSelectedAccidentYear}
+            onMonthChange={setSelectedAccidentMonth}
+            chartData={getAccidentsChartData(filteredAccidentsData)}
+            months={months}
+          />
 
           <button
             className="border w-6 h-6 rounded bg-gray-200 hover:bg-gray-300"
@@ -424,37 +446,15 @@ export default function DashboardPage() {
           </button>
 
           {showSecondAccidentsStats && (
-            <div>
-              <label>Vyber druhý rok pro nehody: </label>
-              <div className="flex flex-row gap-2">
-                <CustomSelect
-                  options={years.map(String)}
-                  value={selectedAccidentYear2}
-                  onChange={setSelectedAccidentYear2}
-                />
-                <CustomSelect
-                  options={months}
-                  value={
-                    selectedAccidentMonth2 === "-"
-                      ? "mm"
-                      : selectedAccidentMonth2
-                  }
-                  onChange={(option) => {
-                    setSelectedAccidentMonth2(option);
-                  }}
-                />
-              </div>
-              {filteredAccidentsData2 ? (
-                (() => {
-                  const { data, options } = getAccidentsChartData(
-                    filteredAccidentsData2
-                  );
-                  return <Doughnut data={data} options={options} />;
-                })()
-              ) : (
-                <p>Načítání druhého grafu...</p>
-              )}
-            </div>
+            <AccidentChartSection
+              title="Vyber rok pro nehody:"
+              year={selectedAccidentYear2}
+              month={selectedAccidentMonth2}
+              onYearChange={setSelectedAccidentYear2}
+              onMonthChange={setSelectedAccidentMonth2}
+              chartData={getAccidentsChartData(filteredAccidentsData2)}
+              months={months}
+            />
           )}
         </div>
       </div>

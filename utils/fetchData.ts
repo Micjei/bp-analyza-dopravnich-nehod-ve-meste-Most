@@ -31,6 +31,22 @@ export const fetchRadarsData = async () => {
         prekroceni_rychl_v_protismeru:
           data.PREKROCENI_RYCHL_V_PROTISMERU || "nezjištěno",
         prekroceni_rychl_soucet: data.PREKROCENI_RYCHL_SOUCET || "nezjištěno",
+        rychlostni_limit: data.RYCHLOSTNI_LIMIT,
+        r30_40_ve_smeru: data.R30_40_VE_SMERU,
+        r30_40_v_protismeru: data.R30_40_V_PROTISMERU,
+        r30_40_soucet: data.R30_40_SOUCET,
+        r40_50_ve_smeru: data.R40_50_VE_SMERU,
+        r40_50_v_protismeru: data.R40_50_V_PROTISMERU,
+        r40_50_soucet: data.R40_50_SOUCET,
+        r50_60_ve_smeru: data.R50_60_VE_SMERU,
+        r50_60_v_protismeru: data.R50_60_V_PROTISMERU,
+        r50_60_soucet: data.R50_60_SOUCET,
+        r60_70_ve_smeru: data.R60_70_VE_SMERU,
+        r60_70_v_protismeru: data.R60_70_V_PROTISMERU,
+        r60_70_soucet: data.R60_70_SOUCET,
+        r70_80_ve_smeru: data.R70_80_VE_SMERU,
+        r70_80_v_protismeru: data.R70_80_V_PROTISMERU,
+        r70_80_soucet: data.R70_80_SOUCET,
       });
     });
 
