@@ -61,11 +61,21 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     setIsOpen(!isOpen);
   };
 
+  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
+
+  const MdColumnCount = isOptionObject(options[0])
+    ? Math.min(options.length, 3)
+    : Math.min(options.length, 7);
+
+  const columnCount = isOptionObject(options[0])
+    ? Math.min(options.length, 1)
+    : Math.min(options.length, 3);
+
   return (
     <div ref={selectRef} className="relative py-1">
       <button
         onClick={handleButtonClick} // Přidání kliknutí pro získání pozice
-        className="border-2 border-dropdown-border rounded px-2 text-left hover:bg-drop active:bg-dropdown-bg-active active:scale-95"
+        className="border-2 rounded px-2 text-left hover:bg-dropdown-bg-hover active:bg-dropdown-bg-active active:scale-95 hover:text-dropdown-text-hover bg-dropdown-bg border-dropdown-border"
       >
         {getSelectedLabel()}
       </button>
@@ -73,7 +83,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       {isOpen && (
         <div
           className="fixed z-[1000]"
-          style={{ left: clickPosition.x + 10, top: clickPosition.y + 10 }}
+          style={{
+            left: isDesktop ? clickPosition.x + 10 : "50%",
+            top: isDesktop ? clickPosition.y + 10 : "50%",
+            transform: isDesktop ? "none" : "translate(-50%, -50%)",
+          }}
           onClick={() => setIsOpen(false)}
         >
           <div
@@ -81,18 +95,13 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div
-              className="grid gap-2"
-              style={{
-                gridTemplateColumns: isOptionObject(options[0])
-                  ? `repeat(${Math.min(options.length, 3)}, minmax(40px, 1fr))`
-                  : `repeat(${Math.min(options.length, 7)}, minmax(40px, 1fr))`,
-              }}
+              className={`grid gap-2 grid-cols-${columnCount} md:grid-cols-${MdColumnCount}`}
             >
               {options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => handleClick(option)}
-                  className="border rounded p-2 text-center hover:bg-dropdown-bg-hover"
+                  className="border rounded p-2 text-center hover:bg-dropdown-bg-hover hover:text-dropdown-text-hover"
                 >
                   {getLabel(option)}
                 </button>

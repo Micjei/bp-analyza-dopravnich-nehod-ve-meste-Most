@@ -39,13 +39,17 @@ import { useData } from "@/context/DataContext";
 import { div } from "framer-motion/client";
 import RadarChartSection from "@/components/RadarChartSection";
 import AccidentChartSection from "@/components/AccidentChartSection";
+import { useTranslation } from "react-i18next";
+import "@/i18n";
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
+
   const { RadarsData, AccidentsData } = useData();
 
   //const [RadarsData, setRadarsData] = useState<any>(null);
-  const [selectedRadarYear, setSelectedRadarYear] = useState("2023");
-  const [selectedRadarYear2, setSelectedRadarYear2] = useState("2023");
+  const [selectedRadarYear, setSelectedRadarYear] = useState("2022");
+  const [selectedRadarYear2, setSelectedRadarYear2] = useState("2022");
   const [selectedRadarMonth, setSelectedRadarMonth] = useState("-");
   const [selectedRadarMonth2, setSelectedRadarMonth2] = useState("-");
   const [showSecondRadarsStats, setShowSecondRadarsStats] = useState(false);
@@ -65,13 +69,13 @@ export default function DashboardPage() {
     "-",
     ...Array.from({ length: 12 }, (_, i) => (i + 1).toString()),
   ];
+  type RadarChartMode = "summary" | "intervals";
 
-  const [radarChartMode, setRadarChartMode] = useState<"souhrn" | "intervaly">(
-    "souhrn"
-  );
-  const [radarChartMode2, setRadarChartMode2] = useState<
-    "souhrn" | "intervaly"
-  >("souhrn");
+  const [radarChartMode, setRadarChartMode] =
+    useState<RadarChartMode>("summary");
+
+  const [radarChartMode2, setRadarChartMode2] =
+    useState<RadarChartMode>("summary");
 
   /*useEffect(() => {
     const loadData = async () => {
@@ -243,17 +247,17 @@ export default function DashboardPage() {
       },
     };
 
-    if (mode === "souhrn") {
+    if (mode === "summary") {
       return {
         labels,
         datasets: [
           {
-            label: "Ve směru",
+            label: `${t("in_direction")}`,
             data: dataVeSmeru,
             backgroundColor: "#3b82f6",
           },
           {
-            label: "V protisměru",
+            label: `${t("opposite_direction")}`,
             data: dataVProtismeru,
             backgroundColor: "#ef4444",
           },
@@ -301,10 +305,10 @@ export default function DashboardPage() {
     const filteredData = sourceData?.features;
 
     const labels = [
-      "Smrtelná zranění",
-      "Lehce zraněné osoby",
-      "Těžce zraněné osoby",
-      "Bez zranění",
+      `${t("fatal_injury")}`,
+      `${t("serious_injury")}`,
+      `${t("minor_injury")}`,
+      `${t("no_injury")}`,
     ];
 
     if (!filteredData) {
@@ -345,7 +349,7 @@ export default function DashboardPage() {
             label: "Počet osob",
             data: logData,
             backgroundColor: ["black", "green", "orange", "gray"],
-            borderColor: "red",
+            borderColor: "white",
             borderWidth: 1,
           },
         ],
@@ -365,27 +369,21 @@ export default function DashboardPage() {
     };
   };
 
-  const radarChart = getStackedRadarChartData(
-    selectedRadarYear,
-    selectedRadarMonth,
-    radarChartMode
-  );
-
-  const radarChart2 = getStackedRadarChartData(
-    selectedRadarYear2,
-    selectedRadarMonth2,
-    radarChartMode2
-  );
   return (
     <div className="mb-5 font-[family-name:var(--font-geist-sans)]">
       <HeaderSection />
-      <h1 className="text-2xl font-bold mt-24 p-10">Dashboard</h1>
+      <h1 className="text-2xl font-bold mt-24 px-10 py-5">Dashboard</h1>
+      <p className="px-5">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi ratione,
+        aperiam nam sequi numquam quae, voluptas tempore labore quos debitis
+        accusantium. Ducimus quaerat nihil iure qui laborum praesentium at
+        dicta.
+      </p>
 
-      <div className="flex flex-row">
+      <div className="flex flex-row p-8 md:gap-8 gap-2">
         {/** levý sloupec */}
-        <div className="flex flex-col w-auto text-center">
+        <div className="flex flex-col w-4/6 text-center gap-2">
           <RadarChartSection
-            title="Vyber rok pro radary:"
             year={selectedRadarYear}
             month={selectedRadarMonth}
             chartMode={radarChartMode}
@@ -401,15 +399,14 @@ export default function DashboardPage() {
           />
 
           <button
-            className="border w-6 h-6 rounded bg-gray-200 hover:bg-gray-300"
-            onClick={() => setShowSecondRadarsStats((prev) => !prev)}
+            className="border w-6 h-6 rounded bg-plus-button-bg hover:bg-plus-button-bg-hover hover:text-plus-button-text-hover flex items-center justify-center"
+            onClick={() => setShowSecondRadarsStats((p) => !p)}
           >
             {showSecondRadarsStats ? "-" : "+"}
           </button>
 
           {showSecondRadarsStats && (
             <RadarChartSection
-              title="Vyber druhý rok pro radary:"
               year={selectedRadarYear2}
               month={selectedRadarMonth2}
               chartMode={radarChartMode2}
@@ -427,9 +424,8 @@ export default function DashboardPage() {
         </div>
 
         {/** pravý sloupec */}
-        <div className="flex flex-col gap-8 w-auto text-center">
+        <div className="flex flex-col w-2/6 text-center gap-2">
           <AccidentChartSection
-            title="Vyber rok pro nehody:"
             year={selectedAccidentYear}
             month={selectedAccidentMonth}
             onYearChange={setSelectedAccidentYear}
@@ -439,7 +435,7 @@ export default function DashboardPage() {
           />
 
           <button
-            className="border w-6 h-6 rounded bg-gray-200 hover:bg-gray-300"
+            className="border w-6 h-6 rounded bg-plus-button-bg hover:bg-plus-button-bg-hover hover:text-plus-button-text-hover flex items-center justify-center"
             onClick={() => setShowSecondAccidentsStats((p) => !p)}
           >
             {showSecondAccidentsStats ? "-" : "+"}
@@ -447,7 +443,6 @@ export default function DashboardPage() {
 
           {showSecondAccidentsStats && (
             <AccidentChartSection
-              title="Vyber rok pro nehody:"
               year={selectedAccidentYear2}
               month={selectedAccidentMonth2}
               onYearChange={setSelectedAccidentYear2}

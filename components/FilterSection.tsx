@@ -138,8 +138,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
-        isFiltersVisible ? "w-[35vw] max-h-[70vh]" : "w-[3vw] max-h-[70vh]"
+      className={`flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 md:whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
+        isFiltersVisible
+          ? "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[calc(100vw-30px)]"
+          : "w-[3vw] md:max-h-[70vh] max-h-[50vh]"
       }`}
     >
       {/* Nadpis */}

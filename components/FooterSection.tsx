@@ -15,7 +15,7 @@ const FooterSection: React.FC = ({}) => {
 
   if (!isClient) return null;
   return (
-    <div className="fixed bottom-0 w-full flex flex-row items-center justify-center bg-footer-bg border-2 border-footer-border shadow-md text-footer-text opacity-80 whitespace-nowrap">
+    <div className="fixed bottom-0 w-[100vw] flex flex-row items-center justify-center bg-footer-bg border-2 border-footer-border shadow-md text-footer-text opacity-80 whitespace-nowrap">
       {lastUpdate && (
         <p className="text-sm italic flex space-x-2">
           <span>{`${t("last_update")}`}:</span>

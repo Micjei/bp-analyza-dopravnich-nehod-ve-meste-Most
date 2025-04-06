@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { fetchWithRetry } from "@/utils/fetchData";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
@@ -10,10 +11,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       consequencesResponse,
       pedestriansResponse,
     ] = await Promise.all([
-      fetch("https://pclazur.fit.vutbr.cz/vozidla.geojson"),
-      fetch("https://pclazur.fit.vutbr.cz/nehody.geojson"),
-      fetch("https://pclazur.fit.vutbr.cz/nasledky.geojson"),
-      fetch("https://pclazur.fit.vutbr.cz/chodci.geojson"),
+      fetchWithRetry("https://pclazur.fit.vutbr.cz/vozidla.geojson"),
+      fetchWithRetry("https://pclazur.fit.vutbr.cz/nehody.geojson"),
+      fetchWithRetry("https://pclazur.fit.vutbr.cz/nasledky.geojson"),
+      fetchWithRetry("https://pclazur.fit.vutbr.cz/chodci.geojson"),
     ]);
 
     console.log(

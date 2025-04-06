@@ -21,8 +21,8 @@ const LegendSection: React.FC<LegendSectionProps> = ({
 
   return (
     <div
-      className={`bottom-0 right-0 flex flex-col items-start p-5 bg-legend-bg border-2 border-legend-border rounded-[30px] shadow-md text-legend-text opacity-80 whitespace-nowrap overflow-hidden transition-all duration-500 w-auto ${
-        isLegendVisible ? "max-h-80" : "max-h-2"
+      className={`bottom-0 right-0 flex flex-col items-start p-5 bg-legend-bg border-2 border-legend-border rounded-[30px] shadow-md text-legend-text opacity-80 whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 w-auto ${
+        isLegendVisible ? "md:max-h-80 max-h-32" : "max-h-2"
       }`}
     >
       {/* Nadpis */}

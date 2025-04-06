@@ -24,7 +24,9 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
     },
     {
       name: "OpenStreetMap",
-      url: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      url: isDark
+        ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+        : "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     },
     {
       name: "Carto Light",
@@ -39,13 +41,11 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-
       if (target && !target.closest(".dropdown")) {
         setShowMapDropdown(false);
         setShowSettingsDropdown(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -54,31 +54,34 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
 
   if (!isClient) return null;
 
-  let linkHref = "/diagrams";
-  let pageButton = "Zobrazit grafy";
-  if (currentPath === "/diagrams") {
-    linkHref = "/";
-    pageButton = "Zobrazit mapu";
-  }
+  const linkHref = currentPath === "/diagrams" ? "/" : "/diagrams";
+  const pageButton = currentPath === "/diagrams" ? t("map") : t("stats");
 
   return (
-    <div className="absolute top-0 w-full h-20 flex flex-row items-center justify-between p-5 bg-header-bg border-2 border-header-border shadow-md text-header-text opacity-80 whitespace-nowrap">
-      <h3 className="transition-opacity duration-300 text-3xl font-bold tracking-wide italic">
-        {`${t("title")}`}
+    <div className="absolute top-0 w-full h-auto min-h-20 flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-2 bg-header-bg border-2 border-header-border shadow-md text-header-text opacity-90 gap-2 z-[999]">
+      <h3 className="w-full md:w-fit text-nowrap text-center md:text-left text-xl md:text-3xl font-bold tracking-wide italic">
+        {t("title")}
       </h3>
 
-      <div className="flex flex-row items-center space-x-2 gap-2">
+      <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 flex-grow min-w-0">
         {/* Jazykové přepínače */}
-        <div className="ml-4 flex flex-row gap-2">
-          {/* Podmíněně zobrazení vlajky podle aktuálního jazyka */}
+        <div className="flex flex-row gap-1 md:gap-2">
           {i18n.language !== "cz" && (
             <button onClick={() => i18n.changeLanguage("cz")}>
-              <img src="/czech-republic.png" className="w-14 h-auto" />
+              <img
+                src="/czech-republic.png"
+                className="w-8 md:w-10 h-auto"
+                alt="CZ"
+              />
             </button>
           )}
           {i18n.language !== "en" && (
             <button onClick={() => i18n.changeLanguage("en")}>
-              <img src="/united-kingdom.png" className="w-14 h-auto" />
+              <img
+                src="/united-kingdom.png"
+                className="w-8 md:w-10 h-auto"
+                alt="EN"
+              />
             </button>
           )}
         </div>
@@ -88,13 +91,12 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
           <div className="relative dropdown">
             <button
               onClick={() => setShowMapDropdown(!showMapDropdown)}
-              className="bg-transparent text-header-text px-4 py-2 rounded-md shadow-md hover:bg-header-bg-hover hover:text-header-text-hover"
+              className="px-2 py-1 md:px-4 md:py-2 rounded-md shadow-md bg-transparent hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base"
             >
               {t("select_map")}
             </button>
-
             {showMapDropdown && (
-              <div className="absolute right-0 mt-2 w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
+              <div className="absolute right-0 mt-2 w-40 md:w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
                 {mapLayers.map((layer) => (
                   <button
                     key={layer.url}
@@ -102,7 +104,7 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
                       onLayerChange(layer.url);
                       setShowMapDropdown(false);
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover"
+                    className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover text-sm"
                   >
                     {layer.name}
                   </button>
@@ -112,34 +114,37 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
           </div>
         )}
 
-        {/* Odkaz na druhou stránku */}
+        {/* Přepínač stránky */}
         <Link href={linkHref}>
-          <button className="bg-transparent text-header-text px-4 py-2 rounded-md shadow-md hover:bg-header-bg-hover hover:text-header-text-hover">
+          <button className="px-2 py-1 md:px-4 md:py-2 rounded-md shadow-md bg-transparent hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base">
             {pageButton}
           </button>
         </Link>
 
-        {/* Nastavení + přepínač tématu */}
+        {/* Nastavení / Téma */}
         <div className="relative dropdown">
           <button
             onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
-            className="bg-transparent text-header-text px-4 py-2 rounded-md shadow-md hover:bg-header-bg-hover hover:text-header-text-hover"
+            className="px-2 py-1 md:px-4 md:py-2 rounded-md md:shadow-md bg-transparent md:hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base flex items-center justify-center"
           >
-            {t("settings")}
+            {/* Ikona pro mobil */}
+            <span className="md:hidden text-xl">⚙️</span>
+
+            {/* Text pro desktop */}
+            <span className="hidden md:block">{t("settings")}</span>
           </button>
 
           {showSettingsDropdown && (
-            <div className="absolute right-0 mt-2 w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
+            <div className="absolute right-0 mt-2 w-40 md:w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
               <button
                 onClick={() => {
                   toggleTheme();
                   setShowSettingsDropdown(false);
                 }}
-                className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover"
+                className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover text-sm"
               >
                 {isDark ? "☀️ Světlý režim" : "🌙 Tmavý režim"}
               </button>
-              {/* Další nastavení může být */}
             </div>
           )}
         </div>

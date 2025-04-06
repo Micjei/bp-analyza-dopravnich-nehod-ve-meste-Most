@@ -60,5 +60,13 @@
   "child": "díte (pod 15 let)",
   "group_of_children": "skupina dětí",
   "other_group": "jiná skupina",
-  "last_update": "Čas poslední aktualizace"
+  "last_update": "Čas poslední aktualizace",
+  "stats": "Zobrazit statistiky",
+  "map": "Zobrazit mapu",
+  "radar_stats": "Statistiky měření",
+  "accidents_stats": "Statistiky nehod",
+  "in_direction": "Ve směru",
+  "opposite_direction": "V protisměru",
+  "summary": "Souhrn",
+  "intervals": "Intervaly"
 }

@@ -60,5 +60,13 @@
   "child": "child (under 15 years)",
   "group_of_children": "group of children",
   "other_group": "other group",
-  "last_update": "Last updated time"
+  "last_update": "Last updated time",
+  "stats": "Display statistics",
+  "map": "Display map",
+  "radar_stats": "Measurements statistics",
+  "accidents_stats": "Accidents statistics",
+  "in_direction": "In direction",
+  "opposite_direction": "Opposite direction",
+  "summary": "Summary",
+  "intervals": "Intervals"
 }
