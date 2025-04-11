@@ -61,12 +61,17 @@
   "group_of_children": "skupina dětí",
   "other_group": "jiná skupina",
   "last_update": "Čas poslední aktualizace",
-  "stats": "Zobrazit statistiky",
+  "stats": "Statistiky",
   "map": "Zobrazit mapu",
   "radar_stats": "Statistiky měření",
   "accidents_stats": "Statistiky nehod",
   "in_direction": "Ve směru",
   "opposite_direction": "V protisměru",
   "summary": "Souhrn",
-  "intervals": "Intervaly"
+  "intervals": "Intervaly",
+  "persons": "osob",
+  "dd": "den",
+  "mm": "měsíc",
+  "yy": "rok",
+  "dashboard_intro": "Tato interaktivní aplikace slouží k vizualizaci a analýze dopravních dat ve městě Most. Umožňuje zobrazit přehled dopravních nehod a radarových měření v různých časových obdobích.\n\nPomocí filtrů v horní části dashboardu lze vybírat konkrétní rok a měsíc. Výsledky se automaticky promítnou do grafů – na levé straně je zobrazeno překročení rychlostí v jednotlivých lokalitách, na pravé straně pak statistiky následků dopravních nehod.\n\nPomocí tlačítka \"+\" si můžete přidat druhý graf pro porovnání dvou různých období vedle sebe.\n\nRadarová data lze zobrazit buď jako celkový součet překročení rychlostí v daných ulicích, nebo podrobněji podle jednotlivých rychlostních intervalů.\n\nCílem aplikace je pomoci lépe porozumět dopravní situaci ve městě a podpořit zvyšování bezpečnosti na silnicích pomocí datově podložených rozhodnutí."
 }

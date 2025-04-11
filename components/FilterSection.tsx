@@ -258,7 +258,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 {/* Výběr měsíce */}
                 <CustomSelect
                   options={months}
-                  value={selectedMonth === "-" ? "mm" : selectedMonth}
+                  value={selectedMonth === "-" ? `${t("mm")}` : selectedMonth}
                   onChange={(option) => {
                     setSelectedMonth(option);
                     if (option === "-") {
@@ -271,7 +271,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 {/* Výběr dne */}
                 <CustomSelect
                   options={days}
-                  value={selectedDay === "-" ? "dd" : selectedDay}
+                  value={selectedDay === "-" ? `${t("dd")}` : selectedDay}
                   onChange={(option) => setSelectedDay(option)}
                 />
               </div>

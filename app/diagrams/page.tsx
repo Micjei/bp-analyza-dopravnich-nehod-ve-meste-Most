@@ -209,22 +209,10 @@ export default function DashboardPage() {
         f.r70_80 > 0
     );
 
-    // Původní data s názvy lokalit a rychlostmi
     const lokalitaTooltipMap = filtered?.map(
       (f: any) => `${f.lokalita} (${f.rychlostni_limit} km/h)`
     );
-
-    // Do labels dáš jen čísla
     const labels = lokalitaTooltipMap?.map((_: any, i: any) => `#${i + 1}`);
-
-    console.log(
-      "Legenda lokalit:",
-      labels?.map(
-        (label: string, index: number) =>
-          `${label}: ${lokalitaTooltipMap?.[index]}`
-      )
-    );
-
     const dataVeSmeru = filtered?.map((f: any) => f.veSmeru);
     const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru);
 
@@ -306,8 +294,8 @@ export default function DashboardPage() {
 
     const labels = [
       `${t("fatal_injury")}`,
-      `${t("serious_injury")}`,
       `${t("minor_injury")}`,
+      `${t("serious_injury")}`,
       `${t("no_injury")}`,
     ];
 
@@ -315,26 +303,26 @@ export default function DashboardPage() {
       return { data: { labels, datasets: [] }, options: {} };
     }
 
-    const smrt = filteredData.reduce(
-      (sum: number, f: any) => sum + (parseInt(f.properties.smrt, 10) || 0),
-      0
-    );
-    const lehke = filteredData.reduce(
-      (sum: number, f: any) =>
-        sum + (parseInt(f.properties.lehce_zraneno_osob, 10) || 0),
-      0
-    );
-    const tezke = filteredData.reduce(
-      (sum: number, f: any) =>
-        sum + (parseInt(f.properties.tezce_zraneno_osob, 10) || 0),
-      0
-    );
-    const bez = filteredData.reduce((sum: number, f: any) => {
+    let smrt = 0;
+    let lehke = 0;
+    let tezke = 0;
+    let bez = 0;
+
+    for (const f of filteredData) {
       const s = parseInt(f.properties.smrt, 10) || 0;
       const l = parseInt(f.properties.lehce_zraneno_osob, 10) || 0;
       const t = parseInt(f.properties.tezce_zraneno_osob, 10) || 0;
-      return s === 0 && l === 0 && t === 0 ? sum + 1 : sum;
-    }, 0);
+
+      smrt += s;
+      lehke += l;
+      tezke += t;
+
+      if (s === 0 && l === 0 && t === 0) {
+        const chodci = f.properties.chodci || [];
+        const nasledky = f.properties.nasledky_ve_vozidle || [];
+        bez += chodci.length + nasledky.length; // snad už správný počet
+      }
+    }
 
     const originalData = [smrt, lehke, tezke, bez];
     const logData = originalData.map((val) =>
@@ -360,7 +348,7 @@ export default function DashboardPage() {
             callbacks: {
               label: (ctx: any) => {
                 const i = ctx.dataIndex;
-                return `${labels[i]}: ${originalData[i]} osob`;
+                return `${labels[i]}: ${originalData[i]} ${t("persons")}`;
               },
             },
           },
@@ -372,13 +360,8 @@ export default function DashboardPage() {
   return (
     <div className="mb-5 font-[family-name:var(--font-geist-sans)]">
       <HeaderSection />
-      <h1 className="text-2xl font-bold mt-24 px-10 py-5">Dashboard</h1>
-      <p className="px-5">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi ratione,
-        aperiam nam sequi numquam quae, voluptas tempore labore quos debitis
-        accusantium. Ducimus quaerat nihil iure qui laborum praesentium at
-        dicta.
-      </p>
+      <h1 className="text-2xl font-bold mt-24 px-10 py-5">{`${t("stats")}`}</h1>
+      <p className="px-5">{`${t("dashboard_intro")}`}</p>
 
       <div className="flex flex-row p-8 md:gap-8 gap-2">
         {/** levý sloupec */}

@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import "@/i18n"; // Import konfigurace i18n
 
 interface CustomSelectProps {
   options: string[] | { label: string; value: string }[];
@@ -11,6 +13,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   value,
   onChange,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [clickPosition, setClickPosition] = useState<{ x: number; y: number }>({
     x: 0,
@@ -34,7 +37,12 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   const getSelectedLabel = () => {
-    if (value === "mm" || value === "dd" || value == "yy") return value;
+    if (
+      value === `${t("mm")}` ||
+      value === `${t("dd")}` ||
+      value == `${t("yy")}`
+    )
+      return value;
     if (!value) return "";
 
     const selectedOption = options.find(

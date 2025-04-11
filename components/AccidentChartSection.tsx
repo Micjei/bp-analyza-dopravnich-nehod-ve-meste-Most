@@ -42,12 +42,12 @@ export default function AccidentChartSection({
       <div className="flex flex-row md:gap-2 gap-1 mb-1">
         <CustomSelect
           options={["-", ...years.map(String)]}
-          value={year === "-" ? "yy" : year}
+          value={year === "-" ? `${t("yy")}` : year}
           onChange={onYearChange}
         />
         <CustomSelect
           options={months}
-          value={month === "-" ? "mm" : month}
+          value={month === "-" ? `${t("mm")}` : month}
           onChange={onMonthChange}
         />
       </div>
