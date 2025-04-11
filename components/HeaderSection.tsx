@@ -64,28 +64,6 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
       </h3>
 
       <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 flex-grow min-w-0">
-        {/* Jazykové přepínače */}
-        <div className="flex flex-row gap-1 md:gap-2">
-          {i18n.language !== "cz" && (
-            <button onClick={() => i18n.changeLanguage("cz")}>
-              <img
-                src="/czech-republic.png"
-                className="w-8 md:w-10 h-auto"
-                alt="CZ"
-              />
-            </button>
-          )}
-          {i18n.language !== "en" && (
-            <button onClick={() => i18n.changeLanguage("en")}>
-              <img
-                src="/united-kingdom.png"
-                className="w-8 md:w-10 h-auto"
-                alt="EN"
-              />
-            </button>
-          )}
-        </div>
-
         {/* Výběr mapy */}
         {onLayerChange && (
           <div className="relative dropdown">
@@ -146,6 +124,27 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
                 {isDark ? "☀️ Světlý režim" : "🌙 Tmavý režim"}
               </button>
             </div>
+          )}
+        </div>
+        {/* Jazykové přepínače */}
+        <div className="flex flex-row gap-1 md:gap-2">
+          {i18n.language !== "cz" && (
+            <button onClick={() => i18n.changeLanguage("cz")}>
+              <img
+                src="/czech-republic.png"
+                className="w-8 md:w-10 h-auto"
+                alt="CZ"
+              />
+            </button>
+          )}
+          {i18n.language !== "en" && (
+            <button onClick={() => i18n.changeLanguage("en")}>
+              <img
+                src="/united-kingdom.png"
+                className="w-8 md:w-10 h-auto"
+                alt="EN"
+              />
+            </button>
           )}
         </div>
       </div>

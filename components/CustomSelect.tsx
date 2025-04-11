@@ -63,18 +63,18 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
   const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
 
-  const MdColumnCount = isOptionObject(options[0])
+  const desktopColumnCount = isOptionObject(options[0])
     ? Math.min(options.length, 3)
     : Math.min(options.length, 7);
 
-  const columnCount = isOptionObject(options[0])
+  const mobileColumnCount = isOptionObject(options[0])
     ? Math.min(options.length, 1)
     : Math.min(options.length, 3);
 
   return (
     <div ref={selectRef} className="relative py-1">
       <button
-        onClick={handleButtonClick} // Přidání kliknutí pro získání pozice
+        onClick={handleButtonClick}
         className="border-2 rounded px-2 text-left hover:bg-dropdown-bg-hover active:bg-dropdown-bg-active active:scale-95 hover:text-dropdown-text-hover bg-dropdown-bg border-dropdown-border"
       >
         {getSelectedLabel()}
@@ -95,7 +95,12 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div
-              className={`grid gap-2 grid-cols-${columnCount} md:grid-cols-${MdColumnCount}`}
+              className="grid gap-2"
+              style={{
+                gridTemplateColumns: isDesktop
+                  ? `repeat(${desktopColumnCount}, minmax(40px, 1fr))`
+                  : `repeat(${mobileColumnCount}, minmax(40px, 1fr))`,
+              }}
             >
               {options.map((option, index) => (
                 <button

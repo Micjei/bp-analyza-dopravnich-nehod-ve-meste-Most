@@ -76,7 +76,7 @@ const Map: React.FC = () => {
   const [pedestrianFilter, setPedestrianFilter] = useState<string>("-");
   const [deadFilter, setDeadFilter] = useState<string>("-");
 
-  const [realAngle, setRealAngle] = useState(false);
+  //const [realAngle, setRealAngle] = useState(false);
   const [isRadarActive, setIsRadarActive] = useState<string>("-");
 
   //tomtom api
@@ -197,7 +197,7 @@ const Map: React.FC = () => {
     } else {
       setNumberOfRadars(0);
     }
-  }, [realAngle, isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
+  }, [, /*realAngle*/ isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
 
   // upravit možná? je tam problik. Useefect pro změnu jazyka
   useEffect(() => {
@@ -218,7 +218,7 @@ const Map: React.FC = () => {
   }, [i18n.language]);
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
-    const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
+    //const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
     const arrowRotation = feature.properties.smer - 90; // směr šipky - 90 protože originál směřuje doprava
     const measurements = feature.properties.mereni; // Pole mereni
 
@@ -226,7 +226,7 @@ const Map: React.FC = () => {
       icon: radarIcon,
     } as L.MarkerOptions);
 
-    (marker as any).setRotationAngle(rotation);
+    //(marker as any).setRotationAngle(rotation);
 
     // upravit info
     const measurementsInfo =
@@ -281,11 +281,11 @@ const Map: React.FC = () => {
         ? pedestrians
             .map(
               (p: any, index: number) =>
-                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(t)(
+                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(t)( // jazyk
                   p.kategorie
-                )}, následky: ${getConsequenceDescription(t)(
-                  p.nasledky_chodci
-                )}, věk: ${p.vek}<br/>`
+                )}, následky: ${getConsequenceDescription(t)( // jazyk
+                  p.nasledky_chodci 
+                )}, věk: ${p.vek}<br/>` // jazyk
             )
             .join("")
         : "";
@@ -319,7 +319,7 @@ const Map: React.FC = () => {
   };
 
   // upload data do Firestore
-  const uploadData = async () => {
+  /*const uploadData = async () => {
     try {
       const datasets = [
         { name: "radary", file: "radary.geojson", api: "/api/uploadRadars" },
@@ -372,7 +372,7 @@ const Map: React.FC = () => {
     } catch (error) {
       console.error("❌ Chyba při nahrávání dat:", error);
     }
-  };
+  };*/
 
   // cluster
   const customClusterIcon = (cluster: L.MarkerCluster, color: string) => {
@@ -463,10 +463,10 @@ const Map: React.FC = () => {
             setPedestrianFilter={setPedestrianFilter}
             deadFilter={deadFilter}
             setDeadFilter={setDeadFilter}
-            onUpdateData={uploadData}
+            //onUpdateData={uploadData}
             //onUpdateData={handleUpdateData}
-            realAngle={realAngle}
-            setRealAngle={setRealAngle}
+            //realAngle={realAngle}
+            //setRealAngle={setRealAngle}
             isRadarActive={isRadarActive}
             setIsRadarActive={setIsRadarActive}
             showAccidentsHeatmap={showAccidentsHeatmap}

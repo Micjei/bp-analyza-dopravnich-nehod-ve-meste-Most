@@ -44,9 +44,9 @@ interface FilterSectionProps {
   setPedestrianFilter: (value: string) => void;
   deadFilter: string;
   setDeadFilter: (value: string) => void;
-  onUpdateData?: () => void;
-  realAngle: boolean; // smazat
-  setRealAngle: (value: boolean) => void; // smazat
+  //onUpdateData?: () => void;
+  //realAngle: boolean; // smazat
+  //setRealAngle: (value: boolean) => void; // smazat
   isRadarActive: string;
   setIsRadarActive: (value: string) => void;
   showAccidentsHeatmap: boolean;
@@ -79,9 +79,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   setPedestrianFilter,
   deadFilter,
   setDeadFilter,
-  onUpdateData,
-  realAngle, // smazat
-  setRealAngle, // smazat
+  //onUpdateData,
+  //realAngle, // smazat
+  //setRealAngle, // smazat
   isRadarActive,
   setIsRadarActive,
   showAccidentsHeatmap,
