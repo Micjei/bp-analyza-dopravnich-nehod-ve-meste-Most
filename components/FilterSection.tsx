@@ -44,9 +44,9 @@ interface FilterSectionProps {
   setPedestrianFilter: (value: string) => void;
   deadFilter: string;
   setDeadFilter: (value: string) => void;
-  onUpdateData?: () => void;
-  realAngle: boolean; // smazat
-  setRealAngle: (value: boolean) => void; // smazat
+  //onUpdateData?: () => void;
+  //realAngle: boolean; // smazat
+  //setRealAngle: (value: boolean) => void; // smazat
   isRadarActive: string;
   setIsRadarActive: (value: string) => void;
   showAccidentsHeatmap: boolean;
@@ -79,9 +79,9 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   setPedestrianFilter,
   deadFilter,
   setDeadFilter,
-  onUpdateData,
-  realAngle, // smazat
-  setRealAngle, // smazat
+  //onUpdateData,
+  //realAngle, // smazat
+  //setRealAngle, // smazat
   isRadarActive,
   setIsRadarActive,
   showAccidentsHeatmap,
@@ -138,10 +138,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-start p-5 bg-[#C8E6C9] border-2 border-[#66BB6A] rounded-[30px] shadow-md text-[#388E3C] opacity-80 whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
+      className={`flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 md:whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
         isFiltersVisible
-          ? "max-w-[30vw] max-h-[70vh]"
-          : "max-w-[3vw] max-h-[70vh]"
+          ? "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[calc(100vw-30px)]"
+          : "w-[3vw] md:max-h-[70vh] max-h-[50vh]"
       }`}
     >
       {/* Nadpis */}
@@ -155,7 +155,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
       {/* Zelená čára pod nadpisem */}
       <div
-        className={`w-[calc(100%+2.5rem)] -mx-5  border-b-2 border-[#66BB6A] mb-5 mt-2 transition-opacity duration-300 ${
+        className={`w-[calc(100%+2.5rem)] -mx-5  border-b-2 border-filters-border mb-5 mt-2 transition-opacity duration-300 ${
           isFiltersVisible ? "opacity-100" : "opacity-0"
         }`}
       ></div>
@@ -163,22 +163,21 @@ const FilterSection: React.FC<FilterSectionProps> = ({
       {/* Obsah */}
 
       <div
-        className={`transition-opacity duration-300 ${
+        className={`transition-opacity duration-300 w-full ${
           isFiltersVisible
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
       >
         {/** radary */}
-        <div className="flex flex-row items-center gap-2">
-          <ButtonToggle
-            showData={showRadarData}
-            toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
-            toggleDetailVisibility={() => setRadarsFilter(!radarsFilter)}
-            rotation={radarsFilter} // detaily šipka
-            label={`${t("radars")}`}
-          />
-        </div>
+        <ButtonToggle
+          showData={showRadarData}
+          toggleGeoJsonVisibility={() => setShowRadarData(!showRadarData)}
+          toggleDetailVisibility={() => setRadarsFilter(!radarsFilter)}
+          rotation={radarsFilter} // detaily šipka
+          label={`${t("radars")}`}
+          onReset={handleRadarReset}
+        />
         {/** detail radaru */}
         <AnimatePresence>
           {radarsFilter && (
@@ -187,7 +186,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="ml-6 overflow-hidden"
+              className="ml-6 overflow-visible"
             >
               {/** aktivita radaru TODO*/}
               <div className="flex items-center gap-2">
@@ -215,18 +214,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               </div>
               {/**počet zobrazených dat */}
               <div className="flex flex-row gap-2">
-                <div className="border-2 border-[#ffffff] rounded px-2 text-left ">
-                  {numberOfRadars}
-                </div>
-                - {`${t("view_number")}`}
-              </div>
-              {/** reset button */}
-              <div className="justify-items-end">
-                <ResetButton onClick={handleRadarReset} />
+                <div className="px-2 text-left ">{numberOfRadars}</div>-{" "}
+                {`${t("view_number")}`}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+
+        <div
+          className={`w-full justify-self-center -mx-5  border-b-2 border-filters-border mb-3 mt-3 transition-opacity duration-300 ${
+            isFiltersVisible ? "opacity-100" : "opacity-0"
+          }`}
+        ></div>
 
         {/** nehody */}
         <ButtonToggle
@@ -235,6 +234,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           toggleDetailVisibility={() => setAccidentsFilter(!accidentsFilter)}
           rotation={accidentsFilter}
           label={`${t("accidents")}`}
+          onReset={handleAccidentReset}
         />
 
         {/* detail nehod */}
@@ -245,7 +245,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeInOut" }}
-              className="ml-6 overflow-hidden"
+              className="ml-6 overflow-visible"
             >
               <div className="flex flex-row gap-2">
                 {/* Výběr roku */}
@@ -258,7 +258,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 {/* Výběr měsíce */}
                 <CustomSelect
                   options={months}
-                  value={selectedMonth === "-" ? "mm" : selectedMonth}
+                  value={selectedMonth === "-" ? `${t("mm")}` : selectedMonth}
                   onChange={(option) => {
                     setSelectedMonth(option);
                     if (option === "-") {
@@ -271,7 +271,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
                 {/* Výběr dne */}
                 <CustomSelect
                   options={days}
-                  value={selectedDay === "-" ? "dd" : selectedDay}
+                  value={selectedDay === "-" ? `${t("dd")}` : selectedDay}
                   onChange={(option) => setSelectedDay(option)}
                 />
               </div>
@@ -328,18 +328,18 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               </div>
               {/**počet zobrazených dat */}
               <div className="flex flex-row gap-2">
-                <div className="border-2 border-[#ffffff] rounded px-2 text-left ">
-                  {numberOfAccidents}
-                </div>
-                - {`${t("view_number")}`}
-              </div>
-              {/** reset button */}
-              <div className="justify-items-end">
-                <ResetButton onClick={handleAccidentReset} />
+                <div className=" px-2 text-left ">{numberOfAccidents}</div>-{" "}
+                {`${t("view_number")}`}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+
+        <div
+          className={`w-full justify-self-center -mx-5  border-b-2 border-filters-border mb-3 mt-3 transition-opacity duration-300 ${
+            isFiltersVisible ? "opacity-100" : "opacity-0"
+          }`}
+        ></div>
 
         <ButtonToggle
           showData={showTrafficData}
@@ -347,12 +347,12 @@ const FilterSection: React.FC<FilterSectionProps> = ({
           label={`${t("traffic_situation")}`}
         />
         {/* Tlačítko pro aktualizaci dat TODO*/}
-        <button
+        {/*<button
           onClick={onUpdateData}
           className="mt-4 bg-[#66BB6A] text-white px-4 py-2 rounded-[30px] shadow hover:bg-[#558b55] w-full"
         >
           {`${t("update")}`}
-        </button>
+        </button>*/}
       </div>
     </div>
   );

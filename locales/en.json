@@ -59,5 +59,19 @@
   "woman": "woman",
   "child": "child (under 15 years)",
   "group_of_children": "group of children",
-  "other_group": "other group"
+  "other_group": "other group",
+  "last_update": "Last updated time",
+  "stats": "Statistics",
+  "map": "Display map",
+  "radar_stats": "Measurements statistics",
+  "accidents_stats": "Accidents statistics",
+  "in_direction": "In direction",
+  "opposite_direction": "Opposite direction",
+  "summary": "Summary",
+  "intervals": "Intervals",
+  "persons": "persons",
+  "dd": "day",
+  "mm": "month",
+  "yy": "year",
+  "dashboard_intro": "This interactive application serves to visualize and analyze traffic data in the city of Most. It allows you to view an overview of traffic accidents and radar measurements across various time periods.\n\nUsing the filters at the top of the dashboard, you can select a specific year and month. The results are automatically reflected in the charts – on the left side you’ll see speed violations across different locations, and on the right, accident consequence statistics.\n\nBy clicking the \"+\" button, you can add a second chart to compare data from two different periods side by side.\n\nRadar data can be displayed either as a total of speed violations per street, or in more detail using categorized speed intervals.\n\nThe goal of this app is to better understand the traffic situation in the city and to support increased road safety through data-driven insights."
 }

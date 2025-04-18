@@ -1,8 +1,8 @@
 // vyber roku/mesice/dnu
 export const getCurrentYear = () => new Date().getFullYear();
 export const years = Array.from(
-  { length: getCurrentYear() - 2014 },
-  (_, i) => 2015 + i
+  { length: getCurrentYear() - 2020 },
+  (_, i) => 2021 + i
 );
 
 // přestupný rok

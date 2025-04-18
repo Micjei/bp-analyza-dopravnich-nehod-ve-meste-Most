@@ -18,7 +18,7 @@ const ResetButton: React.FC<ResetButtonProps> = ({ onClick }) => {
     <div className="w-fit flex flex-col">
       <button
         onClick={handleClick}
-        className="p-2 hover:opacity-80 transition-transform flex flex-row gap-2"
+        className="hover:opacity-80 transition-transform flex flex-row gap-2"
       >
         <img
           src="/refresh.png"
@@ -26,7 +26,7 @@ const ResetButton: React.FC<ResetButtonProps> = ({ onClick }) => {
           className="w-6 h-6 transition-transform duration-700"
           style={{ transform: `rotate(${rotation}deg)` }}
         />
-        <span>{t("reset")}</span>
+        {/*<span>{t("reset")}</span>*/}
       </button>
     </div>
   );

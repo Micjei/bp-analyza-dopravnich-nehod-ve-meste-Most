@@ -45,25 +45,27 @@ import {
 import { useTranslation } from "react-i18next";
 import "@/i18n"; // Import konfigurace i18n
 
+import { useData } from "@/context/DataContext";
+import { useTheme } from "@/context/ThemeContext";
+
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
-  const [RadarsData, setRadarsData] = useState<any>(null);
-  const [AccidentsData, setAccidentsData] = useState<any>(null);
+  const { RadarsData, AccidentsData } = useData();
+  //const [RadarsData, setRadarsData] = useState<any>(null);
+  //const [AccidentsData, setAccidentsData] = useState<any>(null);
   const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null); // filtrovane nehody
   const [filteredRadarsData, setFilteredRadarsData] = useState<any>(null); // filtrovane radary
 
   const [showFilters, setShowFilters] = useState(true);
-  const [showLegend, setShowLegend] = useState(true);
+  const [showLegend, setShowLegend] = useState(false);
 
   const [showRadarData, setShowRadarData] = useState(false);
   const [showAccidentData, setShowAccidentData] = useState(false);
   const [showTrafficData, setShowTrafficData] = useState(false);
 
-  const [tileLayerUrl, setTileLayerUrl] = useState(
-    "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-  );
+  const { isDark } = useTheme();
+  const [tileLayerUrl, setTileLayerUrl] = useState("");
 
-  const [lastUpdate, setLastUpdate] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
   );
@@ -74,7 +76,7 @@ const Map: React.FC = () => {
   const [pedestrianFilter, setPedestrianFilter] = useState<string>("-");
   const [deadFilter, setDeadFilter] = useState<string>("-");
 
-  const [realAngle, setRealAngle] = useState(false);
+  //const [realAngle, setRealAngle] = useState(false);
   const [isRadarActive, setIsRadarActive] = useState<string>("-");
 
   //tomtom api
@@ -87,19 +89,27 @@ const Map: React.FC = () => {
   const [numberOfAccidents, setNumberOfAccidents] = useState(0); // pocet nehod
 
   const { t, i18n } = useTranslation();
-  useEffect(() => {
+  /*useEffect(() => {
     const loadData = async () => {
       const radars = await fetchRadarsData();
       setRadarsData(radars);
 
       const accidents = await fetchAccidentsData();
       setAccidentsData(accidents);
-
-      setLastUpdate(new Date().toLocaleString());
     };
 
     loadData();
-  }, []);
+  }, []);*/
+
+  useEffect(() => {
+    if (isDark) {
+      setTileLayerUrl(
+        "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+      );
+    } else {
+      setTileLayerUrl("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+    }
+  }, [isDark]);
 
   useEffect(() => {
     if (showAccidentData && AccidentsData) {
@@ -187,7 +197,7 @@ const Map: React.FC = () => {
     } else {
       setNumberOfRadars(0);
     }
-  }, [realAngle, isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
+  }, [, /*realAngle*/ isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
 
   // upravit možná? je tam problik. Useefect pro změnu jazyka
   useEffect(() => {
@@ -208,7 +218,7 @@ const Map: React.FC = () => {
   }, [i18n.language]);
 
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
-    const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
+    //const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
     const arrowRotation = feature.properties.smer - 90; // směr šipky - 90 protože originál směřuje doprava
     const measurements = feature.properties.mereni; // Pole mereni
 
@@ -216,8 +226,9 @@ const Map: React.FC = () => {
       icon: radarIcon,
     } as L.MarkerOptions);
 
-    (marker as any).setRotationAngle(rotation);
+    //(marker as any).setRotationAngle(rotation);
 
+    // upravit info
     const measurementsInfo =
       measurements.length > 0
         ? measurements
@@ -271,10 +282,12 @@ const Map: React.FC = () => {
             .map(
               (p: any, index: number) =>
                 `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(t)(
+                  // jazyk
                   p.kategorie
                 )}, následky: ${getConsequenceDescription(t)(
+                  // jazyk
                   p.nasledky_chodci
-                )}, věk: ${p.vek}<br/>`
+                )}, věk: ${p.vek}<br/>` // jazyk
             )
             .join("")
         : "";
@@ -308,7 +321,7 @@ const Map: React.FC = () => {
   };
 
   // upload data do Firestore
-  const uploadData = async () => {
+  /*const uploadData = async () => {
     try {
       const datasets = [
         { name: "radary", file: "radary.geojson", api: "/api/uploadRadars" },
@@ -361,13 +374,7 @@ const Map: React.FC = () => {
     } catch (error) {
       console.error("❌ Chyba při nahrávání dat:", error);
     }
-  };
-
-  const handleUpdateData = () => {
-    // TODO logika pro stažení a uložení nových dat
-
-    setLastUpdate(new Date().toLocaleString());
-  };
+  };*/
 
   // cluster
   const customClusterIcon = (cluster: L.MarkerCluster, color: string) => {
@@ -384,7 +391,7 @@ const Map: React.FC = () => {
     });
   };
 
-  //heatmap
+  // heatmap
   const HeatmapLayer: React.FC<{
     showHeatmap: boolean;
     data: any;
@@ -435,7 +442,7 @@ const Map: React.FC = () => {
       {/* Kontejner pro mapu */}
       <div className="map relative">
         {/* Sekce filtrů s možností skrytí/odkrytí */}
-        <div className="absolute top-1/2 left-5 z-[1000] -translate-y-1/2">
+        <div className="absolute md:left-5 left-1 top-28 z-[1000]">
           <FilterSection
             showRadarData={showRadarData}
             setShowRadarData={setShowRadarData}
@@ -458,10 +465,10 @@ const Map: React.FC = () => {
             setPedestrianFilter={setPedestrianFilter}
             deadFilter={deadFilter}
             setDeadFilter={setDeadFilter}
-            onUpdateData={uploadData}
+            //onUpdateData={uploadData}
             //onUpdateData={handleUpdateData}
-            realAngle={realAngle}
-            setRealAngle={setRealAngle}
+            //realAngle={realAngle}
+            //setRealAngle={setRealAngle}
             isRadarActive={isRadarActive}
             setIsRadarActive={setIsRadarActive}
             showAccidentsHeatmap={showAccidentsHeatmap}
@@ -474,7 +481,7 @@ const Map: React.FC = () => {
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="absolute h-12 w-6 top-1/2 left-full -translate-y-1/2 -translate-x-[0.100rem] bg-[#aac9ab] text-[#388E3C] border-2 border-[#66BB6A] rounded-r-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80 z-[-1]"
+            className="absolute h-12 w-6 top-1/2 left-full -translate-y-1/2 -translate-x-[0.100rem] bg-filters-bg text-filters-text border-2 border-filters-border rounded-r-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80 z-[-1]"
           >
             {showFilters ? "⮜" : "⮞"}
           </button>
@@ -490,7 +497,7 @@ const Map: React.FC = () => {
           {/* Tlačítko pro zobrazení a skrytí legendy */}
           <button
             onClick={() => setShowLegend(!showLegend)}
-            className="absolute w-12 left-1/2 bottom-full -translate-x-1/2 translate-y-[0.100rem] bg-[#aac9ab] text-[#388E3C] border-2 border-[#66BB6A] rounded-t-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80"
+            className="absolute w-12 left-1/2 bottom-full -translate-x-1/2 translate-y-[0.100rem] bg-legend-bg text-legend-text border-2 border-legend-border rounded-t-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80"
           >
             {showLegend ? "⮛" : "⮙"}
           </button>
@@ -503,10 +510,7 @@ const Map: React.FC = () => {
 
         {/* footer */}
         <div className="w-full absolute bottom-0 z-[1000]">
-          <FooterSection
-            footerText="Čas poslední aktualizace:"
-            lastUpdate={lastUpdate}
-          />
+          <FooterSection />
         </div>
 
         <MapContainer
@@ -522,7 +526,7 @@ const Map: React.FC = () => {
           {showRadarData && filteredRadarsData && (
             <MarkerClusterGroup
               iconCreateFunction={(cluster: L.MarkerCluster) =>
-                customClusterIcon(cluster, "red")
+                customClusterIcon(cluster, "gray")
               }
             >
               <GeoJSON

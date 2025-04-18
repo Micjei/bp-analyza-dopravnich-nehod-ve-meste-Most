@@ -1,17 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import "@/i18n"; // Import konfigurace i18n
+import "@/i18n";
+import { usePathname } from "next/navigation";
+import { useTheme } from "@/context/ThemeContext";
+
 interface HeaderProps {
-  onLayerChange: (url: string) => void;
-  onSettingsClick?: () => void;
+  onLayerChange?: (url: string) => void;
 }
 
-const HeaderSection: React.FC<HeaderProps> = ({
-  onLayerChange,
-  onSettingsClick,
-}) => {
+const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
   const { t, i18n } = useTranslation();
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showMapDropdown, setShowMapDropdown] = useState(false);
+  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const currentPath = usePathname();
+  const { isDark, toggleTheme } = useTheme();
 
   const mapLayers = [
     {
@@ -20,7 +24,9 @@ const HeaderSection: React.FC<HeaderProps> = ({
     },
     {
       name: "OpenStreetMap",
-      url: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      url: isDark
+        ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+        : "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     },
     {
       name: "Carto Light",
@@ -28,61 +34,119 @@ const HeaderSection: React.FC<HeaderProps> = ({
     },
   ];
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target && !target.closest(".dropdown")) {
+        setShowMapDropdown(false);
+        setShowSettingsDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  if (!isClient) return null;
+
+  const linkHref = currentPath === "/diagrams" ? "/" : "/diagrams";
+  const pageButton = currentPath === "/diagrams" ? t("map") : t("stats");
+
   return (
-    <div className="absolute top-0 w-full h-20 flex flex-row items-center justify-between p-5 bg-[#66BB6A] border-2 border-[#66BB6A] shadow-md text-[#ffffff] opacity-80 whitespace-nowrap">
-      <h3 className="transition-opacity duration-300 text-3xl font-bold tracking-wide italic">
-        {`${t("title")}`}
+    <div className="absolute top-0 w-full h-auto min-h-20 flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-2 bg-header-bg border-2 border-header-border shadow-md text-header-text opacity-90 gap-2 z-[999]">
+      <h3 className="w-full md:w-fit text-nowrap text-center md:text-left text-xl md:text-3xl font-bold tracking-wide italic">
+        {t("title")}
       </h3>
 
-      <div className="flex flex-row items-center space-x-2 gap-2">
-        {/** vlajky - změna jazyka */}
-        <div className="ml-4 flex flex-row gap-2">
-          <button onClick={() => i18n.changeLanguage("cz")}>
-            <img
-              src="/czech-republic.png"
-              className="w-14 h-auto transition-transform duration-700"
-            />
+      <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 flex-grow min-w-0">
+        {/* Výběr mapy */}
+        {onLayerChange && (
+          <div className="relative dropdown">
+            <button
+              onClick={() => setShowMapDropdown(!showMapDropdown)}
+              className="px-2 py-1 md:px-4 md:py-2 rounded-md shadow-md bg-transparent hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base"
+            >
+              {t("select_map")}
+            </button>
+            {showMapDropdown && (
+              <div className="absolute right-0 mt-2 w-40 md:w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
+                {mapLayers.map((layer) => (
+                  <button
+                    key={layer.url}
+                    onClick={() => {
+                      onLayerChange(layer.url);
+                      setShowMapDropdown(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover text-sm"
+                  >
+                    {layer.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Přepínač stránky */}
+        <Link href={linkHref}>
+          <button className="px-2 py-1 md:px-4 md:py-2 rounded-md shadow-md bg-transparent hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base">
+            {pageButton}
           </button>
-          <button onClick={() => i18n.changeLanguage("en")}>
-            <img
-              src="/united-kingdom.png"
-              className="w-14 h-auto transition-transform duration-700"
-            />
-          </button>
-        </div>
-        {/* Tlačítko pro výběr mapy */}
-        <div className="relative">
+        </Link>
+
+        {/* Nastavení / Téma */}
+        <div className="relative dropdown">
           <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="bg-transparent text-[#ffffff] px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-[#388E3C]"
+            onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
+            className="px-2 py-1 md:px-4 md:py-2 rounded-md md:shadow-md bg-transparent md:hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base flex items-center justify-center"
           >
-            {`${t("select_map")}`}
+            {/* Ikona pro mobil */}
+            <span className="md:hidden text-xl">⚙️</span>
+
+            {/* Text pro desktop */}
+            <span className="hidden md:block">{t("settings")}</span>
           </button>
-          {showDropdown && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-md shadow-lg text-[#388E3C]">
-              {mapLayers.map((layer) => (
-                <button
-                  key={layer.url}
-                  onClick={() => {
-                    onLayerChange(layer.url);
-                    setShowDropdown(false);
-                  }}
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                >
-                  {layer.name}
-                </button>
-              ))}
+
+          {showSettingsDropdown && (
+            <div className="absolute right-0 mt-2 w-40 md:w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
+              <button
+                onClick={() => {
+                  toggleTheme();
+                  setShowSettingsDropdown(false);
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover text-sm"
+              >
+                {isDark ? "☀️ Světlý režim" : "🌙 Tmavý režim"}
+              </button>
             </div>
           )}
         </div>
-
-        {/* Tlačítko pro nastavení */}
-        <button
-          onClick={() => onSettingsClick && onSettingsClick()}
-          className="bg-transparent text-[#ffffff] px-4 py-2 rounded-md shadow-md hover:bg-gray-200 hover:text-[#388E3C]"
-        >
-          {`${t("settings")}`}
-        </button>
+        {/* Jazykové přepínače */}
+        <div className="flex flex-row gap-1 md:gap-2">
+          {i18n.language !== "cz" && (
+            <button onClick={() => i18n.changeLanguage("cz")}>
+              <img
+                src="/czech-republic.png"
+                className="w-8 md:w-10 h-auto"
+                alt="CZ"
+              />
+            </button>
+          )}
+          {i18n.language !== "en" && (
+            <button onClick={() => i18n.changeLanguage("en")}>
+              <img
+                src="/united-kingdom.png"
+                className="w-8 md:w-10 h-auto"
+                alt="EN"
+              />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

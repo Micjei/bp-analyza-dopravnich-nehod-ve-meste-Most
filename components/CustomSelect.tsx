@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import "@/i18n"; // Import konfigurace i18n
 
 interface CustomSelectProps {
-  options: string[] | { label: string; value: string }[]; // Může být pole stringů nebo objektů { label, value }
+  options: string[] | { label: string; value: string }[];
   value: string | null;
   onChange: (value: string) => void;
 }
@@ -11,18 +13,18 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   value,
   onChange,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [clickPosition, setClickPosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
   const selectRef = useRef<HTMLDivElement>(null);
 
-  // Funkce pro získání labelu z option (pokud je to objekt)
   const getLabel = (option: string | { label: string; value: string }) => {
-    if (typeof option === "string") {
-      return option; // Pokud je option string, vrátíme ji přímo
-    }
-    return option.label; // Pokud je option objekt, vrátíme label
+    return typeof option === "string" ? option : option.label;
   };
 
-  // Funkce pro zjištění, zda je option objekt (s label a value) nebo string
   const isOptionObject = (
     option: string | { label: string; value: string }
   ): option is { label: string; value: string } => {
@@ -30,29 +32,26 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   const handleClick = (option: string | { label: string; value: string }) => {
-    if (typeof option === "string") {
-      onChange(option); // Pokud je option string, předáme ho přímo
-    } else {
-      onChange(option.value); // Pokud je option objekt, předáme value
-    }
+    onChange(isOptionObject(option) ? option.value : option);
     setIsOpen(false);
   };
 
-  // Funkce pro získání labelu pro aktuálně vybranou hodnotu
   const getSelectedLabel = () => {
-    // Zde upravujeme logiku pro "mm" nebo "dd", když je selectedMonth nebo selectedDay "all"
-    if (value === "mm" || value === "dd") {
-      return value === "mm" ? "mm" : "dd"; // Pokud je value "mm" nebo "dd", vrátí odpovídající label
-    }
-
-    if (!value) return ""; // Pokud není vybraná žádná hodnota, vrátí prázdný text
+    if (
+      value === `${t("mm")}` ||
+      value === `${t("dd")}` ||
+      value == `${t("yy")}`
+    )
+      return value;
+    if (!value) return "";
 
     const selectedOption = options.find(
       (option) => (typeof option === "string" ? option : option.value) === value
     );
-    return selectedOption ? getLabel(selectedOption) : ""; // Pokud nenalezne hodnotu, vrátí prázdný text
+    return selectedOption ? getLabel(selectedOption) : "";
   };
 
+  // click mimo
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
@@ -61,45 +60,63 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    setClickPosition({ x: clientX, y: clientY });
+    setIsOpen(!isOpen);
+  };
+
+  const isDesktop = typeof window !== "undefined" && window.innerWidth >= 768;
+
+  const desktopColumnCount = isOptionObject(options[0])
+    ? Math.min(options.length, 3)
+    : Math.min(options.length, 7);
+
+  const mobileColumnCount = isOptionObject(options[0])
+    ? Math.min(options.length, 1)
+    : Math.min(options.length, 3);
 
   return (
     <div ref={selectRef} className="relative py-1">
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="border-2 border-[#ffffff] rounded px-2 text-left hover:bg-slate-50 active:bg-gray-300 active:scale-95"
+        onClick={handleButtonClick}
+        className="border-2 rounded px-2 text-left hover:bg-dropdown-bg-hover active:bg-dropdown-bg-active active:scale-95 hover:text-dropdown-text-hover bg-dropdown-bg border-dropdown-border"
       >
-        {getSelectedLabel()} {/* Zobrazení labelu podle value */}
+        {getSelectedLabel()}
       </button>
 
       {isOpen && (
         <div
-          className="fixed flex items-center justify-center z-[1000]"
-          onClick={() => setIsOpen(false)} // Zavření při kliknutí mimo
+          className="fixed z-[1000]"
+          style={{
+            left: isDesktop ? clickPosition.x + 10 : "50%",
+            top: isDesktop ? clickPosition.y + 10 : "50%",
+            transform: isDesktop ? "none" : "translate(-50%, -50%)",
+          }}
+          onClick={() => setIsOpen(false)}
         >
           <div
-            className="w-max bg-white border rounded shadow-lg p-2"
+            className="w-max bg-dropdown-bg border rounded shadow-lg p-2"
             onClick={(e) => e.stopPropagation()}
           >
             <div
               className="grid gap-2"
               style={{
-                gridTemplateColumns: isOptionObject(options[0])
-                  ? `repeat(${Math.min(options.length, 3)}, minmax(40px, 1fr))`
-                  : `repeat(${Math.min(options.length, 7)}, minmax(40px, 1fr))`,
+                gridTemplateColumns: isDesktop
+                  ? `repeat(${desktopColumnCount}, minmax(40px, 1fr))`
+                  : `repeat(${mobileColumnCount}, minmax(40px, 1fr))`,
               }}
             >
               {options.map((option, index) => (
                 <button
                   key={index}
                   onClick={() => handleClick(option)}
-                  className="border rounded p-2 text-center hover:bg-gray-200"
+                  className="border rounded p-2 text-center hover:bg-dropdown-bg-hover hover:text-dropdown-text-hover"
                 >
-                  {getLabel(option)} {/* Zobrazení labelu */}
+                  {getLabel(option)}
                 </button>
               ))}
             </div>
