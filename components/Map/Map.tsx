@@ -281,10 +281,12 @@ const Map: React.FC = () => {
         ? pedestrians
             .map(
               (p: any, index: number) =>
-                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(t)( // jazyk
+                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(t)(
+                  // jazyk
                   p.kategorie
-                )}, následky: ${getConsequenceDescription(t)( // jazyk
-                  p.nasledky_chodci 
+                )}, následky: ${getConsequenceDescription(t)(
+                  // jazyk
+                  p.nasledky_chodci
                 )}, věk: ${p.vek}<br/>` // jazyk
             )
             .join("")
@@ -389,7 +391,7 @@ const Map: React.FC = () => {
     });
   };
 
-  //heatmap
+  // heatmap
   const HeatmapLayer: React.FC<{
     showHeatmap: boolean;
     data: any;
