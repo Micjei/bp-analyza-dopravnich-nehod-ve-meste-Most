@@ -1,21 +1,26 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import "@/i18n";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/context/ThemeContext";
+import { useMapLayer } from "@/context/MapLayerContext";
+import { HelpCircle } from "lucide-react";
 
-interface HeaderProps {
-  onLayerChange?: (url: string) => void;
-}
-
-const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
+const HeaderSection: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [showMapDropdown, setShowMapDropdown] = useState(false);
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const currentPath = usePathname();
   const { isDark, toggleTheme } = useTheme();
+  const { setTileLayerUrl } = useMapLayer();
+
+  const isHome = currentPath === "/";
+  const isStats = currentPath === "/stats";
+  const isInfo = currentPath === "/info";
 
   const mapLayers = [
     {
@@ -54,9 +59,6 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
 
   if (!isClient) return null;
 
-  const linkHref = currentPath === "/diagrams" ? "/" : "/diagrams";
-  const pageButton = currentPath === "/diagrams" ? t("map") : t("stats");
-
   return (
     <div className="absolute top-0 w-full h-auto min-h-20 flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-2 bg-header-bg border-2 border-header-border shadow-md text-header-text opacity-90 gap-2 z-[999]">
       <h3 className="w-full md:w-fit text-nowrap text-center md:text-left text-xl md:text-3xl font-bold tracking-wide italic">
@@ -64,8 +66,8 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
       </h3>
 
       <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 flex-grow min-w-0">
-        {/* Výběr mapy */}
-        {onLayerChange && (
+        {/* Výběr mapy – pouze na hlavní stránce */}
+        {isHome && (
           <div className="relative dropdown">
             <button
               onClick={() => setShowMapDropdown(!showMapDropdown)}
@@ -79,10 +81,10 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
                   <button
                     key={layer.url}
                     onClick={() => {
-                      onLayerChange(layer.url);
+                      setTileLayerUrl(layer.url);
                       setShowMapDropdown(false);
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover text-sm"
+                    className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover text-sm rounded-md"
                   >
                     {layer.name}
                   </button>
@@ -92,12 +94,22 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
           </div>
         )}
 
-        {/* Přepínač stránky */}
-        <Link href={linkHref}>
-          <button className="px-2 py-1 md:px-4 md:py-2 rounded-md shadow-md bg-transparent hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base">
-            {pageButton}
-          </button>
-        </Link>
+        {/* Přepínací tlačítka podle stránky */}
+        {(isHome || isInfo) && (
+          <Link href="/stats">
+            <button className="px-2 py-1 md:px-4 md:py-2 rounded-md shadow-md bg-transparent hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base">
+              {t("stats")}
+            </button>
+          </Link>
+        )}
+
+        {(isStats || isInfo) && (
+          <Link href="/">
+            <button className="px-2 py-1 md:px-4 md:py-2 rounded-md shadow-md bg-transparent hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base">
+              {t("map")}
+            </button>
+          </Link>
+        )}
 
         {/* Nastavení / Téma */}
         <div className="relative dropdown">
@@ -105,10 +117,7 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
             onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
             className="px-2 py-1 md:px-4 md:py-2 rounded-md md:shadow-md bg-transparent md:hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base flex items-center justify-center"
           >
-            {/* Ikona pro mobil */}
             <span className="md:hidden text-xl">⚙️</span>
-
-            {/* Text pro desktop */}
             <span className="hidden md:block">{t("settings")}</span>
           </button>
 
@@ -119,13 +128,29 @@ const HeaderSection: React.FC<HeaderProps> = ({ onLayerChange }) => {
                   toggleTheme();
                   setShowSettingsDropdown(false);
                 }}
-                className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover text-sm"
+                className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover text-sm rounded-md"
               >
                 {isDark ? "☀️ Světlý režim" : "🌙 Tmavý režim"}
               </button>
             </div>
           )}
         </div>
+
+        {/* Tlačítko info */}
+        {currentPath !== "/info" && (
+          <Link href="/info">
+            <button
+              title="info"
+              className="w-8 md:w-10 h-8 md:h-10 rounded-full flex items-center justify-center bg-transparent group hover:bg-header-bg-hover"
+            >
+              <HelpCircle
+                size={24}
+                className="text-header-text group-hover:text-header-text-hover"
+              />
+            </button>
+          </Link>
+        )}
+
         {/* Jazykové přepínače */}
         <div className="flex flex-row gap-1 md:gap-2">
           {i18n.language !== "cz" && (

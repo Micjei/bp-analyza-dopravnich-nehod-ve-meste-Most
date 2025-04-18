@@ -31,6 +31,7 @@ export default {
         "dropdown-text-hover": "var(--dropdown-text-hover)",
         "dropdown-bg-active": "var(--dropdown-bg-active)",
         "plus-button-bg": "var(--plus-button-bg)",
+        "plus-button-text": "var(--plus-button-text)",
         "plus-button-bg-hover": "var(--plus-button-bg-hover)",
         "plus-button-text-hover": "var(--plus-button-text-hover)",
       },

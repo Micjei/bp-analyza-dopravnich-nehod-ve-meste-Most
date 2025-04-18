@@ -83,7 +83,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     <div ref={selectRef} className="relative py-1">
       <button
         onClick={handleButtonClick}
-        className="border-2 rounded px-2 text-left hover:bg-dropdown-bg-hover active:bg-dropdown-bg-active active:scale-95 hover:text-dropdown-text-hover bg-dropdown-bg border-dropdown-border"
+        className="border-2 rounded px-2 text-left bg-dropdown-bg hover:bg-dropdown-bg-hover active:bg-dropdown-bg-active active:scale-95 text-dropdown-text hover:text-dropdown-text-hover border-dropdown-border"
       >
         {getSelectedLabel()}
       </button>
@@ -114,7 +114,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                 <button
                   key={index}
                   onClick={() => handleClick(option)}
-                  className="border rounded p-2 text-center hover:bg-dropdown-bg-hover hover:text-dropdown-text-hover"
+                  className="border rounded p-2 text-center bg-dropdown-bg hover:bg-dropdown-bg-hover text-dropdown-text hover:text-dropdown-text-hover"
                 >
                   {getLabel(option)}
                 </button>

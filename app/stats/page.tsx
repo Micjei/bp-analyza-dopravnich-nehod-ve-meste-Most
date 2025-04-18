@@ -77,18 +77,6 @@ export default function DashboardPage() {
   const [radarChartMode2, setRadarChartMode2] =
     useState<RadarChartMode>("summary");
 
-  /*useEffect(() => {
-    const loadData = async () => {
-      const radars = await fetchRadarsData();
-      setRadarsData(radars);
-
-      const accidents = await fetchAccidentsData();
-      setAccidentsData(accidents);
-    };
-
-    loadData();
-  }, []);*/
-
   useEffect(() => {
     if (AccidentsData) {
       const filtered = AccidentsData.features.filter((feature: any) => {
@@ -359,7 +347,7 @@ export default function DashboardPage() {
 
   return (
     <div className="mb-5 font-[family-name:var(--font-geist-sans)]">
-      <HeaderSection />
+      {/*<HeaderSection />*/}
       <h1 className="text-2xl font-bold mt-24 px-10 py-5">{`${t("stats")}`}</h1>
       <p className="px-5">{`${t("dashboard_intro")}`}</p>
 
@@ -418,7 +406,7 @@ export default function DashboardPage() {
           />
 
           <button
-            className="border w-6 h-6 rounded bg-plus-button-bg hover:bg-plus-button-bg-hover hover:text-plus-button-text-hover flex items-center justify-center"
+            className="border w-6 h-6 text-plus-button-text rounded bg-plus-button-bg hover:bg-plus-button-bg-hover hover:text-plus-button-text-hover flex items-center justify-center"
             onClick={() => setShowSecondAccidentsStats((p) => !p)}
           >
             {showSecondAccidentsStats ? "-" : "+"}
