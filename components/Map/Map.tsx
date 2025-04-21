@@ -9,6 +9,13 @@ import { LatLngExpression } from "leaflet";
 // Utility a styly
 import { useEffect, useState } from "react";
 import "../../app/globals.css";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 // Specifické komponenty
 import ButtonToggle from "../ButtonToggle";
@@ -472,9 +479,15 @@ const Map: React.FC = () => {
           {/* Tlačítko pro zobrazení a skrytí filtrů */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="absolute h-12 w-6 top-1/2 left-full -translate-y-1/2 -translate-x-[0.100rem] bg-filters-bg text-filters-text border-2 border-filters-border rounded-r-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80 z-[-1]"
+            className="absolute h-12 w-6 top-1/2 left-full -translate-y-1/2  bg-filters-bg text-filters-text border-2 border-filters-border border-l-0 rounded-r-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80 z-[-1] flex items-center justify-center"
           >
-            {showFilters ? "⮜" : "⮞"}
+            <motion.div
+              initial={false}
+              animate={{ rotate: showFilters ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ChevronRight size={18} />
+            </motion.div>
           </button>
         </div>
 
@@ -488,9 +501,15 @@ const Map: React.FC = () => {
           {/* Tlačítko pro zobrazení a skrytí legendy */}
           <button
             onClick={() => setShowLegend(!showLegend)}
-            className="absolute w-12 left-1/2 bottom-full -translate-x-1/2 translate-y-[0.100rem] bg-legend-bg text-legend-text border-2 border-legend-border rounded-t-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80"
+            className="absolute w-12 left-1/2 bottom-full -translate-x-1/2 bg-legend-bg text-legend-text border-2 border-legend-border border-b-0 rounded-t-[20%] cursor-pointer shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 opacity-80 flex items-center justify-center"
           >
-            {showLegend ? "⮛" : "⮙"}
+            <motion.div
+              initial={false}
+              animate={{ rotate: showLegend ? 180 : 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ChevronUp size={18} />
+            </motion.div>
           </button>
         </div>
 
