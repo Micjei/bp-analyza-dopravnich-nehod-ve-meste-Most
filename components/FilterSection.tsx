@@ -136,11 +136,31 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     setShowMeasureHeatmap(false);
   };
 
+  const [isLandscape, setIsLandscape] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(orientation: landscape)");
+
+    const handleOrientationChange = (e: MediaQueryListEvent) => {
+      setIsLandscape(e.matches);
+    };
+
+    setIsLandscape(mediaQuery.matches); // nastaví hned při načtení
+
+    mediaQuery.addEventListener("change", handleOrientationChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleOrientationChange);
+    };
+  }, []);
+
   return (
     <div
       className={`relative flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 md:whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
         isFiltersVisible
-          ? "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[calc(100vw-30px)]"
+          ? isLandscape
+            ? "w-[60vw]"
+            : "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[calc(100vw-30px)]"
           : "w-[3vw] md:max-h-[70vh] max-h-[50vh]"
       }`}
     >

@@ -440,7 +440,7 @@ const Map: React.FC = () => {
       {/* Kontejner pro mapu */}
       <div className="map relative">
         {/* Sekce filtrů s možností skrytí/odkrytí */}
-        <div className="absolute md:left-5 left-1 top-28 z-[1000]">
+        <div className="absolute md:left-5 left-1 top-28 z-[1001]">
           <FilterSection
             showRadarData={showRadarData}
             setShowRadarData={setShowRadarData}
