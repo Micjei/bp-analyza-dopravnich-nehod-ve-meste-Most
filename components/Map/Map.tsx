@@ -494,7 +494,7 @@ const Map: React.FC = () => {
           </button>
         </div>
 
-        {/* header 
+        {/* header blabla 
         <div className="w-full absolute top-0 z-[1000]">
           <HeaderSection />
         </div>*/}
