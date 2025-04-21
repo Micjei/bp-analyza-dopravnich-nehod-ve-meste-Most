@@ -16,7 +16,7 @@ const HeaderSection: React.FC = () => {
   const [isClient, setIsClient] = useState(false);
   const currentPath = usePathname();
   const { isDark, toggleTheme } = useTheme();
-  const { setTileLayerUrl } = useMapLayer();
+  const { setTileLayerUrl, tileLayerUrl } = useMapLayer();
 
   const isHome = currentPath === "/";
   const isStats = currentPath === "/stats";
@@ -42,6 +42,18 @@ const HeaderSection: React.FC = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (!isHome) return;
+
+    const darkUrl =
+      "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
+    const lightUrl = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+    if (tileLayerUrl === darkUrl || tileLayerUrl === lightUrl) {
+      setTileLayerUrl(isDark ? darkUrl : lightUrl);
+    }
+  }, [isDark, isHome, setTileLayerUrl, tileLayerUrl]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -157,7 +169,7 @@ const HeaderSection: React.FC = () => {
             <button onClick={() => i18n.changeLanguage("cz")}>
               <img
                 src="/czech-republic.png"
-                className="w-8 md:w-10 h-auto"
+                className="w-8 md:w-10 h-auto transition-transform duration-200 hover:scale-110"
                 alt="CZ"
               />
             </button>
@@ -166,7 +178,7 @@ const HeaderSection: React.FC = () => {
             <button onClick={() => i18n.changeLanguage("en")}>
               <img
                 src="/united-kingdom.png"
-                className="w-8 md:w-10 h-auto"
+                className="w-8 md:w-10 h-auto transition-transform duration-200 hover:scale-110"
                 alt="EN"
               />
             </button>
