@@ -72,7 +72,7 @@ const HeaderSection: React.FC = () => {
   if (!isClient) return null;
 
   return (
-    <div className="absolute top-0 w-full h-auto min-h-20 flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-2 bg-header-bg border-2 border-header-border shadow-md text-header-text opacity-90 gap-2 z-[999]">
+    <div className="absolute top-0 w-full h-auto min-h-20 flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-2 bg-header-bg border-2 border-header-border shadow-md text-header-text opacity-90 gap-2 z-[1002]">
       <h3 className="w-full md:w-fit text-nowrap text-center md:text-left text-xl md:text-3xl font-bold tracking-wide italic">
         {t("title")}
       </h3>
