@@ -138,12 +138,23 @@ const FilterSection: React.FC<FilterSectionProps> = ({
 
   return (
     <div
-      className={`flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 md:whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
+      className={`relative flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 md:whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
         isFiltersVisible
           ? "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[calc(100vw-30px)]"
           : "w-[3vw] md:max-h-[70vh] max-h-[50vh]"
       }`}
     >
+      {/* Výpis FILTRY při zatažení – absolutní a nad vším */}
+      {!isFiltersVisible && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="flex flex-col items-center justify-center text-center text-sm font-semibold text-filters-text leading-tight tracking-wide">
+            {"FILTRY".split("").map((char, index) => (
+              <span key={index}>{char}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Nadpis */}
       <h3
         className={`self-center transition-opacity duration-300 text-1xl font-bold ${
