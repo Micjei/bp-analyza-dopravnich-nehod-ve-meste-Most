@@ -47,6 +47,7 @@ import "@/i18n"; // Import konfigurace i18n
 
 import { useData } from "@/context/DataContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useMapLayer } from "@/context/MapLayerContext";
 
 const Map: React.FC = () => {
   const position: LatLngExpression = [50.503056, 13.636667];
@@ -64,7 +65,7 @@ const Map: React.FC = () => {
   const [showTrafficData, setShowTrafficData] = useState(false);
 
   const { isDark } = useTheme();
-  const [tileLayerUrl, setTileLayerUrl] = useState("");
+  const { tileLayerUrl, setTileLayerUrl } = useMapLayer();
 
   const [selectedYear, setSelectedYear] = useState(
     new Date().getFullYear().toString()
@@ -100,16 +101,6 @@ const Map: React.FC = () => {
 
     loadData();
   }, []);*/
-
-  useEffect(() => {
-    if (isDark) {
-      setTileLayerUrl(
-        "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
-      );
-    } else {
-      setTileLayerUrl("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
-    }
-  }, [isDark]);
 
   useEffect(() => {
     if (showAccidentData && AccidentsData) {
@@ -503,10 +494,10 @@ const Map: React.FC = () => {
           </button>
         </div>
 
-        {/* header */}
+        {/* header 
         <div className="w-full absolute top-0 z-[1000]">
-          <HeaderSection onLayerChange={setTileLayerUrl} />
-        </div>
+          <HeaderSection />
+        </div>*/}
 
         {/* footer */}
         <div className="w-full absolute bottom-0 z-[1000]">
