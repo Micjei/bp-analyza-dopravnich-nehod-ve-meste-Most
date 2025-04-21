@@ -57,7 +57,7 @@ const Map: React.FC = () => {
   const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null); // filtrovane nehody
   const [filteredRadarsData, setFilteredRadarsData] = useState<any>(null); // filtrovane radary
 
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
 
   const [showRadarData, setShowRadarData] = useState(false);
