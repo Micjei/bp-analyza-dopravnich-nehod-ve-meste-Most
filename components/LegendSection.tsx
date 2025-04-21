@@ -21,10 +21,19 @@ const LegendSection: React.FC<LegendSectionProps> = ({
 
   return (
     <div
-      className={`bottom-0 right-0 flex flex-col items-start p-5 bg-legend-bg border-2 border-legend-border rounded-[30px] shadow-md text-legend-text opacity-80 whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 w-auto ${
+      className={`relative bottom-0 right-0 flex flex-col items-start p-5 bg-legend-bg border-2 border-legend-border rounded-[30px] shadow-md text-legend-text opacity-80 whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 w-auto ${
         isLegendVisible ? "md:max-h-80 max-h-32" : "max-h-2"
       }`}
     >
+      {/* Výpis LEGENDA při zatažení – absolutní a nad vším */}
+      {!isLegendVisible && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="text-sm font-semibold text-filters-text tracking-wide">
+            LEGENDA
+          </div>
+        </div>
+      )}
+
       {/* Nadpis */}
       <h3
         className={`self-center transition-opacity duration-300 text-1xl font-bold ${
