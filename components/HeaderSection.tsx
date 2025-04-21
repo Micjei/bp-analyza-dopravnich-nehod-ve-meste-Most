@@ -88,7 +88,7 @@ const HeaderSection: React.FC = () => {
               {t("select_map")}
             </button>
             {showMapDropdown && (
-              <div className="absolute right-0 mt-2 w-40 md:w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
+              <div className="absolute left-0 mt-2 w-40 md:w-48 bg-dropdown-bg border border-dropdown-border rounded-md shadow-lg text-dropdown-text z-50">
                 {mapLayers.map((layer) => (
                   <button
                     key={layer.url}
