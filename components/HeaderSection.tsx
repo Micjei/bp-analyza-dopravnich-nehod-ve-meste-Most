@@ -47,8 +47,7 @@ const HeaderSection: React.FC = () => {
   useEffect(() => {
     if (!isHome) return;
 
-    const darkUrl =
-      "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
+    const darkUrl = `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${apiKey}`;
     const lightUrl = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
     if (tileLayerUrl === darkUrl || tileLayerUrl === lightUrl) {
