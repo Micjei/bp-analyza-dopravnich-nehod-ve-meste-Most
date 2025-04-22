@@ -540,6 +540,7 @@ const Map: React.FC = () => {
               }
             >
               <GeoJSON
+                key={JSON.stringify(filteredRadarsData)} // here
                 data={filteredRadarsData}
                 pointToLayer={pointToLayerRadars}
               />
@@ -565,6 +566,7 @@ const Map: React.FC = () => {
                 }
               >
                 <GeoJSON
+                  key={JSON.stringify(filteredAccidentsData)} // here
                   data={filteredAccidentsData}
                   pointToLayer={pointToLayerAccidents}
                 />
