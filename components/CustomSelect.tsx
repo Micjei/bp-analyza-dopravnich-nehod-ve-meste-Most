@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import "@/i18n"; // Import konfigurace i18n
+import { createPortal } from "react-dom";
+import "@/i18n";
 
 interface CustomSelectProps {
   options: string[] | { label: string; value: string }[];
@@ -21,15 +22,12 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   });
   const selectRef = useRef<HTMLDivElement>(null);
 
-  const getLabel = (option: string | { label: string; value: string }) => {
-    return typeof option === "string" ? option : option.label;
-  };
+  const getLabel = (option: string | { label: string; value: string }) =>
+    typeof option === "string" ? option : option.label;
 
   const isOptionObject = (
     option: string | { label: string; value: string }
-  ): option is { label: string; value: string } => {
-    return typeof option !== "string";
-  };
+  ): option is { label: string; value: string } => typeof option !== "string";
 
   const handleClick = (option: string | { label: string; value: string }) => {
     onChange(isOptionObject(option) ? option.value : option);
@@ -37,11 +35,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   const getSelectedLabel = () => {
-    if (
-      value === `${t("mm")}` ||
-      value === `${t("dd")}` ||
-      value == `${t("yy")}`
-    )
+    if ([`${t("mm")}`, `${t("dd")}`, `${t("yy")}`].includes(value || ""))
       return value;
     if (!value) return "";
 
@@ -51,7 +45,6 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     return selectedOption ? getLabel(selectedOption) : "";
   };
 
-  // click mimo
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
@@ -74,10 +67,45 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const desktopColumnCount = isOptionObject(options[0])
     ? Math.min(options.length, 3)
     : Math.min(options.length, 7);
-
   const mobileColumnCount = isOptionObject(options[0])
     ? Math.min(options.length, 1)
     : Math.min(options.length, 3);
+
+  const dropdown = (
+    <div
+      className="fixed z-[1003]"
+      style={{
+        left: isDesktop ? clickPosition.x + 10 : "50%",
+        top: isDesktop ? clickPosition.y + 10 : "50%",
+        transform: isDesktop ? "none" : "translate(-50%, -50%)",
+      }}
+      onClick={() => setIsOpen(false)}
+    >
+      <div
+        className="w-max bg-dropdown-bg border rounded shadow-lg p-2"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="grid gap-2"
+          style={{
+            gridTemplateColumns: isDesktop
+              ? `repeat(${desktopColumnCount}, minmax(40px, 1fr))`
+              : `repeat(${mobileColumnCount}, minmax(40px, 1fr))`,
+          }}
+        >
+          {options.map((option, index) => (
+            <button
+              key={index}
+              onClick={() => handleClick(option)}
+              className="border rounded p-2 text-center bg-dropdown-bg hover:bg-dropdown-bg-hover text-dropdown-text hover:text-dropdown-text-hover"
+            >
+              {getLabel(option)}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div ref={selectRef} className="relative py-1">
@@ -88,41 +116,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         {getSelectedLabel()}
       </button>
 
-      {isOpen && (
-        <div
-          className="fixed z-[1000]"
-          style={{
-            left: isDesktop ? clickPosition.x + 10 : "50%",
-            top: isDesktop ? clickPosition.y + 10 : "50%",
-            transform: isDesktop ? "none" : "translate(-50%, -50%)",
-          }}
-          onClick={() => setIsOpen(false)}
-        >
-          <div
-            className="w-max bg-dropdown-bg border rounded shadow-lg p-2"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div
-              className="grid gap-2"
-              style={{
-                gridTemplateColumns: isDesktop
-                  ? `repeat(${desktopColumnCount}, minmax(40px, 1fr))`
-                  : `repeat(${mobileColumnCount}, minmax(40px, 1fr))`,
-              }}
-            >
-              {options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleClick(option)}
-                  className="border rounded p-2 text-center bg-dropdown-bg hover:bg-dropdown-bg-hover text-dropdown-text hover:text-dropdown-text-hover"
-                >
-                  {getLabel(option)}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {isOpen &&
+        typeof window !== "undefined" &&
+        createPortal(dropdown, document.body)}
     </div>
   );
 };
