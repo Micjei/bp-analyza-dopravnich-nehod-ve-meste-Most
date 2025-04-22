@@ -159,7 +159,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
       className={`relative flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 md:whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
         isFiltersVisible
           ? isLandscape
-            ? "w-[80vw] max-h-[50vh]" // telefon naležato
+            ? "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[80vw]" // telefon naležato
             : "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[calc(100vw-30px)]" // jinak
           : "w-[3vw] md:max-h-[70vh] max-h-[50vh]"
       }`}
