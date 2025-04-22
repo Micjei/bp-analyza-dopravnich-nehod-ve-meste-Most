@@ -197,24 +197,6 @@ const Map: React.FC = () => {
     }
   }, [, /*realAngle*/ isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
 
-  // upravit možná? je tam problik. Useefect pro změnu jazyka
-  useEffect(() => {
-    if (showRadarData) {
-      setShowRadarData(false);
-
-      setTimeout(() => {
-        setShowRadarData(true);
-      }, 0);
-    }
-    if (showAccidentData) {
-      setShowAccidentData(false);
-
-      setTimeout(() => {
-        setShowAccidentData(true);
-      }, 0);
-    }
-  }, [i18n.language]);
-
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
     //const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
     const arrowRotation = feature.properties.smer - 90; // směr šipky - 90 protože originál směřuje doprava
@@ -540,7 +522,7 @@ const Map: React.FC = () => {
               }
             >
               <GeoJSON
-                key={`radars-${filteredRadarsData.features
+                key={`radars-${i18n.language}-${filteredRadarsData.features
                   .map((f: any) => f.id)
                   .join(",")}`}
                 data={filteredRadarsData}
@@ -568,7 +550,9 @@ const Map: React.FC = () => {
                 }
               >
                 <GeoJSON
-                  key={`accidents-${filteredAccidentsData.features
+                  key={`accidents-${
+                    i18n.language
+                  }-${filteredAccidentsData.features
                     .map((f: any) => f.id)
                     .join(",")}`}
                   data={filteredAccidentsData}
