@@ -22,6 +22,7 @@ const HeaderSection: React.FC = () => {
   const isStats = currentPath === "/stats";
   const isInfo = currentPath === "/info";
 
+  const apiKey = process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY;
   const mapLayers = [
     {
       name: `${t("satellite")}`,
@@ -30,7 +31,7 @@ const HeaderSection: React.FC = () => {
     {
       name: "OpenStreetMap",
       url: isDark
-        ? "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+        ? `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?key=${apiKey}`
         : "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     },
     {
