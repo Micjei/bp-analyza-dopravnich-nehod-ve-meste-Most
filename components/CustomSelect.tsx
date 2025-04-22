@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { createPortal } from "react-dom";
+import ReactDOM from "react-dom";
 import "@/i18n";
 
 interface CustomSelectProps {
@@ -16,18 +16,16 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [clickPosition, setClickPosition] = useState<{ x: number; y: number }>({
-    x: 0,
-    y: 0,
-  });
+  const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
   const selectRef = useRef<HTMLDivElement>(null);
-
-  const getLabel = (option: string | { label: string; value: string }) =>
-    typeof option === "string" ? option : option.label;
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isOptionObject = (
     option: string | { label: string; value: string }
   ): option is { label: string; value: string } => typeof option !== "string";
+
+  const getLabel = (option: string | { label: string; value: string }) =>
+    typeof option === "string" ? option : option.label;
 
   const handleClick = (option: string | { label: string; value: string }) => {
     onChange(isOptionObject(option) ? option.value : option);
@@ -35,7 +33,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   const getSelectedLabel = () => {
-    if ([`${t("mm")}`, `${t("dd")}`, `${t("yy")}`].includes(value || ""))
+    if (
+      value === `${t("mm")}` ||
+      value === `${t("dd")}` ||
+      value === `${t("yy")}`
+    )
       return value;
     if (!value) return "";
 
@@ -45,9 +47,15 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     return selectedOption ? getLabel(selectedOption) : "";
   };
 
+  // kliknutí mimo – teď zahrnuje i portál
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(e.target as Node)) {
+      if (
+        selectRef.current &&
+        !selectRef.current.contains(e.target as Node) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -57,8 +65,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   }, []);
 
   const handleButtonClick = (e: React.MouseEvent) => {
-    const { clientX, clientY } = e;
-    setClickPosition({ x: clientX, y: clientY });
+    setClickPosition({ x: e.clientX, y: e.clientY });
     setIsOpen(!isOpen);
   };
 
@@ -67,24 +74,22 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const desktopColumnCount = isOptionObject(options[0])
     ? Math.min(options.length, 3)
     : Math.min(options.length, 7);
+
   const mobileColumnCount = isOptionObject(options[0])
     ? Math.min(options.length, 1)
     : Math.min(options.length, 3);
 
   const dropdown = (
     <div
+      ref={dropdownRef}
       className="fixed z-[1003]"
       style={{
         left: isDesktop ? clickPosition.x + 10 : "50%",
         top: isDesktop ? clickPosition.y + 10 : "50%",
         transform: isDesktop ? "none" : "translate(-50%, -50%)",
       }}
-      onClick={() => setIsOpen(false)}
     >
-      <div
-        className="w-max bg-dropdown-bg border rounded shadow-lg p-2"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="w-max bg-dropdown-bg border rounded shadow-lg p-2">
         <div
           className="grid gap-2"
           style={{
@@ -115,10 +120,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       >
         {getSelectedLabel()}
       </button>
-
-      {isOpen &&
-        typeof window !== "undefined" &&
-        createPortal(dropdown, document.body)}
+      {isOpen && typeof window !== "undefined"
+        ? ReactDOM.createPortal(dropdown, document.body)
+        : null}
     </div>
   );
 };

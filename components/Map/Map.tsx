@@ -540,7 +540,9 @@ const Map: React.FC = () => {
               }
             >
               <GeoJSON
-                key={JSON.stringify(filteredRadarsData)} // here
+                key={`radars-${filteredRadarsData.features
+                  .map((f: any) => f.id)
+                  .join(",")}`}
                 data={filteredRadarsData}
                 pointToLayer={pointToLayerRadars}
               />
@@ -566,7 +568,9 @@ const Map: React.FC = () => {
                 }
               >
                 <GeoJSON
-                  key={JSON.stringify(filteredAccidentsData)} // here
+                  key={`accidents-${filteredAccidentsData.features
+                    .map((f: any) => f.id)
+                    .join(",")}`}
                   data={filteredAccidentsData}
                   pointToLayer={pointToLayerAccidents}
                 />
