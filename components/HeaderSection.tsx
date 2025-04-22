@@ -31,7 +31,7 @@ const HeaderSection: React.FC = () => {
     {
       name: "OpenStreetMap",
       url: isDark
-        ? `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?key=${apiKey}`
+        ? `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${apiKey}`
         : "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     },
     {

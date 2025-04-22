@@ -15,7 +15,7 @@ export const MapLayerProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const apiKey = process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY || "";
-  const defaultUrl = `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?key=${apiKey}`;
+  const defaultUrl = `https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=${apiKey}`;
 
   const [tileLayerUrl, setTileLayerUrl] = useState(defaultUrl);
 
