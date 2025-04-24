@@ -42,7 +42,7 @@ import AccidentChartSection from "@/components/AccidentChartSection";
 import { useTranslation } from "react-i18next";
 import "@/i18n";
 
-export default function DashboardPage() {
+export default function StatsPage() {
   const { t } = useTranslation();
 
   const { RadarsData, AccidentsData } = useData();
@@ -76,6 +76,12 @@ export default function DashboardPage() {
 
   const [radarChartMode2, setRadarChartMode2] =
     useState<RadarChartMode>("summary");
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (AccidentsData) {
@@ -115,6 +121,8 @@ export default function DashboardPage() {
       setFilteredAccidentsData2({ features: filtered });
     }
   }, [selectedAccidentYear2, selectedAccidentMonth2, AccidentsData]);
+
+  if (!isClient) return null;
 
   const getStackedRadarChartData = (
     year: string,
@@ -349,7 +357,7 @@ export default function DashboardPage() {
     <div className="mb-5 font-[family-name:var(--font-geist-sans)]">
       {/*<HeaderSection />*/}
       <h1 className="text-2xl font-bold mt-24 px-10 py-5">{`${t("stats")}`}</h1>
-      <p className="px-5">{`${t("dashboard_intro")}`}</p>
+      <p className="px-5">{`${t("stats_intro")}`}</p>
 
       <div className="flex flex-row p-8 md:gap-8 gap-2">
         {/** levý sloupec */}

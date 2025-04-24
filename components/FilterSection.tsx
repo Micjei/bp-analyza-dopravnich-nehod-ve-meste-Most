@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ButtonToggle from "./ButtonToggle";
 import ResetButton from "./ResetButton";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // Téma pro slider
@@ -154,21 +154,33 @@ const FilterSection: React.FC<FilterSectionProps> = ({
     };
   }, []);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isFiltersVisible && containerRef.current) {
+      containerRef.current.scrollTop = 0;
+    }
+  }, [isFiltersVisible]);
+
   return (
     <div
-      className={`relative flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 md:whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 ${
-        isFiltersVisible
-          ? isLandscape
-            ? "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[80vw]" // telefon naležato
-            : "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[calc(100vw-30px)]" // jinak
-          : "w-[3vw] md:max-h-[70vh] max-h-[50vh]"
-      }`}
+      ref={containerRef}
+      className={`relative flex flex-col items-start p-5 bg-filters-bg border-2 border-filters-border rounded-[30px] shadow-md text-filters-text opacity-80 md:whitespace-nowrap ${
+        isFiltersVisible ? "overflow-y-auto" : "overflow-hidden"
+      } overflow-x-hidden scrollbar-hide transition-all duration-500
+ ${
+   isFiltersVisible
+     ? isLandscape
+       ? "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[80vw]" // telefon naležato
+       : "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[calc(100vw-30px)]" // jinak
+     : "w-[3vw] md:max-h-[70vh] max-h-[50vh]"
+ }`}
     >
       {/* Výpis FILTRY při zatažení – absolutní a nad vším */}
       {!isFiltersVisible && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="flex flex-col items-center justify-center text-center text-sm font-semibold text-filters-text leading-tight tracking-wide">
-            {"FILTRY".split("").map((char, index) => (
+          <div className="flex flex-col items-center justify-center text-center text-sm font-semibold text-filters-text leading-tight tracking-wide uppercase">
+            {`${t("filter_title")}`.split("").map((char, index) => (
               <span key={index}>{char}</span>
             ))}
           </div>

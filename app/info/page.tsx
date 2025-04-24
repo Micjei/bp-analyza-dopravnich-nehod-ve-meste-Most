@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import "@/i18n";
 import { HelpCircle } from "lucide-react";
@@ -8,51 +8,46 @@ import { HelpCircle } from "lucide-react";
 export default function InfoPage() {
   const { t } = useTranslation();
 
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
   return (
-    <main className=" mt-24 px-6 py-10 max-w-4xl mx-auto text-lg ">
+    <main className="mt-24 px-6 py-10 max-w-4xl mx-auto text-lg">
       <h1 className="text-3xl font-bold mb-6">{t("info_page_title")}</h1>
 
       <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-2">
+          🧭 {t("header_section")}
+        </h2>
+        <p>{t("header_section_text")}</p>
+      </section>
+
+      <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-2">🗺️ {t("map_section")}</h2>
-        <p>
-          Interaktivní mapa zobrazuje lokality s radary a dopravní nehody.
-          Kliknutím na symbol nebo oblast se zobrazí podrobnosti. Můžete
-          přepínat mezi světlým a tmavým režimem nebo změnit podkladovou mapu
-          (satelitní, OpenStreetMap apod.).
-        </p>
+        <p>{t("map_section_text")}</p>
       </section>
 
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-2">
-          📊 {t("dashboard_section")}
+          🎛️ {t("filter_section")}
         </h2>
-        <p>
-          Stránka s grafy umožňuje porovnávat data z různých časových období.
-          Můžete zobrazit například četnost překročení rychlosti nebo podíl
-          různých následků dopravních nehod.
-        </p>
+        <p>{t("filter_section_text")}</p>
       </section>
 
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-2">
-          🔘 {t("filter_section")}
+          🧾 {t("legend_section")}
         </h2>
-        <p>
-          Pomocí výběrových boxů (rok, měsíc, den, alkohol, účast chodce apod.)
-          lze upravit zobrazená data podle specifických kritérií. To umožňuje
-          detailnější analýzu konkrétních situací a přesnější vizualizaci.
-        </p>
+        <p>{t("legend_section_text")}</p>
       </section>
 
       <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-2">
-          ⚙️ {t("settings_section")}
-        </h2>
-        <p>
-          V pravé horní části aplikace se nachází nabídka pro změnu jazykové
-          mutace a přepnutí mezi světlým a tmavým režimem. Tím si můžete
-          přizpůsobit prostředí aplikace podle vlastních preferencí.
-        </p>
+        <h2 className="text-2xl font-semibold mb-2">📊 {t("stats_section")}</h2>
+        <p>{t("stats_section_text")}</p>
       </section>
 
       <section className="mb-8">
@@ -62,12 +57,14 @@ export default function InfoPage() {
           </span>
           {t("help_section")}
         </h2>
+        <p>{t("help_section_text")}</p>
+      </section>
 
-        <p>
-          Pokud máte zájem o podrobnější informace o tom, odkud data pochází a
-          jak jsou zpracovávána, navštivte dokumentaci nebo kontaktujte správce
-          aplikace.
-        </p>
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-2">
+          📌 {t("footer_section")}
+        </h2>
+        <p>{t("footer_section_text")}</p>
       </section>
     </main>
   );

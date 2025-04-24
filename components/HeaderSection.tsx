@@ -142,7 +142,7 @@ const HeaderSection: React.FC = () => {
                 }}
                 className="block w-full text-left px-4 py-2 hover:bg-dropdown-bg-hover text-sm rounded-md"
               >
-                {isDark ? "☀️ Světlý režim" : "🌙 Tmavý režim"}
+                {isDark ? `☀️ ${t("light_mode")}` : `🌙 ${t("dark_mode")}`}
               </button>
             </div>
           )}

@@ -73,5 +73,22 @@
   "dd": "day",
   "mm": "month",
   "yy": "year",
-  "dashboard_intro": "This interactive application serves to visualize and analyze traffic data in the city of Most. It allows you to view an overview of traffic accidents and radar measurements across various time periods.\n\nUsing the filters at the top of the dashboard, you can select a specific year and month. The results are automatically reflected in the charts – on the left side you’ll see speed violations across different locations, and on the right, accident consequence statistics.\n\nBy clicking the \"+\" button, you can add a second chart to compare data from two different periods side by side.\n\nRadar data can be displayed either as a total of speed violations per street, or in more detail using categorized speed intervals.\n\nThe goal of this app is to better understand the traffic situation in the city and to support increased road safety through data-driven insights."
+  "stats_intro": "This interactive application serves to visualize and analyze traffic data in the city of Most. It allows you to view an overview of traffic accidents and radar measurements across various time periods.\n\nUsing the filters at the top of the dashboard, you can select a specific year and month. The results are automatically reflected in the charts – on the left side you’ll see speed violations across different locations, and on the right, accident consequence statistics.\n\nBy clicking the \"+\" button, you can add a second chart to compare data from two different periods side by side.\n\nRadar data can be displayed either as a total of speed violations per street, or in more detail using categorized speed intervals.\n\nThe goal of this app is to better understand the traffic situation in the city and to support increased road safety through data-driven insights.",
+  "info_page_title": "Help",
+  "header_section": "Header",
+  "header_section_text": "The top navigation bar allows you to switch between the map, statistics, and the help page. Here you’ll also find controls for language selection, light/dark mode, and map background (e.g., satellite, OpenStreetMap, etc.).",
+  "map_section": "Map",
+  "map_section_text": "The interactive map displays traffic accidents, radar devices in the city of Most, and optionally the current traffic situation. Clicking on a map element reveals detailed information.",
+  "filter_section": "Filters",
+  "filter_section_text": "On the left side of the screen, you’ll find the filter panel, which allows you to choose which data is shown on the map and filter it by year, month, day, alcohol or drug presence, pedestrian involvement, and other parameters.",
+  "legend_section": "Legend",
+  "legend_section_text": "In the bottom-right corner, you’ll find the map legend, explaining the meaning of icons, traffic layer colors, and symbols used for traffic accidents and radar devices.",
+  "stats_section": "Statistics",
+  "stats_section_text": "The statistics section displays selected data in a visual form over time. You can compare, for example, the frequency of radar measurements or the development of traffic accidents throughout the year. It's also possible to compare different time periods and switch between various display modes.",
+  "help_section": "Help",
+  "help_section_text": "This page serves as a detailed guide for using the application – you'll find explanations of all major components such as the map, statistics, filters, and settings.",
+  "footer_section": "Footer",
+  "footer_section_text": "At the bottom of the page, you’ll find information about the last time the data was updated.",
+  "light_mode": "Light mode",
+  "dark_mode": "Dark mode"
 }

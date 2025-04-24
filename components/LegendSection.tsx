@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
@@ -19,17 +19,27 @@ const LegendSection: React.FC<LegendSectionProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isLegendVisible && containerRef.current) {
+      containerRef.current.scrollTop = 0;
+    }
+  }, [isLegendVisible]);
+
   return (
     <div
-      className={`relative bottom-0 right-0 flex flex-col items-start p-5 bg-legend-bg border-2 border-legend-border rounded-[30px] shadow-md text-legend-text opacity-80 whitespace-nowrap overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-500 w-auto ${
-        isLegendVisible ? "md:max-h-80 max-h-32" : "max-h-2"
-      }`}
+      ref={containerRef}
+      className={`relative bottom-0 right-0 flex flex-col items-start p-5 bg-legend-bg border-2 border-legend-border rounded-[30px] shadow-md text-legend-text opacity-80 whitespace-nowrap ${
+        isLegendVisible ? "overflow-y-auto" : "overflow-hidden"
+      } overflow-x-hidden scrollbar-hide transition-all duration-500
+ w-auto ${isLegendVisible ? "md:max-h-80 max-h-32" : "max-h-2"}`}
     >
       {/* Výpis LEGENDA při zatažení – absolutní a nad vším */}
       {!isLegendVisible && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="text-sm font-semibold text-filters-text tracking-wide">
-            LEGENDA
+          <div className="text-sm font-semibold text-filters-text tracking-wide uppercase">
+            {`${t("legend_title")}`}
           </div>
         </div>
       )}
