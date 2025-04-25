@@ -9,12 +9,7 @@ import { LatLngExpression } from "leaflet";
 // Utility a styly
 import { useEffect, useState } from "react";
 import "../../app/globals.css";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
+import { ChevronRight, ChevronUp } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Specifické komponenty
@@ -143,8 +138,8 @@ const Map: React.FC = () => {
             (drugsFilter === "-" ||
               parseInt(drogy, 10) === parseInt(drugsFilter, 10)) &&
             (pedestrianFilter === "-" ||
-              (pedestrianFilter === "ano" && chodci.length > 0) ||
-              (pedestrianFilter === "ne" && chodci.length === 0)) &&
+              (pedestrianFilter === `${t("yes")}` && chodci.length > 0) ||
+              (pedestrianFilter === `${t("no")}` && chodci.length === 0)) &&
             (deadFilter === "-" ||
               parseInt(smrt, 10) === parseInt(deadFilter, 10) ||
               (deadFilter === "0" && parseInt(smrt, 10) !== 1))
@@ -212,21 +207,24 @@ const Map: React.FC = () => {
     const measurementsInfo =
       measurements.length > 0
         ? measurements
-            .slice(0, 5) // Omezí počet zobrazených měření na 5
+            .slice(0, 2) // Omezí počet zobrazených měření na 2
             .map(
               (m: any, index: number) =>
                 `<b>${t("measurement")}: ${index + 1}:</b> 
-            ${t("speed")}: ${m.prekroceni_rychlost_soucet} km/h, 
+            ${t("speeding")}: ${m.prekroceni_rychl_soucet} km/h,
             ${t("date")}: ${m.datum}, 
-            ${t("speeding")}: ${m.prekroceni_ve_smeru}<br/>`
+            ${t("speeding_in_line")}: ${m.prekroceni_rychl_ve_smeru},
+            ${t("speeding_out_line")}: ${
+                  m.prekroceni_rychl_v_protismeru
+                }, <br/>` // edit
             )
             .join("") + (measurements.length > 5 ? `<b>${t("more")}</b>` : "")
         : "";
 
-    marker.bindPopup(`
-      <b>ID:</b> ${feature.properties.id}<br/>
+    marker.bindPopup(/*`
+      <b>ID:</b> ${feature.properties.id}<br/>*/ `
       <div style="display: flex; align-items: center; gap: 8px;">
-        <b>${t("direction")}:</b> ${feature.properties.smer}°
+        <b>${t("direction")}:</b>
         <img src="${arrowIcon.options.iconUrl}" 
              style="width: 20px; height: 20px; transform: rotate(${arrowRotation}deg);" 
              alt="Radar směr"/>
@@ -261,32 +259,32 @@ const Map: React.FC = () => {
         ? pedestrians
             .map(
               (p: any, index: number) =>
-                `<b>Chodec ${index + 1}:</b> ${getPedestrianDescription(t)(
-                  // jazyk
-                  p.kategorie
-                )}, následky: ${getConsequenceDescription(t)(
-                  // jazyk
-                  p.nasledky_chodci
-                )}, věk: ${p.vek}<br/>` // jazyk
+                `<b>${t("pedestrian")} ${
+                  index + 1
+                }:</b> ${getPedestrianDescription(t)(p.kategorie)}, ${t(
+                  "consequence"
+                )}: ${getConsequenceDescription(t)(p.nasledky_chodci)}, ${t(
+                  "age"
+                )}: ${p.vek}<br/>`
             )
             .join("")
         : "";
 
-    // Zpracování následků do HTML řetězce
+    // Zpracování následků do HTML řetězce (vozidlo)
     const consequencesInfo =
       consequences.length > 0
         ? consequences
             .map(
               (c: any, index: number) =>
-                `<b>${t("consequence")} ${
+                `<b>${t("passenger")} ${
                   index + 1
                 }:</b> ${getConsequenceDescription(t)(c.nasledky_vozidlo)}<br/>` // ve vozidle následky?
             )
             .join("")
         : "";
 
-    marker.bindPopup(`
-      <b>ID:</b> ${feature.properties.id}<br/>
+    marker.bindPopup(/*`
+      <b>ID:</b> ${feature.properties.id}<br/> */ `
       <b>${t("alcohol")}:</b> ${getAlcoholDescription(t)(
       feature.properties.alkohol
     )}<br/>
@@ -468,7 +466,7 @@ const Map: React.FC = () => {
               animate={{ rotate: showFilters ? 180 : 0 }}
               transition={{ duration: 0.3 }}
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={18} className="text-red-500" />
             </motion.div>
           </button>
         </div>
@@ -490,7 +488,7 @@ const Map: React.FC = () => {
               animate={{ rotate: showLegend ? 180 : 0 }}
               transition={{ duration: 0.3 }}
             >
-              <ChevronUp size={18} />
+              <ChevronUp size={18} className="text-red-500" />
             </motion.div>
           </button>
         </div>

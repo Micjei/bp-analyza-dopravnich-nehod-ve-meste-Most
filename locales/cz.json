@@ -3,9 +3,10 @@
   "normal": "Markery",
   "language": "Jazyk",
   "measurement": "Měření",
-  "speed": "Rychlost",
+  "speeding": "Překročení rychlosti celkem",
   "date": "Datum",
-  "speeding": "Překročení",
+  "speeding_in_line": "Překročení rychlosti ve směru celkem",
+  "speeding_out_line": "Překročení rychlosti proti směru celkem",
   "more": "A další...",
   "settings": "Nastavení",
   "select_map": "Vybrat mapu",
@@ -90,5 +91,9 @@
   "footer_section": "Zápatí",
   "footer_section_text": "Ve spodní části stránky naleznete informaci o čase, kdy byla proběhla poslední aktualizace dat.",
   "light_mode": "Světlý režim",
-  "dark_mode": "Tmavý režim"
+  "dark_mode": "Tmavý režim",
+  "pedestrian": "Chodec",
+  "passenger": "Pasažér",
+  "age": "Věk",
+  "unknown_value": "Neznámá hodnota"
 }

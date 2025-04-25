@@ -59,8 +59,8 @@ export const drugsOptions = (t: (key: string) => string) => [
 
 export const pedestrianOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
-  { label: `${t("yes")}`, value: "ano" },
-  { label: `${t("no")}`, value: "ne" },
+  { label: `${t("yes")}`, value: `${t("yes")}` },
+  { label: `${t("no")}`, value: `${t("no")}` },
 ];
 
 export const consequenceOptions = (t: (key: string) => string) => [
@@ -76,8 +76,8 @@ export const viewOptions = (t: (key: string) => string) => [
 
 export const activeRadarOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
-  { label: `${t("yes")}`, value: "Ano" },
-  { label: `${t("no")}`, value: "Ne" },
+  { label: `${t("yes")}`, value: `${t("yes")}` },
+  { label: `${t("no")}`, value: `${t("no")}` },
 ];
 
 export const measureViewOptions = (t: (key: string) => string) => [

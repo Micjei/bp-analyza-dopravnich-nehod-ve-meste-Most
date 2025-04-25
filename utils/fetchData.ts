@@ -1,6 +1,7 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { convertCoordinates } from "../utils/coordinateUtils";
+import i18next from "i18next";
 
 export const fetchRadarsData = async () => {
   try {
@@ -62,7 +63,7 @@ export const fetchRadarsData = async () => {
           id: data.ID,
           lokalita: data.LOKALITA,
           smer: data.SMER,
-          v_provozu: data.V_PROVOZU === 1 ? "Ano" : "Ne",
+          v_provozu: data.V_PROVOZU === 1 ? i18next.t("yes") : i18next.t("no"),
           mereni: measurements,
         },
       };

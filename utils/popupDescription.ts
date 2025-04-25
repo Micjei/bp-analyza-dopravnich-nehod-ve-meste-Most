@@ -20,7 +20,7 @@ export const getAlcoholDescription =
       "9": `1,5 ‰ ${t("and_more")}`,
     };
     const parsedValue = parseInt(String(alcohol), 10);
-    return alcoholMap[String(parsedValue)] || "Neznámá hodnota";
+    return alcoholMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
 export const getDrugsDescription =
@@ -38,7 +38,7 @@ export const getDrugsDescription =
       "8": `${t("not_detected")}`,
     };
     const parsedValue = parseInt(String(drug), 10);
-    return drugMap[String(parsedValue)] || "Neznámá hodnota";
+    return drugMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
 export const getConsequenceDescription =
@@ -51,7 +51,7 @@ export const getConsequenceDescription =
       "4": `${t("no_injury")}`,
     };
     const parsedValue = parseInt(String(consequence), 10);
-    return consequenceMap[String(parsedValue)] || "Neznámá hodnota";
+    return consequenceMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
 export const getPedestrianDescription =
@@ -65,5 +65,5 @@ export const getPedestrianDescription =
       "5": `${t("other_group")}`,
     };
     const parsedValue = parseInt(String(pedestrian), 10);
-    return pedestrianMap[String(parsedValue)] || "Neznámá hodnota";
+    return pedestrianMap[String(parsedValue)] || `${t("unknown_value")}`;
   };

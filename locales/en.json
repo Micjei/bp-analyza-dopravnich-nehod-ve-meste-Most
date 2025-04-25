@@ -3,9 +3,10 @@
   "normal": "Markers",
   "language": "Language",
   "measurement": "Measurement",
-  "speed": "Speed",
+  "speeding": "Total speeding",
   "date": "Date",
-  "speeding": "Speeding",
+  "speeding_in_line": "Total speeding in the direction of traffic",
+  "speeding_out_line": "Total speeding against the direction of traffic",
   "more": "And more...",
   "settings": "Settings",
   "select_map": "Select map",
@@ -90,5 +91,9 @@
   "footer_section": "Footer",
   "footer_section_text": "At the bottom of the page, you’ll find information about the last time the data was updated.",
   "light_mode": "Light mode",
-  "dark_mode": "Dark mode"
+  "dark_mode": "Dark mode",
+  "pedestrian": "Pedestrian",
+  "passenger": "Pasenger",
+  "age": "Age",
+  "unknown_value": "Unknown value"
 }
