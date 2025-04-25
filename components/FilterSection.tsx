@@ -172,7 +172,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
    isFiltersVisible
      ? isLandscape
        ? "lg:w-[35vw] lg:max-h-[70vh] max-h-[50vh] w-[50vw]" // telefon naležato
-       : "md:w-[35vw] md:max-h-[70vh] max-h-[50vh] w-[calc(100vw-30px)]" // jinak
+       : "md:w-[35vw] md:max-h-[70vh] max-h-[40vh] w-[calc(100vw-35px)]" // jinak
      : "w-[3vw] md:max-h-[70vh] max-h-[50vh]"
  }`}
     >

@@ -359,9 +359,9 @@ export default function StatsPage() {
       <h1 className="text-2xl font-bold mt-24 px-10 py-5">{`${t("stats")}`}</h1>
       <p className="px-5">{`${t("stats_intro")}`}</p>
 
-      <div className="flex flex-row p-8 md:gap-8 gap-2">
+      <div className="flex flex-row md:p-7 p-4 md:gap-8 gap-3">
         {/** levý sloupec */}
-        <div className="flex flex-col w-4/6 text-center gap-2">
+        <div className="flex flex-col w-[62.5%] text-center gap-2">
           <RadarChartSection
             year={selectedRadarYear}
             month={selectedRadarMonth}
@@ -403,7 +403,7 @@ export default function StatsPage() {
         </div>
 
         {/** pravý sloupec */}
-        <div className="flex flex-col w-2/6 text-center gap-2">
+        <div className="flex flex-col w-[37.5%] text-center gap-2">
           <AccidentChartSection
             year={selectedAccidentYear}
             month={selectedAccidentMonth}

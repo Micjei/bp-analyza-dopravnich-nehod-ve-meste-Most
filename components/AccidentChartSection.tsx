@@ -39,7 +39,7 @@ export default function AccidentChartSection({
   return (
     <div className="h-[330px] flex flex-col">
       <label>{t("accidents_stats")}</label>
-      <div className="flex flex-row md:gap-2 gap-1 mb-1">
+      <div className="flex flex-row md:gap-2 gap-0.5 mb-1">
         <CustomSelect
           options={["-", ...years.map(String)]}
           value={year === "-" ? `${t("yy")}` : year}
@@ -58,6 +58,20 @@ export default function AccidentChartSection({
           options={{
             ...chartData.options,
             maintainAspectRatio: false,
+            plugins: {
+              ...chartData.options?.plugins,
+              legend: {
+                position: "top",
+                align: "start",
+                labels: {
+                  boxWidth: 20,
+                  padding: 8,
+                  font: {
+                    size: 11,
+                  },
+                },
+              },
+            },
           }}
         />
       </div>

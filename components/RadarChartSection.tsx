@@ -41,7 +41,7 @@ export default function RadarChartSection({
     <div className="h-[330px] flex flex-col">
       <label>{t("radar_stats")}</label>
 
-      <div className="flex flex-row md:gap-2 gap-1 mb-1">
+      <div className="flex flex-row md:gap-2 gap-0.5 mb-1">
         <CustomSelect
           options={["-", ...years.map(String)]}
           value={year === "-" ? `${t("yy")}` : year}
@@ -71,7 +71,17 @@ export default function RadarChartSection({
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { position: "top" },
+              legend: {
+                position: "top", // nebo "bottom" – vyzkoušej
+                align: "start", // zarovná legenda vlevo
+                labels: {
+                  boxWidth: 20, // velikost barevného čtverečku
+                  padding: 8, // mezery mezi položkami
+                  font: {
+                    size: 11, // menší písmo, aby se vešlo i na mobil
+                  },
+                },
+              },
               title: {
                 display: true,
                 text: `${t("chart_title", {
