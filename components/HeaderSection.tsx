@@ -70,7 +70,10 @@ const HeaderSection: React.FC = () => {
   }, []);
 
   if (!isClient) return null;
-
+  if (!i18n.isInitialized) return null;
+  if (!i18n.language) {
+    return null;
+  }
   return (
     <div className="absolute top-0 w-full h-auto min-h-20 flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-2 bg-header-bg border-2 border-header-border shadow-md text-header-text opacity-90 gap-2 z-[1002]">
       <h3 className="w-full md:w-fit text-nowrap text-center md:text-left text-xl md:text-3xl font-bold tracking-wide italic">
@@ -165,8 +168,8 @@ const HeaderSection: React.FC = () => {
 
         {/* Jazykové přepínače */}
         <div className="flex flex-row gap-1 md:gap-2">
-          {i18n.language !== "cz" && (
-            <button onClick={() => i18n.changeLanguage("cz")}>
+          {i18n.language !== "cs" && (
+            <button onClick={() => i18n.changeLanguage("cs")}>
               <img
                 src="/czech-republic.png"
                 className="w-8 md:w-10 h-auto transition-transform duration-200 hover:scale-110"

@@ -10,10 +10,10 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      cz: { translation: cz },
+      cs: { translation: cz },
       en: { translation: en },
     },
-    fallbackLng: "cz", // Výchozí jazyk, pokud není detekován
+    fallbackLng: "cs", // Výchozí jazyk, pokud není detekován
     interpolation: { escapeValue: false },
   });
 
