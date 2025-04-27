@@ -192,6 +192,17 @@ const Map: React.FC = () => {
     }
   }, [, /*realAngle*/ isRadarActive, showRadarData, RadarsData]); // Když se změní realAngle, triggeruj překreslení radarů
 
+  // formating date from 01022021 to 1/2/2021
+  const formateDate = (datumText: string) => {
+    const year = datumText?.slice(0, 4);
+    const month = parseInt(datumText?.slice(4, 6), 10);
+    const day = parseInt(datumText?.slice(6, 8), 10);
+
+    const formated_date = day + "/" + month + "/" + year;
+    console.log(datumText);
+    return formated_date;
+  };
+
   const pointToLayerRadars = (feature: any, latlng: LatLngExpression) => {
     //const rotation = realAngle ? feature.properties.smer + 105 : 0; // cca směr si myslím, kamera směřuje doleva dolů originál
     const arrowRotation = feature.properties.smer - 90; // směr šipky - 90 protože originál směřuje doprava
@@ -212,7 +223,7 @@ const Map: React.FC = () => {
               (m: any, index: number) =>
                 `<b>${t("measurement")}: ${index + 1}:</b> 
             ${t("speeding")}: ${m.prekroceni_rychl_soucet} km/h,
-            ${t("date")}: ${m.datum}, 
+            ${t("date")}: ${formateDate(m.datum_text)}, 
             ${t("speeding_in_line")}: ${m.prekroceni_rychl_ve_smeru},
             ${t("speeding_out_line")}: ${
                   m.prekroceni_rychl_v_protismeru
