@@ -176,5 +176,34 @@
   "broken_drive_shaft": "Broken drive shaft",
   "technical_fault": "Technical defect",
 
-  "material_damage": "Material damage"
+  "material_damage": "Material damage",
+  "fault_of_accident": "Fault of Accident",
+  "cause_of_accident": "Main Cause of Accident",
+
+  "motorcycle": "Motorcycle",
+  "car_without_trailer": "Passenger car without trailer",
+  "car_with_trailer": "Passenger car with trailer",
+  "truck": "Truck",
+  "truck_with_trailer": "Truck with trailer",
+  "truck_with_semitrailer": "Truck with semitrailer",
+  "bus": "Bus",
+  "tractor": "Tractor (including with trailer)",
+  "tram": "Tram",
+  "trolleybus": "Trolleybus",
+  "other_motor_vehicle": "Motor vehicle (agricultural, forestry, construction machinery, etc.)",
+  "bicycle": "Bicycle",
+  "horse_drawn_vehicle": "Cart, horse riding",
+  "other_non_motor_vehicle": "Other non-motor vehicle",
+  "train": "Train",
+  "unknown_or_driver_fled": "Unknown, driver fled",
+  "other_vehicle_type": "Other vehicle type",
+  "vehicle": "Vehicle",
+
+  "moving_in_parking_direction": "Vehicle moving in parking direction",
+  "parked_in_parking_direction": "Vehicle parked in parking direction",
+  "moving_against_parking_direction": "Vehicle moving against parking direction",
+  "parked_against_parking_direction": "Vehicle parked against parking direction",
+  "moving_on_road_no_parking_direction": "Vehicle moving on a road without parking direction",
+  "parked_on_road_no_parking_direction": "Vehicle parked on a road without parking direction",
+  "vehicle_position": "Vehicle position"
 }

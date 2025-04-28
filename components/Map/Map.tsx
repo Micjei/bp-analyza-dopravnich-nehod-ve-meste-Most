@@ -46,6 +46,7 @@ import {
   getCauseDescription,
   getDamageDescription,
   getVehicleTypeDescription,
+  getVehicleDirectionDescription,
 } from "@/utils/popupDescription";
 
 import { useTranslation } from "react-i18next";
@@ -304,15 +305,19 @@ const Map: React.FC = () => {
         ? vehicles
             .map(
               (v: any, index: number) =>
-                `<b>${t("druh vozidla")} ${
+                `<b>${t("vehicle")} ${
                   index + 1
-                }:</b> ${getVehicleTypeDescription(t)(v.vozidlo)}<br/>` // vozidla
+                }:</b> ${getVehicleTypeDescription(t)(v.vozidlo)}, ${t(
+                  "vehicle_position"
+                )}: ${getVehicleDirectionDescription(t)(
+                  v.postaveni_vozidla
+                )}<br/>` // vozidla
             )
             .join("")
         : "";
 
     marker.bindPopup(/*`
-      <b>ID:</b> ${feature.properties.id}<br/> */ `
+      <b>ID:</b> ${feature.properties.id}<br/>*/ `
       <b>${t("alcohol")}:</b> ${getAlcoholDescription(t)(
       feature.properties.alkohol
     )}<br/>
@@ -322,13 +327,15 @@ const Map: React.FC = () => {
       ${pedestriansInfo}
       ${consequencesInfo}
       ${vehiclesInfo}
-    <b>zavineni nehody:</b> ${getFaultDescription(t)(
+    <b>${t("fault_of_accident")}:</b> ${getFaultDescription(t)(
       feature.properties.zavineni_nehody
     )}<br/> 
-    <b>priciny nehody:</b> ${getCauseDescription(t)(
+    <b>${t("cause_of_accident")}:</b> ${getCauseDescription(t)(
       feature.properties.priciny_nehody
     )}<br/> 
-    <b>skoda:</b> ${getDamageDescription(t)(feature.properties.skoda)}<br/> 
+    <b>${t("material_damage")}:</b> ${getDamageDescription(t)(
+      feature.properties.skoda
+    )}<br/> 
     `);
 
     return marker;

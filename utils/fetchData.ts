@@ -139,6 +139,7 @@ export const fetchAccidentsData = async () => {
 
       vehiclesMap.get(accidentId).push({
         vozidlo: data.p44 || "neznámé",
+        postaveni_vozidla: data.p52 || "neznámé",
       });
     });
 

@@ -177,22 +177,33 @@
   "technical_fault": "Technická závada",
 
   "material_damage": "Hmotná škoda",
+  "fault_of_accident": "Zavinění nehody",
+  "cause_of_accident": "Hlavní příčina nehody",
 
-  "motorcycle": "Motocykl (včetně sidecarů, skútrů apod.)",
+  "motorcycle": "Motocykl",
   "car_without_trailer": "Osobní automobil bez přívěsu",
   "car_with_trailer": "Osobní automobil s přívěsem",
-  "truck": "Nákladní automobil (včetně multikáry, autojeřábu, cisterny atd.)",
+  "truck": "Nákladní automobil",
   "truck_with_trailer": "Nákladní automobil s přívěsem",
   "truck_with_semitrailer": "Nákladní automobil s návěsem",
   "bus": "Autobus",
   "tractor": "Traktor (i s přívěsem)",
   "tram": "Tramvaj",
   "trolleybus": "Trolejbus",
-  "other_motor_vehicle": "Jiné motorové vozidlo (zemědělské, lesní, stavební stroje atd.)",
+  "other_motor_vehicle": "Motorové vozidlo (zemědělské, lesní, stavební stroje atd.)",
   "bicycle": "Jízdní kolo",
   "horse_drawn_vehicle": "Povoz, jízda na koni",
   "other_non_motor_vehicle": "Jiné nemotorové vozidlo",
   "train": "Vlak",
   "unknown_or_driver_fled": "Nezjištěno, řidič ujel",
-  "other_vehicle_type": "Jiný druh vozidla"
+  "other_vehicle_type": "Jiný druh vozidla",
+  "vehicle": "Vozidlo",
+
+  "moving_in_parking_direction": "Vozidlo jedoucí ve směru staničení",
+  "parked_in_parking_direction": "Vozidlo odstavené/parkující ve směru staničení",
+  "moving_against_parking_direction": "Vozidlo jedoucí proti směru staničení",
+  "parked_against_parking_direction": "Vozidlo odstavené/parkující proti směru staničení",
+  "moving_on_road_no_parking_direction": "Vozidlo jedoucí na komunikaci bez staničení",
+  "parked_on_road_no_parking_direction": "Vozidlo odstavené/parkující na komunikaci bez staničení",
+  "vehicle_position": "Postavení vozidla"
 }

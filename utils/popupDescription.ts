@@ -203,3 +203,25 @@ export const getVehicleTypeDescription =
     console.log(vehicleType);
     return vehicleTypeMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
+
+// Směr jízdy nebo postavení vozidla (p52)
+export const getVehicleDirectionDescription =
+  (t: (key: string) => string) =>
+  (direction: string | number): string => {
+    const directionMap: Record<string, string> = {
+      "1": `${t("moving_in_parking_direction")}`, // vozidlo jedoucí - ve směru staničení
+      "2": `${t("parked_in_parking_direction")}`, // vozidlo odstavené, parkující - ve směru staničení
+      "3": `${t("moving_against_parking_direction")}`, // vozidlo jedoucí - proti směru staničení
+      "4": `${t("parked_against_parking_direction")}`, // vozidlo odstavené, parkující - proti směru staničení
+      "5": `${t("moving_on_road_no_parking_direction")}`, // vozidlo jedoucí - na komunikaci bez staničení
+      "6": `${t("parked_on_road_no_parking_direction")}`, // vozidlo odstavené, parkující - na komunikaci bez staničení
+    };
+    const parsedValue = parseInt(String(direction), 10);
+    console.log(
+      "[getVehicleDirectionDescription] direction:",
+      direction,
+      "| parsedValue:",
+      parsedValue
+    );
+    return directionMap[String(parsedValue)] || `${t("unknown_value")}`;
+  };
