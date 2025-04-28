@@ -33,6 +33,9 @@ export const fetchRadarsData = async () => {
           data.PREKROCENI_RYCHL_V_PROTISMERU || "nezjištěno",
         prekroceni_rychl_soucet: data.PREKROCENI_RYCHL_SOUCET || "nezjištěno",
         rychlostni_limit: data.RYCHLOSTNI_LIMIT,
+        pocet_prujezdu_ve_smeru: data.POCET_PRUJEZDU_VE_SMERU,
+        pocet_prujezdu_v_protismeru: data.POCET_PRUJEZDU_V_PROTISMERU,
+        pocet_prujezdu_soucet: data.POCET_PRUJEZDU_SOUCET,
         r30_40_ve_smeru: data.R30_40_VE_SMERU,
         r30_40_v_protismeru: data.R30_40_V_PROTISMERU,
         r30_40_soucet: data.R30_40_SOUCET,
@@ -124,11 +127,27 @@ export const fetchAccidentsData = async () => {
       });
     });
 
+    // Mapování následků podle ID nehody
+    const vehiclesMap = new Map();
+    vehicles.features.forEach((feature: any) => {
+      const data = feature.properties;
+      const accidentId = data.p1;
+
+      if (!vehiclesMap.has(accidentId)) {
+        vehiclesMap.set(accidentId, []);
+      }
+
+      vehiclesMap.get(accidentId).push({
+        vozidlo: data.p44 || "neznámé",
+      });
+    });
+
     // Zpracování nehod
     const features = accidents.features.map((feature: any) => {
       const data = feature.properties;
       const chodci = pedestriansMap.get(data.p1) || [];
       const nasledky = consequencesMap.get(data.p1) || [];
+      const vozidla = vehiclesMap.get(data.p1) || [];
       const [x, y] = feature.geometry.coordinates;
       const { latitude, longitude } = convertCoordinates(x, y);
       return {
@@ -147,6 +166,10 @@ export const fetchAccidentsData = async () => {
           lehce_zraneno_osob: data.p13c || 0, //lehce_zraneno_osob || 0,
           chodci,
           nasledky_ve_vozidle: nasledky,
+          vozidla,
+          zavineni_nehody: data.p10,
+          priciny_nehody: data.p12,
+          skoda: data.p14,
         },
       };
     });

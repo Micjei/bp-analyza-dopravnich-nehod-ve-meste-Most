@@ -144,6 +144,24 @@ export default function StatsPage() {
         );
       });
 
+      const prujezd_ve_smeru = matching.reduce(
+        (sum: number, m: any) =>
+          sum + (parseInt(m.pocet_prujezdu_ve_smeru, 10) || 0),
+        0
+      );
+
+      const prujezd_proti_smeru = matching.reduce(
+        (sum: number, m: any) =>
+          sum + (parseInt(m.pocet_prujezdu_v_protismeru, 10) || 0),
+        0
+      );
+
+      const prujezd_soucet = matching.reduce(
+        (sum: number, m: any) =>
+          sum + (parseInt(m.pocet_prujezdu_soucet, 10) || 0),
+        0
+      );
+
       const veSmeru = matching.reduce(
         (sum: number, m: any) =>
           sum + (parseInt(m.prekroceni_rychl_ve_smeru, 10) || 0),
@@ -183,6 +201,9 @@ export default function StatsPage() {
 
       return {
         lokalita: feature.properties.lokalita,
+        prujezd_ve_smeru,
+        prujezd_proti_smeru,
+        prujezd_soucet,
         veSmeru,
         vProtismeru,
         rychlostni_limit,
@@ -196,6 +217,9 @@ export default function StatsPage() {
 
     const filtered = raw?.filter(
       (f: any) =>
+        f.prujezd_ve_smeru > 0 ||
+        f.prujezd_proti_smeru > 0 ||
+        f.prujezd_soucet > 0 ||
         f.veSmeru > 0 ||
         f.vProtismeru > 0 ||
         f.r30_40 > 0 ||
@@ -204,13 +228,30 @@ export default function StatsPage() {
         f.r60_70 > 0 ||
         f.r70_80 > 0
     );
-
     const lokalitaTooltipMap = filtered?.map(
       (f: any) => `${f.lokalita} (${f.rychlostni_limit} km/h)`
     );
+
+    const labelTooltipMap = filtered?.map((f: any) => {
+      if (mode === "summary") {
+        return [
+          `${f.lokalita}`,
+          `${f.rychlostni_limit} km/h`,
+          `${f.prujezd_ve_smeru} ve směru`, // tolik aut projelo
+          `${f.prujezd_proti_smeru} v protisměru`, // tolik aut projelo
+        ];
+      } else {
+        return [
+          `${f.lokalita}`,
+          `${f.rychlostni_limit} km/h`,
+          `∑ ${f.prujezd_soucet} průjezdů`, // tolik aut projelo
+        ];
+      }
+    });
+
     const labels = lokalitaTooltipMap?.map((_: any, i: any) => `#${i + 1}`);
-    const dataVeSmeru = filtered?.map((f: any) => f.veSmeru);
-    const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru);
+    const dataVeSmeru = filtered?.map((f: any) => f.veSmeru); // tolik aut překročilo rychlost
+    const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru); // tolik aut překročilo rychlost
 
     const r30_40 = filtered?.map((f: any) => f.r30_40);
     const r40_50 = filtered?.map((f: any) => f.r40_50);
@@ -224,7 +265,7 @@ export default function StatsPage() {
           callbacks: {
             title: (ctx: any) => {
               const i = ctx[0].dataIndex;
-              return lokalitaTooltipMap?.[i] || "Neznámá lokalita";
+              return labelTooltipMap?.[i] || "Neznámá lokalita";
             },
           },
         },

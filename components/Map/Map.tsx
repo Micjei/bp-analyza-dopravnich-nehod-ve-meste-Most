@@ -42,6 +42,10 @@ import {
   getDrugsDescription,
   getConsequenceDescription,
   getPedestrianDescription,
+  getFaultDescription,
+  getCauseDescription,
+  getDamageDescription,
+  getVehicleTypeDescription,
 } from "@/utils/popupDescription";
 
 import { useTranslation } from "react-i18next";
@@ -252,6 +256,7 @@ const Map: React.FC = () => {
   const pointToLayerAccidents = (feature: any, latlng: LatLngExpression) => {
     const pedestrians = feature.properties.chodci; // Pole chodců
     const consequences = feature.properties.nasledky_ve_vozidle; // Pole následků
+    const vehicles = feature.properties.vozidla; // vozidla
     const hasPedestrianCategory = pedestrians.length > 0;
 
     let icon = carCrashIcon;
@@ -289,7 +294,19 @@ const Map: React.FC = () => {
               (c: any, index: number) =>
                 `<b>${t("passenger")} ${
                   index + 1
-                }:</b> ${getConsequenceDescription(t)(c.nasledky_vozidlo)}<br/>` // ve vozidle následky?
+                }:</b> ${getConsequenceDescription(t)(c.nasledky_vozidlo)}<br/>` // ve vozidle následky
+            )
+            .join("")
+        : "";
+
+    const vehiclesInfo =
+      vehicles.length > 0
+        ? vehicles
+            .map(
+              (v: any, index: number) =>
+                `<b>${t("druh vozidla")} ${
+                  index + 1
+                }:</b> ${getVehicleTypeDescription(t)(v.vozidlo)}<br/>` // vozidla
             )
             .join("")
         : "";
@@ -304,6 +321,14 @@ const Map: React.FC = () => {
     )}<br/>
       ${pedestriansInfo}
       ${consequencesInfo}
+      ${vehiclesInfo}
+    <b>zavineni nehody:</b> ${getFaultDescription(t)(
+      feature.properties.zavineni_nehody
+    )}<br/> 
+    <b>priciny nehody:</b> ${getCauseDescription(t)(
+      feature.properties.priciny_nehody
+    )}<br/> 
+    <b>skoda:</b> ${getDamageDescription(t)(feature.properties.skoda)}<br/> 
     `);
 
     return marker;
