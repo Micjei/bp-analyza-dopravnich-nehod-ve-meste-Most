@@ -131,17 +131,27 @@ const Map: React.FC = () => {
           // dead filter
           const smrt = feature.properties?.smrt;
 
+          const alkoholStr = String(parseInt(alkohol, 10));
+          const drogyStr = String(parseInt(drogy, 10));
+
+          const alcoholYesValues = ["1", "3", "4", "5", "6", "7", "8", "9"]; // 0 = nezjištěno
+          const drugsYesValues = ["1", "2", "3", "4", "5", "6", "7"]; // 0 = NE
+
           // TODO null hodnoty
           return (
-            rok === selectedYear &&
+            (selectedYear === "-" ||
+              parseInt(rok) === parseInt(selectedYear)) &&
             (selectedMonth === "-" ||
               parseInt(mesic, 10) === parseInt(selectedMonth, 10)) &&
             (selectedDay === "-" ||
               parseInt(den, 10) === parseInt(selectedDay, 10)) &&
             (alcoholFilter === "-" ||
-              parseInt(alkohol, 10) === parseInt(alcoholFilter, 10)) &&
+              (alcoholFilter === "ano" &&
+                alcoholYesValues.includes(alkoholStr)) ||
+              alkoholStr === alcoholFilter) &&
             (drugsFilter === "-" ||
-              parseInt(drogy, 10) === parseInt(drugsFilter, 10)) &&
+              (drugsFilter === "ano" && drugsYesValues.includes(drogyStr)) ||
+              drogyStr === drugsFilter) &&
             (pedestrianFilter === "-" ||
               (pedestrianFilter === `${t("yes")}` && chodci.length > 0) ||
               (pedestrianFilter === `${t("no")}` && chodci.length === 0)) &&
@@ -200,8 +210,8 @@ const Map: React.FC = () => {
   // formating date from 01022021 to 1/2/2021
   const formateDate = (datumText: string) => {
     const year = datumText?.slice(0, 4);
-    const month = parseInt(datumText?.slice(4, 6), 10);
-    const day = parseInt(datumText?.slice(6, 8), 10);
+    const month = datumText?.slice(4, 6);
+    const day = datumText?.slice(6, 8);
 
     const formated_date = day + "/" + month + "/" + year;
     console.log(datumText);
@@ -318,6 +328,7 @@ const Map: React.FC = () => {
 
     marker.bindPopup(/*`
       <b>ID:</b> ${feature.properties.id}<br/>*/ `
+      <b>${t("date")}:</b> ${feature.properties.datum}<br/>
       <b>${t("alcohol")}:</b> ${getAlcoholDescription(t)(
       feature.properties.alkohol
     )}<br/>

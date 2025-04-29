@@ -58,8 +58,8 @@ export default function StatsPage() {
   const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null);
   const [filteredAccidentsData2, setFilteredAccidentsData2] =
     useState<any>(null);
-  const [selectedAccidentYear, setSelectedAccidentYear] = useState("2023");
-  const [selectedAccidentYear2, setSelectedAccidentYear2] = useState("2023");
+  const [selectedAccidentYear, setSelectedAccidentYear] = useState("-");
+  const [selectedAccidentYear2, setSelectedAccidentYear2] = useState("-");
   const [selectedAccidentMonth, setSelectedAccidentMonth] = useState("-");
   const [selectedAccidentMonth2, setSelectedAccidentMonth2] = useState("-");
   //const selectedAccidentDay = "1"; // smazat

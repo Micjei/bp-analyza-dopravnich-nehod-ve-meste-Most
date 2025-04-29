@@ -293,8 +293,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
               <div className="flex flex-row gap-2">
                 {/* Výběr roku */}
                 <CustomSelect
-                  options={years.map(String)}
-                  value={selectedYear}
+                  options={["-", ...years.map(String)]}
+                  value={selectedYear === "-" ? `${t("yy")}` : selectedYear}
                   onChange={(option) => setSelectedYear(option)}
                 />
 
