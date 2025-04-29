@@ -32,6 +32,7 @@ export const getDaysInMonth = (month: number, year: number) => {
 
 export const alcoholOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
+  { label: `${t("yes")}`, value: "ano" },
   { label: `${t("no")}`, value: "2" },
   { label: `${t("measurement_rejected")}`, value: "4" },
   { label: `${t("from")} 0,24 ‰`, value: "1" },
@@ -46,6 +47,7 @@ export const alcoholOptions = (t: (key: string) => string) => [
 
 export const drugsOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
+  { label: `${t("yes")}`, value: "ano" },
   { label: `${t("no")}`, value: "0" },
   { label: `${t("measurement_rejected")}`, value: "7" },
   { label: `${t("THC")}`, value: "1" },
