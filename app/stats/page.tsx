@@ -1,5 +1,6 @@
 "use client";
 
+import "../../app/globals.css";
 import React, { useEffect, useState } from "react";
 import HeaderSection from "@/components/HeaderSection";
 import FooterSection from "@/components/FooterSection";
@@ -69,7 +70,7 @@ export default function StatsPage() {
     "-",
     ...Array.from({ length: 12 }, (_, i) => (i + 1).toString()),
   ];
-  type RadarChartMode = "summary" | "intervals";
+  type RadarChartMode = "summary" | "intervals" | "ratio";
 
   const [radarChartMode, setRadarChartMode] =
     useState<RadarChartMode>("summary");
@@ -237,22 +238,33 @@ export default function StatsPage() {
         return [
           `${f.lokalita}`,
           `${f.rychlostni_limit} km/h`,
-          `${f.prujezd_ve_smeru} ve směru`, // tolik aut projelo
-          `${f.prujezd_proti_smeru} v protisměru`, // tolik aut projelo
+          //`aut ${f.prujezd_ve_smeru} ve směru`, // tolik aut projelo
+          //`aut ${f.prujezd_proti_smeru} v protisměru`, // tolik aut projelo
         ];
-      } else {
+      } else if (mode === "intervals") {
         return [
           `${f.lokalita}`,
           `${f.rychlostni_limit} km/h`,
-          `∑ ${f.prujezd_soucet} průjezdů`, // tolik aut projelo
+          //`∑ ${f.prujezd_soucet} průjezdů`, // tolik aut projelo
+        ];
+      } else {
+        // pokus pro poměry
+        return [
+          `${f.lokalita}`,
+          `${f.rychlostni_limit} km/h`,
+          //`aut ${f.prujezd_ve_smeru} ve směru`, // tolik aut projelo
+          //`aut ${f.prujezd_proti_smeru} v protisměru`, // tolik aut projelo
         ];
       }
     });
 
     const labels = lokalitaTooltipMap?.map((_: any, i: any) => `#${i + 1}`);
-    const dataVeSmeru = filtered?.map((f: any) => f.veSmeru); // tolik aut překročilo rychlost
-    const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru); // tolik aut překročilo rychlost
-
+    const dataVeSmeru = filtered?.map((f: any) => f.veSmeru); // tolik aut překročilo rychlost ve smeru
+    const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru); // tolik aut překročilo rychlost v protismeru
+    const dataPrujezdVeSmeru = filtered?.map((f: any) => f.prujezd_ve_smeru); // tolik aut projelo ve smeru
+    const dataPrujezdVProtismeru = filtered?.map(
+      (f: any) => f.prujezd_proti_smeru
+    ); // tolik aut projelo v protismeru
     const r30_40 = filtered?.map((f: any) => f.r30_40);
     const r40_50 = filtered?.map((f: any) => f.r40_50);
     const r50_60 = filtered?.map((f: any) => f.r50_60);
@@ -266,6 +278,32 @@ export default function StatsPage() {
             title: (ctx: any) => {
               const i = ctx[0].dataIndex;
               return labelTooltipMap?.[i] || "Neznámá lokalita";
+            },
+            label: (ctx: any) => {
+              const datasetLabel = ctx.dataset.label;
+              const value = Number(ctx.raw);
+              const index = ctx.dataIndex;
+
+              if (mode === "ratio") {
+                let total = 0;
+                if (datasetLabel === t("cars_speeding_in_direction")) {
+                  total = dataPrujezdVeSmeru?.[index] || 0;
+                } else if (datasetLabel === t("cars_speeding_opposite")) {
+                  total = dataPrujezdVProtismeru?.[index] || 0;
+                }
+
+                if (total > 0) {
+                  const percent = ((value / total) * 100).toFixed(3);
+                  return `${value.toLocaleString()} ${t(
+                    "cars"
+                  )} (${percent} %)`;
+                }
+              }
+              if (mode === "intervals") {
+                return `${value.toLocaleString()} ${t("cars")} ${t("passed")} `;
+              } else {
+                return `${value.toLocaleString()} ${t("cars")}`;
+              }
             },
           },
         },
@@ -290,7 +328,7 @@ export default function StatsPage() {
         options: commonOptions,
         lokalitaTooltipMap,
       };
-    } else {
+    } else if (mode === "intervals") {
       return {
         labels,
         datasets: [
@@ -302,7 +340,7 @@ export default function StatsPage() {
           {
             label: "40–50 km/h",
             data: r40_50,
-            backgroundColor: "#4ade80",
+            backgroundColor: "#22c55e",
           },
           {
             label: "50–60 km/h",
@@ -318,6 +356,34 @@ export default function StatsPage() {
             label: "70–80 km/h",
             data: r70_80,
             backgroundColor: "#ef4444",
+          },
+        ],
+        options: commonOptions,
+        lokalitaTooltipMap,
+      };
+    } else {
+      return {
+        labels,
+        datasets: [
+          {
+            label: t("cars_passed_in_direction"),
+            data: dataPrujezdVeSmeru,
+            backgroundColor: "#86efac",
+          },
+          {
+            label: t("cars_speeding_in_direction"),
+            data: dataVeSmeru,
+            backgroundColor: "#22c55e",
+          },
+          {
+            label: t("cars_passed_opposite"),
+            data: dataPrujezdVProtismeru,
+            backgroundColor: "#facc15",
+          },
+          {
+            label: t("cars_speeding_opposite"),
+            data: dataVProtismeru,
+            backgroundColor: "#f97316",
           },
         ],
         options: commonOptions,
@@ -371,7 +437,6 @@ export default function StatsPage() {
         labels,
         datasets: [
           {
-            label: "Počet osob",
             data: logData,
             backgroundColor: ["black", "green", "orange", "gray"],
             borderColor: "white",
@@ -385,7 +450,7 @@ export default function StatsPage() {
             callbacks: {
               label: (ctx: any) => {
                 const i = ctx.dataIndex;
-                return `${labels[i]}: ${originalData[i]} ${t("persons")}`;
+                return `${originalData[i]} ${t("persons")}`;
               },
             },
           },
@@ -419,10 +484,10 @@ export default function StatsPage() {
           />
 
           <button
-            className="border w-6 h-6 rounded bg-plus-button-bg hover:bg-plus-button-bg-hover hover:text-plus-button-text-hover flex items-center justify-center"
+            className="border w-6 h-6 text-plus-button-text rounded bg-plus-button-bg hover:bg-plus-button-bg-hover hover:text-plus-button-text-hover flex items-center justify-center"
             onClick={() => setShowSecondRadarsStats((p) => !p)}
           >
-            {showSecondRadarsStats ? "-" : "+"}
+            {showSecondAccidentsStats ? "-" : "+"}
           </button>
 
           {showSecondRadarsStats && (

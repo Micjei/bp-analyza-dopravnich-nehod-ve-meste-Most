@@ -66,10 +66,11 @@
   "map": "Display map",
   "radar_stats": "Measurements statistics",
   "accidents_stats": "Accidents statistics",
-  "in_direction": "In direction",
-  "opposite_direction": "Opposite direction",
-  "summary": "Summary",
-  "intervals": "Intervals",
+  "in_direction": "Vehicles speeding in driving direction",
+  "opposite_direction": "Vehicles speeding in opposite direction",
+  "summary": "summary",
+  "intervals": "intervals",
+  "ratio": "ratio",
   "persons": "persons",
   "dd": "day",
   "mm": "month",
@@ -205,5 +206,12 @@
   "parked_against_parking_direction": "Vehicle parked against parking direction",
   "moving_on_road_no_parking_direction": "Vehicle moving on a road without parking direction",
   "parked_on_road_no_parking_direction": "Vehicle parked on a road without parking direction",
-  "vehicle_position": "Vehicle position"
+  "vehicle_position": "Vehicle position",
+
+  "cars": "cars",
+  "cars_passed_in_direction": "cars passed in direction",
+  "cars_speeding_in_direction": "cars speeding in direction",
+  "cars_passed_opposite": "cars passed in opposite direction",
+  "cars_speeding_opposite": "cars speeding in opposite direction",
+  "passed": "passed"
 }
