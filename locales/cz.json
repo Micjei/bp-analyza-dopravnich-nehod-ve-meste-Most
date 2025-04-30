@@ -66,10 +66,11 @@
   "map": "Zobrazit mapu",
   "radar_stats": "Statistiky měření",
   "accidents_stats": "Statistiky nehod",
-  "in_direction": "Ve směru",
-  "opposite_direction": "V protisměru",
-  "summary": "Souhrn",
-  "intervals": "Intervaly",
+  "in_direction": "aut překročilo rychlost ve směru",
+  "opposite_direction": "aut překročilo rychlost v protisměru",
+  "summary": "souhrn",
+  "intervals": "intervaly",
+  "ratio": "poměry",
   "persons": "osob",
   "dd": "den",
   "mm": "měsíc",
@@ -205,5 +206,12 @@
   "parked_against_parking_direction": "Vozidlo odstavené/parkující proti směru staničení",
   "moving_on_road_no_parking_direction": "Vozidlo jedoucí na komunikaci bez staničení",
   "parked_on_road_no_parking_direction": "Vozidlo odstavené/parkující na komunikaci bez staničení",
-  "vehicle_position": "Postavení vozidla"
+  "vehicle_position": "Postavení vozidla",
+
+  "cars": "aut",
+  "cars_passed_in_direction": "aut projelo ve směru",
+  "cars_speeding_in_direction": "aut překročilo rychlost ve směru",
+  "cars_passed_opposite": "aut projelo v protisměru",
+  "cars_speeding_opposite": "aut překročilo rychlost v protisměru",
+  "passed": "projelo"
 }

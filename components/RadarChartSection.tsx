@@ -10,10 +10,10 @@ import "@/i18n";
 type Props = {
   year: string;
   month: string;
-  chartMode: "summary" | "intervals";
+  chartMode: "summary" | "intervals" | "ratio";
   onYearChange: (year: string) => void;
   onMonthChange: (month: string) => void;
-  onChartModeChange: (mode: "summary" | "intervals") => void;
+  onChartModeChange: (mode: "summary" | "intervals" | "ratio") => void;
   chartData: any;
   months: string[];
 };
@@ -56,10 +56,11 @@ export default function RadarChartSection({
           options={[
             { value: "summary", label: t("summary") },
             { value: "intervals", label: t("intervals") },
+            { value: "ratio", label: t("ratio") },
           ]}
           value={chartMode}
           onChange={(mode) =>
-            onChartModeChange(mode as "summary" | "intervals")
+            onChartModeChange(mode as "summary" | "intervals" | "ratio")
           }
         />
       </div>
@@ -93,7 +94,10 @@ export default function RadarChartSection({
             scales: {
               x: { stacked: false },
               y: {
-                type: chartMode === "intervals" ? "logarithmic" : "linear",
+                type:
+                  chartMode === "intervals" || "ratio"
+                    ? "logarithmic"
+                    : "linear",
                 min: 1,
                 stacked: false,
                 ticks: {
