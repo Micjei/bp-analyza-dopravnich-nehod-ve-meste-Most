@@ -3,25 +3,28 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import "@/i18n";
+import "@/i18n"; // i18n config for translations
 import { usePathname } from "next/navigation";
-import { useTheme } from "@/context/ThemeContext";
-import { useMapLayer } from "@/context/MapLayerContext";
-import { HelpCircle } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext"; // Custom theme context (dark/light)
+import { useMapLayer } from "@/context/MapLayerContext"; // Custom context for map layer selection
+import { HelpCircle } from "lucide-react"; // Icon
 
 const HeaderSection: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const [showMapDropdown, setShowMapDropdown] = useState(false);
-  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  const currentPath = usePathname();
-  const { isDark, toggleTheme } = useTheme();
-  const { setTileLayerUrl, tileLayerUrl } = useMapLayer();
+  const [showMapDropdown, setShowMapDropdown] = useState(false); // Controls map layer dropdown
+  const [showSettingsDropdown, setShowSettingsDropdown] = useState(false); // Controls settings dropdown
+  const [isClient, setIsClient] = useState(false); // Prevent SSR issues
 
+  const currentPath = usePathname(); // Detect current route
+  const { isDark, toggleTheme } = useTheme(); // Theme toggle
+  const { setTileLayerUrl, tileLayerUrl } = useMapLayer(); // Map tile selection
+
+  // Check current page
   const isHome = currentPath === "/";
   const isStats = currentPath === "/stats";
   const isInfo = currentPath === "/info";
 
+  // Define map layers
   const apiKey = process.env.NEXT_PUBLIC_STADIA_MAPS_API_KEY;
   const mapLayers = [
     {
@@ -40,10 +43,12 @@ const HeaderSection: React.FC = () => {
     },
   ];
 
+  // Enable client-only rendering
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // Automatically switch between dark/light map layer if user toggles theme
   useEffect(() => {
     if (!isHome) return;
 
@@ -55,6 +60,7 @@ const HeaderSection: React.FC = () => {
     }
   }, [isDark, isHome, setTileLayerUrl, tileLayerUrl]);
 
+  // Hide dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -69,16 +75,18 @@ const HeaderSection: React.FC = () => {
     };
   }, []);
 
+  // Prevent SSR rendering
   if (!isClient) return null;
 
   return (
     <div className="absolute top-0 w-full h-auto min-h-20 flex flex-wrap md:flex-nowrap items-center justify-between px-4 py-2 bg-header-bg border-2 border-header-border shadow-md text-header-text opacity-90 gap-2 z-[1002]">
+      {/* Title */}
       <h3 className="w-full md:w-fit text-nowrap text-center md:text-left text-xl md:text-3xl font-bold tracking-wide italic">
         {t("title")}
       </h3>
 
       <div className="flex flex-wrap items-center justify-center md:justify-end gap-2 flex-grow min-w-0">
-        {/* Výběr mapy – pouze na hlavní stránce */}
+        {/* Map selection (only on homepage) */}
         {isHome && (
           <div className="relative dropdown">
             <button
@@ -106,7 +114,7 @@ const HeaderSection: React.FC = () => {
           </div>
         )}
 
-        {/* Přepínací tlačítka podle stránky */}
+        {/* Navigation: stats/map toggle */}
         {(isHome || isInfo) && (
           <Link href="/stats">
             <button className="px-2 py-1 md:px-4 md:py-2 rounded-md shadow-md bg-transparent hover:bg-header-bg-hover hover:text-header-text-hover text-sm md:text-base">
@@ -123,7 +131,7 @@ const HeaderSection: React.FC = () => {
           </Link>
         )}
 
-        {/* Nastavení / Téma */}
+        {/* Settings menu (theme toggle) */}
         <div className="relative dropdown">
           <button
             onClick={() => setShowSettingsDropdown(!showSettingsDropdown)}
@@ -148,7 +156,7 @@ const HeaderSection: React.FC = () => {
           )}
         </div>
 
-        {/* Tlačítko info */}
+        {/* Info button */}
         {currentPath !== "/info" && (
           <Link href="/info">
             <button
@@ -163,7 +171,7 @@ const HeaderSection: React.FC = () => {
           </Link>
         )}
 
-        {/* Jazykové přepínače */}
+        {/* Language switcher */}
         <div className="flex flex-row gap-1 md:gap-2">
           {i18n.language !== "cs" && (
             <button onClick={() => i18n.changeLanguage("cs")}>

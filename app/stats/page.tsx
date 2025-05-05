@@ -2,12 +2,9 @@
 
 import "../../app/globals.css";
 import React, { useEffect, useState } from "react";
-import HeaderSection from "@/components/HeaderSection";
 import FooterSection from "@/components/FooterSection";
-import { fetchRadarsData, fetchAccidentsData } from "@/utils/fetchData";
-import { Chart, Doughnut, Bar } from "react-chartjs-2";
-import { getCurrentYear, years } from "@/utils/selectOptions";
-import CustomSelect from "@/components/CustomSelect";
+
+// Import necessary modules from Chart.js
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,6 +20,7 @@ import {
   LogarithmicScale,
 } from "chart.js";
 
+// Register Chart.js components globally
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -36,62 +34,73 @@ ChartJS.register(
   RadialLinearScale,
   LogarithmicScale
 );
+
+// Import application data and components
 import { useData } from "@/context/DataContext";
-import { div } from "framer-motion/client";
 import RadarChartSection from "@/components/RadarChartSection";
 import AccidentChartSection from "@/components/AccidentChartSection";
 import { useTranslation } from "react-i18next";
 import "@/i18n";
 
 export default function StatsPage() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(); // For translations
 
-  const { RadarsData, AccidentsData } = useData();
+  const { RadarsData, AccidentsData } = useData(); // Load radar and accident data from context
 
-  //const [RadarsData, setRadarsData] = useState<any>(null);
+  // State for first radar chart
   const [selectedRadarYear, setSelectedRadarYear] = useState("2022");
-  const [selectedRadarYear2, setSelectedRadarYear2] = useState("2022");
   const [selectedRadarMonth, setSelectedRadarMonth] = useState("-");
+
+  // State for second radar chart (if enabled)
+  const [selectedRadarYear2, setSelectedRadarYear2] = useState("2022");
   const [selectedRadarMonth2, setSelectedRadarMonth2] = useState("-");
   const [showSecondRadarsStats, setShowSecondRadarsStats] = useState(false);
 
-  //const [AccidentsData, setAccidentsData] = useState<any>(null);
+  // State for filtered accident data (first and second dataset)
   const [filteredAccidentsData, setFilteredAccidentsData] = useState<any>(null);
   const [filteredAccidentsData2, setFilteredAccidentsData2] =
     useState<any>(null);
+
+  // State for accident filter (first chart)
   const [selectedAccidentYear, setSelectedAccidentYear] = useState("-");
-  const [selectedAccidentYear2, setSelectedAccidentYear2] = useState("-");
   const [selectedAccidentMonth, setSelectedAccidentMonth] = useState("-");
+
+  // State for accident filter (second chart)
+  const [selectedAccidentYear2, setSelectedAccidentYear2] = useState("-");
   const [selectedAccidentMonth2, setSelectedAccidentMonth2] = useState("-");
-  //const selectedAccidentDay = "1"; // smazat
   const [showSecondAccidentsStats, setShowSecondAccidentsStats] =
     useState(false);
+
+  // List of months used for dropdown selection
   const months = [
     "-",
     ...Array.from({ length: 12 }, (_, i) => (i + 1).toString()),
   ];
-  type RadarChartMode = "summary" | "intervals" | "ratio";
 
+  // Radar chart display modes
+  type RadarChartMode = "summary" | "intervals" | "ratio";
   const [radarChartMode, setRadarChartMode] =
     useState<RadarChartMode>("summary");
-
   const [radarChartMode2, setRadarChartMode2] =
     useState<RadarChartMode>("summary");
 
+  // Client-side rendering state (required for compatibility)
   const [isClient, setIsClient] = useState(false);
 
+  // Only enable rendering on the client
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // Filter first accident dataset based on year and month
   useEffect(() => {
     if (AccidentsData) {
       const filtered = AccidentsData.features.filter((feature: any) => {
         const datum = feature.properties?.datum;
         const parts = datum.split("/");
         if (parts.length !== 3) return false;
-        const mesic = parts[1];
-        const rok = parts[2];
+        const mesic = parts[1]; // month
+        const rok = parts[2]; // year
         return (
           (selectedAccidentYear === "-" ||
             parseInt(rok) === parseInt(selectedAccidentYear)) &&
@@ -104,14 +113,15 @@ export default function StatsPage() {
     }
   }, [selectedAccidentYear, selectedAccidentMonth, AccidentsData]);
 
+  // Filter second accident dataset (if comparison chart is shown)
   useEffect(() => {
     if (AccidentsData) {
       const filtered = AccidentsData.features.filter((feature: any) => {
         const datum = feature.properties?.datum;
         const parts = datum.split("/");
         if (parts.length !== 3) return false;
-        const mesic = parts[1];
-        const rok = parts[2];
+        const mesic = parts[1]; // month
+        const rok = parts[2]; // year
         return (
           (selectedAccidentYear2 === "-" ||
             parseInt(rok) === parseInt(selectedAccidentYear2)) &&
@@ -123,16 +133,20 @@ export default function StatsPage() {
     }
   }, [selectedAccidentYear2, selectedAccidentMonth2, AccidentsData]);
 
+  // Avoid rendering on server side
   if (!isClient) return null;
 
+  // This function prepares data for a stacked radar chart based on year, month and mode (summary, intervals, ratio)
   const getStackedRadarChartData = (
     year: string,
     month: string,
     mode: string
   ) => {
+    // Prepare raw data from all radar locations
     const raw = RadarsData?.features?.map((feature: any) => {
       const measurements = feature.properties?.mereni || [];
 
+      // Filter measurements based on selected year and month
       const matching = measurements.filter((m: any) => {
         const datumText = m.datum_text;
         const yearFromData = datumText?.slice(0, 4);
@@ -145,6 +159,7 @@ export default function StatsPage() {
         );
       });
 
+      // Aggregate various statistics for the filtered data
       const prujezd_ve_smeru = matching.reduce(
         (sum: number, m: any) =>
           sum + (parseInt(m.pocet_prujezdu_ve_smeru, 10) || 0),
@@ -177,8 +192,9 @@ export default function StatsPage() {
 
       const rychlostni_limit =
         matching.find((m: any) => m.rychlostni_limit != null)
-          ?.rychlostni_limit || "nezjištěno";
+          ?.rychlostni_limit || `${t("unknown")}`;
 
+      // Breakdown of speeding intervals
       const r30_40 = matching.reduce(
         (sum: number, m: any) => sum + (parseFloat(m.r30_40_soucet) || 0),
         0
@@ -216,6 +232,7 @@ export default function StatsPage() {
       };
     });
 
+    //Filter out locations where no meaningful data is present
     const filtered = raw?.filter(
       (f: any) =>
         f.prujezd_ve_smeru > 0 ||
@@ -229,55 +246,47 @@ export default function StatsPage() {
         f.r60_70 > 0 ||
         f.r70_80 > 0
     );
+
+    // Tooltip helper arrays
     const lokalitaTooltipMap = filtered?.map(
       (f: any) => `${f.lokalita} (${f.rychlostni_limit} km/h)`
     );
 
     const labelTooltipMap = filtered?.map((f: any) => {
       if (mode === "summary") {
-        return [
-          `${f.lokalita}`,
-          `${f.rychlostni_limit} km/h`,
-          //`aut ${f.prujezd_ve_smeru} ve směru`, // tolik aut projelo
-          //`aut ${f.prujezd_proti_smeru} v protisměru`, // tolik aut projelo
-        ];
+        return [`${f.lokalita}`, `${f.rychlostni_limit} km/h`];
       } else if (mode === "intervals") {
-        return [
-          `${f.lokalita}`,
-          `${f.rychlostni_limit} km/h`,
-          //`∑ ${f.prujezd_soucet} průjezdů`, // tolik aut projelo
-        ];
+        return [`${f.lokalita}`, `${f.rychlostni_limit} km/h`];
       } else {
-        // pokus pro poměry
-        return [
-          `${f.lokalita}`,
-          `${f.rychlostni_limit} km/h`,
-          //`aut ${f.prujezd_ve_smeru} ve směru`, // tolik aut projelo
-          //`aut ${f.prujezd_proti_smeru} v protisměru`, // tolik aut projelo
-        ];
+        return [`${f.lokalita}`, `${f.rychlostni_limit} km/h`];
       }
     });
 
+    // Generate x-axis labels like #1, #2, #3, ...
     const labels = lokalitaTooltipMap?.map((_: any, i: any) => `#${i + 1}`);
-    const dataVeSmeru = filtered?.map((f: any) => f.veSmeru); // tolik aut překročilo rychlost ve smeru
-    const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru); // tolik aut překročilo rychlost v protismeru
-    const dataPrujezdVeSmeru = filtered?.map((f: any) => f.prujezd_ve_smeru); // tolik aut projelo ve smeru
+
+    // Prepare data arrays for the chart
+    const dataVeSmeru = filtered?.map((f: any) => f.veSmeru); // number of cars that were speeding in the driving direction
+    const dataVProtismeru = filtered?.map((f: any) => f.vProtismeru); // number of cars that were speeding in the opposite direction
+    const dataPrujezdVeSmeru = filtered?.map((f: any) => f.prujezd_ve_smeru); // number of cars that passed in the driving direction
     const dataPrujezdVProtismeru = filtered?.map(
       (f: any) => f.prujezd_proti_smeru
-    ); // tolik aut projelo v protismeru
+    ); // number of cars that passed in the opposite direction
+
     const r30_40 = filtered?.map((f: any) => f.r30_40);
     const r40_50 = filtered?.map((f: any) => f.r40_50);
     const r50_60 = filtered?.map((f: any) => f.r50_60);
     const r60_70 = filtered?.map((f: any) => f.r60_70);
     const r70_80 = filtered?.map((f: any) => f.r70_80);
 
+    // Common tooltip configuration used in all modes
     const commonOptions = {
       plugins: {
         tooltip: {
           callbacks: {
             title: (ctx: any) => {
               const i = ctx[0].dataIndex;
-              return labelTooltipMap?.[i] || "Neznámá lokalita";
+              return labelTooltipMap?.[i] || `${t("unknown")}`;
             },
             label: (ctx: any) => {
               const datasetLabel = ctx.dataset.label;
@@ -310,6 +319,7 @@ export default function StatsPage() {
       },
     };
 
+    // chart config for each mode
     if (mode === "summary") {
       return {
         labels,
@@ -393,8 +403,10 @@ export default function StatsPage() {
   };
 
   const getAccidentsChartData = (sourceData = filteredAccidentsData) => {
+    // Extract features (individual accident records) from the data
     const filteredData = sourceData?.features;
 
+    // Define labels for chart categories
     const labels = [
       `${t("fatal_injury")}`,
       `${t("minor_injury")}`,
@@ -406,12 +418,14 @@ export default function StatsPage() {
       return { data: { labels, datasets: [] }, options: {} };
     }
 
-    let smrt = 0;
-    let lehke = 0;
-    let tezke = 0;
-    let bez = 0;
+    // Initialize counters for each injury type
+    let smrt = 0; // fatalities
+    let lehke = 0; // minor injuries
+    let tezke = 0; // serious injuries
+    let bez = 0; // people without injury
 
     for (const f of filteredData) {
+      // Parse injury counts from the accident properties
       const s = parseInt(f.properties.smrt, 10) || 0;
       const l = parseInt(f.properties.lehce_zraneno_osob, 10) || 0;
       const t = parseInt(f.properties.tezce_zraneno_osob, 10) || 0;
@@ -423,15 +437,18 @@ export default function StatsPage() {
       if (s === 0 && l === 0 && t === 0) {
         const chodci = f.properties.chodci || [];
         const nasledky = f.properties.nasledky_ve_vozidle || [];
-        bez += chodci.length + nasledky.length; // snad už správný počet
+        bez += chodci.length + nasledky.length;
       }
     }
 
     const originalData = [smrt, lehke, tezke, bez];
+
+    // Transform data using logarithmic scale for better chart visualization from original data
     const logData = originalData.map((val) =>
       val > 0 ? Math.log10(val + 1) : 0
     );
 
+    // chart data and configuration
     return {
       data: {
         labels,
@@ -461,13 +478,15 @@ export default function StatsPage() {
 
   return (
     <div className="mb-5 font-[family-name:var(--font-geist-sans)]">
-      {/*<HeaderSection />*/}
+      {/* Page title and introductory text */}
       <h1 className="text-2xl font-bold mt-24 px-10 py-5">{`${t("stats")}`}</h1>
       <p className="px-5">{`${t("stats_intro")}`}</p>
 
+      {/* Main content layout with two columns: radar stats on the left, accidents on the right */}
       <div className="flex flex-row md:p-7 p-4 md:gap-8 gap-3">
-        {/** levý sloupec */}
+        {/* Left column – Radar chart(s) */}
         <div className="flex flex-col w-[62.5%] text-center gap-2">
+          {/* First radar chart */}
           <RadarChartSection
             year={selectedRadarYear}
             month={selectedRadarMonth}
@@ -483,13 +502,15 @@ export default function StatsPage() {
             months={months}
           />
 
+          {/* Button to toggle visibility of second radar chart */}
           <button
             className="border w-6 h-6 text-plus-button-text rounded bg-plus-button-bg hover:bg-plus-button-bg-hover hover:text-plus-button-text-hover flex items-center justify-center"
             onClick={() => setShowSecondRadarsStats((p) => !p)}
           >
-            {showSecondAccidentsStats ? "-" : "+"}
+            {showSecondRadarsStats ? "-" : "+"}
           </button>
 
+          {/* Second radar chart (conditionally rendered) */}
           {showSecondRadarsStats && (
             <RadarChartSection
               year={selectedRadarYear2}
@@ -508,8 +529,9 @@ export default function StatsPage() {
           )}
         </div>
 
-        {/** pravý sloupec */}
+        {/* Right column – Accident chart(s) */}
         <div className="flex flex-col w-[37.5%] text-center gap-2">
+          {/* First accident chart */}
           <AccidentChartSection
             year={selectedAccidentYear}
             month={selectedAccidentMonth}
@@ -519,6 +541,7 @@ export default function StatsPage() {
             months={months}
           />
 
+          {/* Button to toggle visibility of second accident chart */}
           <button
             className="border w-6 h-6 text-plus-button-text rounded bg-plus-button-bg hover:bg-plus-button-bg-hover hover:text-plus-button-text-hover flex items-center justify-center"
             onClick={() => setShowSecondAccidentsStats((p) => !p)}
@@ -526,6 +549,7 @@ export default function StatsPage() {
             {showSecondAccidentsStats ? "-" : "+"}
           </button>
 
+          {/* Second accident chart (conditionally rendered) */}
           {showSecondAccidentsStats && (
             <AccidentChartSection
               year={selectedAccidentYear2}
@@ -539,6 +563,7 @@ export default function StatsPage() {
         </div>
       </div>
 
+      {/* Page footer */}
       <FooterSection />
     </div>
   );

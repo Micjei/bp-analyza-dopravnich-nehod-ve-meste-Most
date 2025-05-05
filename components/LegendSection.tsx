@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
-import "@/i18n";
+import "@/i18n"; // i18n translation config
 
 interface LegendSectionProps {
   isLegendVisible: boolean;
@@ -18,9 +18,9 @@ const LegendSection: React.FC<LegendSectionProps> = ({
   showRadarData,
 }) => {
   const { t } = useTranslation();
-
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Reset scroll when legend is closed
   useEffect(() => {
     if (!isLegendVisible && containerRef.current) {
       containerRef.current.scrollTop = 0;
@@ -35,7 +35,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
       } overflow-x-hidden scrollbar-hide transition-all duration-500
  w-auto ${isLegendVisible ? "md:max-h-80 max-h-32" : "max-h-2"}`}
     >
-      {/* Výpis LEGENDA při zatažení – absolutní a nad vším */}
+      {/* Legend label when collapsed – centered and non-interactive */}
       {!isLegendVisible && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="text-sm font-semibold text-filters-text tracking-wide uppercase">
@@ -44,7 +44,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
         </div>
       )}
 
-      {/* Nadpis */}
+      {/* Title */}
       <h3
         className={`self-center transition-opacity duration-300 text-1xl font-bold ${
           isLegendVisible ? "opacity-100" : "opacity-0"
@@ -53,13 +53,14 @@ const LegendSection: React.FC<LegendSectionProps> = ({
         {`${t("legend_title")}`}
       </h3>
 
-      {/* Zelená čára pod nadpisem */}
+      {/* Divider line under the title */}
       <div
         className={`w-[calc(100%+2.5rem)] -mx-5 border-b-2 border-legend-border mb-5 mt-2 transition-opacity duration-300 ${
           isLegendVisible ? "opacity-100" : "opacity-0"
         }`}
       ></div>
 
+      {/* Animated visibility of the content */}
       <AnimatePresence>
         {isLegendVisible && (
           <motion.div
@@ -68,7 +69,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.5, ease: "easeInOut" }}
           >
-            {/* Radary */}
+            {/* Radar legend */}
             {showRadarData && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -82,9 +83,10 @@ const LegendSection: React.FC<LegendSectionProps> = ({
               </motion.div>
             )}
 
-            {/* Dopravní nehody */}
+            {/* Accident legend */}
             {showAccidentData && (
               <div className="flex flex-col">
+                {/* Vehicle-only accidents */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -94,13 +96,14 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <Image
                     src="/car-crash.png"
-                    alt="Dopravní nehoda"
+                    alt="Traffic accident"
                     width={24}
                     height={24}
                   />
                   <span>{`${t("car_accidents")}`}</span>
                 </motion.div>
 
+                {/* Pedestrian accidents */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -110,7 +113,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                 >
                   <Image
                     src="/car-crash-pedestrian.png"
-                    alt="Nehoda s chodcem"
+                    alt="Pedestrian accident"
                     width={24}
                     height={24}
                   />
@@ -119,9 +122,10 @@ const LegendSection: React.FC<LegendSectionProps> = ({
               </div>
             )}
 
-            {/* Dopravní situace */}
+            {/* Traffic condition legend */}
             {showTrafficData && (
               <div className="flex flex-col">
+                {/* Jam */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -129,11 +133,11 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                   transition={{ duration: 0.5 }}
                   className="flex items-center space-x-2"
                 >
-                  <div className="w-12 h-2 bg-red-500"></div>{" "}
-                  {/* Červená čára */}
+                  <div className="w-12 h-2 bg-red-500"></div>
                   <span>{`${t("traffic_jam")}`}</span>
                 </motion.div>
 
+                {/* Slow traffic */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -141,11 +145,11 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                   transition={{ duration: 0.5 }}
                   className="flex items-center space-x-2 mt-2"
                 >
-                  <div className="w-12 h-2 bg-orange-500"></div>{" "}
-                  {/* Oranžová čára */}
+                  <div className="w-12 h-2 bg-orange-500"></div>
                   <span>{`${t("slow_traffic")}`}</span>
                 </motion.div>
 
+                {/* Reduced speed */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -153,11 +157,11 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                   transition={{ duration: 0.5 }}
                   className="flex items-center space-x-2 mt-2"
                 >
-                  <div className="w-12 h-2 bg-yellow-500"></div>{" "}
-                  {/* Žlutá čára */}
+                  <div className="w-12 h-2 bg-yellow-500"></div>
                   <span>{`${t("reduced_speed")}`}</span>
                 </motion.div>
 
+                {/* Smooth traffic */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -165,8 +169,7 @@ const LegendSection: React.FC<LegendSectionProps> = ({
                   transition={{ duration: 0.5 }}
                   className="flex items-center space-x-2 mt-2"
                 >
-                  <div className="w-12 h-2 bg-green-500"></div>{" "}
-                  {/* Zelená čára */}
+                  <div className="w-12 h-2 bg-green-500"></div>
                   <span>{`${t("smooth_traffic")}`}</span>
                 </motion.div>
               </div>

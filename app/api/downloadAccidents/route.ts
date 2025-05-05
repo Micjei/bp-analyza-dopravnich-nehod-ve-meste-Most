@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchWithRetry } from "@/utils/fetchData";
 
+// Handler for GET requests to this API route
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
-    console.log("📡 Načítání dat...");
+    console.log("📡 Loading data...");
 
+    // Fetch all datasets concurrently from external sources with retry logic
     const [
       vehiclesResponse,
       accidentsResponse,
@@ -17,13 +19,16 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       fetchWithRetry("https://pclazur.fit.vutbr.cz/chodci.geojson"),
     ]);
 
+    // Log status codes of responses
     console.log(
-      "📊 Stav odpovědí:",
+      "📊 Response statuses:",
       vehiclesResponse.status,
       accidentsResponse.status,
       consequencesResponse.status,
       pedestriansResponse.status
     );
+
+    // Check if any request failed
     if (
       !vehiclesResponse.ok ||
       !accidentsResponse.ok ||
@@ -31,18 +36,20 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       !pedestriansResponse.ok
     ) {
       return NextResponse.json(
-        { error: "Nepodařilo se načíst data" },
+        { error: "Failed to load one or more data sources" },
         { status: 500 }
       );
     }
 
+    // Parse responses to JSON
     const vehiclesData = await vehiclesResponse.json();
     const accidentsData = await accidentsResponse.json();
     const consequencesData = await consequencesResponse.json();
     const pedestriansData = await pedestriansResponse.json();
 
-    console.log("✅ Data načtena úspěšně (nehody).");
+    console.log("✅ Accident data loaded successfully.");
 
+    // Return all datasets in a single JSON response
     return NextResponse.json(
       {
         vehicles: vehiclesData,
@@ -53,9 +60,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("🚨 Chyba při načítání dat:", error);
+    // Handle unexpected errors
+    console.error("🚨 Error loading data:", error);
     return NextResponse.json(
-      { error: "Chyba při načítání dat", details: error.message },
+      { error: "Error loading data", details: error.message },
       { status: 500 }
     );
   }
