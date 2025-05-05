@@ -1,9 +1,22 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import { useTranslation } from "react-i18next";
 import "@/i18n";
 
+/**
+ * Maps radar activity (1 = active, 0 = inactive) to localized descriptions.
+ */
+export const getActivityDescription =
+  (t: (key: string) => string) =>
+  (activity: string | number): string => {
+    const activityMap: Record<string, string> = {
+      "1": `${t("yes")}`,
+      "0": `${t("no")}`,
+    };
+    const parsedValue = parseInt(String(activity), 10);
+    return activityMap[String(parsedValue)] || `${t("unknown_value")}`;
+  };
+
+/**
+ * Maps alcohol levels (p11) to descriptions.
+ */
 export const getAlcoholDescription =
   (t: (key: string) => string) =>
   (alcohol: string | number): string => {
@@ -13,7 +26,6 @@ export const getAlcoholDescription =
       "2": `${t("no")}`,
       "3": "0,24 - 0,5 ‰",
       "4": `${t("measurement_rejected")}`,
-      //"5": "1,00 - 1,49 ‰",
       "6": "0,5 - 0,8 ‰",
       "7": "0,8 - 1,0 ‰",
       "8": "1,0 - 1,5 ‰",
@@ -23,6 +35,9 @@ export const getAlcoholDescription =
     return alcoholMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
+/**
+ * Maps drug types (p11a) to readable strings.
+ */
 export const getDrugsDescription =
   (t: (key: string) => string) =>
   (drug: string | number): string => {
@@ -41,6 +56,9 @@ export const getDrugsDescription =
     return drugMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
+/**
+ * Maps injury consequences (p33g or p59g) to labels.
+ */
 export const getConsequenceDescription =
   (t: (key: string) => string) =>
   (consequence: string | number): string => {
@@ -54,6 +72,9 @@ export const getConsequenceDescription =
     return consequenceMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
+/**
+ * Maps pedestrian categories (p29) to readable labels.
+ */
 export const getPedestrianDescription =
   (t: (key: string) => string) =>
   (pedestrian: string | number): string => {
@@ -68,7 +89,9 @@ export const getPedestrianDescription =
     return pedestrianMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
-// Zavinění nehody (p10)
+/**
+ * Maps fault categories (p10) – who caused the accident.
+ */
 export const getFaultDescription =
   (t: (key: string) => string) =>
   (fault: string | number): string => {
@@ -86,7 +109,9 @@ export const getFaultDescription =
     return faultMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
-// Hlavní příčina nehody (p12)
+/**
+ * Maps accident cause codes (p12) to localized descriptions.
+ */
 export const getCauseDescription =
   (t: (key: string) => string) =>
   (cause: string | number): string => {
@@ -162,7 +187,9 @@ export const getCauseDescription =
     return causeMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
-// Celková hmotná škoda (p14)
+/**
+ * Formats material damage (p14) to Czech currency format.
+ */
 export const getDamageDescription =
   (t: (key: string) => string) =>
   (damage: string | number): string => {
@@ -176,7 +203,9 @@ export const getDamageDescription =
     return `${parsedValue.toLocaleString("cs-CZ")} Kč`;
   };
 
-// Druh vozidla (p44)
+/**
+ * Maps vehicle types (p44) to readable labels.
+ */
 export const getVehicleTypeDescription =
   (t: (key: string) => string) =>
   (vehicleType: string | number): string => {
@@ -204,17 +233,19 @@ export const getVehicleTypeDescription =
     return vehicleTypeMap[String(parsedValue)] || `${t("unknown_value")}`;
   };
 
-// Směr jízdy nebo postavení vozidla (p52)
+/**
+ * Maps vehicle direction/posture (p52) to descriptive text.
+ */
 export const getVehicleDirectionDescription =
   (t: (key: string) => string) =>
   (direction: string | number): string => {
     const directionMap: Record<string, string> = {
-      "1": `${t("moving_in_parking_direction")}`, // vozidlo jedoucí - ve směru staničení
-      "2": `${t("parked_in_parking_direction")}`, // vozidlo odstavené, parkující - ve směru staničení
-      "3": `${t("moving_against_parking_direction")}`, // vozidlo jedoucí - proti směru staničení
-      "4": `${t("parked_against_parking_direction")}`, // vozidlo odstavené, parkující - proti směru staničení
-      "5": `${t("moving_on_road_no_parking_direction")}`, // vozidlo jedoucí - na komunikaci bez staničení
-      "6": `${t("parked_on_road_no_parking_direction")}`, // vozidlo odstavené, parkující - na komunikaci bez staničení
+      "1": `${t("moving_in_parking_direction")}`,
+      "2": `${t("parked_in_parking_direction")}`,
+      "3": `${t("moving_against_parking_direction")}`,
+      "4": `${t("parked_against_parking_direction")}`,
+      "5": `${t("moving_on_road_no_parking_direction")}`,
+      "6": `${t("parked_on_road_no_parking_direction")}`,
     };
     const parsedValue = parseInt(String(direction), 10);
     console.log(

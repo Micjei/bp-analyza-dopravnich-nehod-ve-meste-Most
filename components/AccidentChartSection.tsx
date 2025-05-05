@@ -1,12 +1,20 @@
 "use client";
 
+// React hooks
 import { useEffect, useState } from "react";
+
+// Chart component
 import { Doughnut } from "react-chartjs-2";
+
+// Custom UI components and utilities
 import CustomSelect from "@/components/CustomSelect";
 import { years } from "@/utils/selectOptions";
-import { useTranslation } from "react-i18next";
-import "@/i18n";
 
+// i18n translation hook
+import { useTranslation } from "react-i18next";
+import "@/i18n"; // Translation initialization
+
+// Type definition for component props
 type Props = {
   year: string;
   month: string;
@@ -19,6 +27,7 @@ type Props = {
   months: string[];
 };
 
+// Main component definition
 export default function AccidentChartSection({
   year,
   month,
@@ -27,18 +36,23 @@ export default function AccidentChartSection({
   chartData,
   months,
 }: Props) {
-  const { t } = useTranslation();
-  const [isClient, setIsClient] = useState(false);
+  const { t } = useTranslation(); // Translation function
+  const [isClient, setIsClient] = useState(false); // Used to avoid rendering before hydration on the server
 
+  // Set client flag after mounting to avoid SSR mismatches
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // Prevent rendering on the server
   if (!isClient) return null;
 
   return (
     <div className="h-[330px] flex flex-col">
+      {/* Section label */}
       <label>{t("accidents_stats")}</label>
+
+      {/* Year and month dropdowns */}
       <div className="flex flex-row md:gap-2 gap-0.5 mb-1">
         <CustomSelect
           options={["-", ...years.map(String)]}
@@ -52,6 +66,7 @@ export default function AccidentChartSection({
         />
       </div>
 
+      {/* Doughnut chart section */}
       <div className="flex-1 overflow-hidden">
         <Doughnut
           data={chartData.data}

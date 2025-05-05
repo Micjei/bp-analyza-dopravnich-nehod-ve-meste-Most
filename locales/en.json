@@ -75,10 +75,10 @@
   "dd": "day",
   "mm": "month",
   "yy": "year",
-  "stats_intro": "This interactive application serves to visualize and analyze traffic data in the city of Most. It allows you to view an overview of traffic accidents and radar measurements across various time periods.\n\nUsing the filters at the top of the dashboard, you can select a specific year and month. The results are automatically reflected in the charts – on the left side you’ll see speed violations across different locations, and on the right, accident consequence statistics.\n\nBy clicking the \"+\" button, you can add a second chart to compare data from two different periods side by side.\n\nRadar data can be displayed either as a total of speed violations per street, or in more detail using categorized speed intervals.\n\nThe goal of this app is to better understand the traffic situation in the city and to support increased road safety through data-driven insights.",
+  "stats_intro": "This section provides an interactive overview of traffic accidents and speed radar measurements in the city of Most. You can filter the displayed data by selecting a specific year and month to observe changes in traffic over time.\n\nThe left side of the dashboard shows speeding violations at monitored locations, while the right side visualizes the consequences of traffic accidents. By clicking the “+” button, you can add a second chart to compare two different time periods side by side.\n\nRadar charts support three display modes: a summary (counts of speeding in both directions), an interval mode (by speed ranges), and a ratio mode (e.g., the percentage of vehicles that exceeded the speed limit).\n\nThe goal of this visualization is to provide users with a data-driven insight into traffic safety and support its analysis and improvement.",
   "info_page_title": "Help",
   "header_section": "Header",
-  "header_section_text": "The top navigation bar allows you to switch between the map, statistics, and the help page. Here you’ll also find controls for language selection, light/dark mode, and map background (e.g., satellite, OpenStreetMap, etc.).",
+  "header_section_text": "The top navigation bar allows you to switch between the map, statistics, and the help page. Here you’ll also find controls for language selection , light/dark mode (settings), and map background (e.g., satellite, OpenStreetMap, etc.).",
   "map_section": "Map",
   "map_section_text": "The interactive map displays traffic accidents, radar devices in the city of Most, and optionally the current traffic situation. Clicking on a map element reveals detailed information.",
   "filter_section": "Filters",
@@ -213,5 +213,9 @@
   "cars_speeding_in_direction": "cars speeding in direction",
   "cars_passed_opposite": "cars passed in opposite direction",
   "cars_speeding_opposite": "cars speeding in opposite direction",
-  "passed": "passed"
+  "passed": "passed",
+
+  "welcome_title": "Welcome!",
+  "welcome_text": "Click the question mark in the top right to explore how to use this app.",
+  "got_it": "Got it"
 }

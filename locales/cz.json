@@ -75,16 +75,16 @@
   "dd": "den",
   "mm": "měsíc",
   "yy": "rok",
-  "stats_intro": "Tato interaktivní aplikace slouží k vizualizaci a analýze dopravních dat ve městě Most. Umožňuje zobrazit přehled dopravních nehod a radarových měření v různých časových obdobích.\n\nPomocí filtrů v horní části dashboardu lze vybírat konkrétní rok a měsíc. Výsledky se automaticky promítnou do grafů – na levé straně je zobrazeno překročení rychlostí v jednotlivých lokalitách, na pravé straně pak statistiky následků dopravních nehod.\n\nPomocí tlačítka \"+\" si můžete přidat druhý graf pro porovnání dvou různých období vedle sebe.\n\nRadarová data lze zobrazit buď jako celkový součet překročení rychlostí v daných ulicích, nebo podrobněji podle jednotlivých rychlostních intervalů.\n\nCílem aplikace je pomoci lépe porozumět dopravní situaci ve městě a podpořit zvyšování bezpečnosti na silnicích pomocí datově podložených rozhodnutí.",
+  "stats_intro": "Tato sekce nabízí interaktivní přehled o dopravních nehodách a radarových měřeních ve městě Most. Pomocí výběru roku a měsíce můžete filtrovat zobrazená data a sledovat vývoj dopravní situace v čase.\n\nLevá strana dashboardu zobrazuje překročení rychlosti ve sledovaných lokalitách, pravá strana vizualizuje následky dopravních nehod. Kliknutím na tlačítko „+“ můžete přidat druhý graf pro porovnání různých období vedle sebe.\n\nRadarové grafy podporují tři režimy: souhrnný přehled (počty překročení rychlosti ve směru a v protisměru), zobrazení podle rychlostních intervalů a poměrové zobrazení (např. kolik procent aut překročilo rychlost).\n\nCílem této vizualizace je poskytnout uživatelům datově podložený náhled na dopravní bezpečnost a usnadnit její analýzu.",
   "info_page_title": "Nápověda",
   "header_section": "Hlavička",
-  "header_section_text": "Horní lišta umožňuje navigaci mezi mapou, statistikama a informační stránkou. Zde se nachází i přepínače pro výběr jazyka, změnu barevného režimu (světlý / tmavý) a výběr podkladové mapy (např. satelitní, OpenStreetMap apod.).",
+  "header_section_text": "Horní lišta umožňuje navigaci mezi mapou, statistikama a informační stránkou. Zde se nachází i přepínače pro výběr jazyka, změnu barevného režimu (světlý / tmavý v nastavení) a výběr podkladové mapy (např. satelitní, OpenStreetMap apod.).",
   "map_section": "Mapa",
   "map_section_text": "Interaktivní mapa zobrazuje dopravní nehody, měřicí radary ve městě Most a případně i dopravní situaci. Kliknutím na jednotlivé prvky se zobrazí detailní informace.",
   "filter_section": "Filtry",
-  "filter_section_text": "V levé části obrazovky naleznete panel filtrů, který umožňuje vybrat data, která se budou na mapě zobrazovat, filtrovat je podle konkrétního roku, měsíce, dne, přítomnosti alkoholu či drog, účasti chodce a dalších parametrů.",
+  "filter_section_text": "V levé části obrazovky na mapě naleznete panel filtrů, který umožňuje vybrat data, která se budou na mapě zobrazovat, filtrovat je podle konkrétního roku, měsíce, dne, přítomnosti alkoholu či drog, účasti chodce a dalších parametrů.",
   "legend_section": "Legenda",
-  "legend_section_text": "V pravém dolním rohu se nachází legenda, která vysvětluje význam jednotlivých ikon na mapě, barev v dopravní vrstvě nebo význam symbolů u dopravních nehod a radarů.",
+  "legend_section_text": "V pravém dolním rohu na mapě se nachází legenda, která vysvětluje význam jednotlivých ikon, barev v dopravní vrstvě nebo význam symbolů u dopravních nehod, radarů a dopravní situace",
   "stats_section": "Statistiky",
   "stats_section_text": "Statistiky nabízí grafické zobrazení vybraných dat v čase. Umožňuje porovnat například četnost radarových měření nebo vývoj dopravních nehod v průběhu roku. Můžete také porovnávat různá období a přepínat mezi více typy zobrazení.",
   "help_section": "Nápověda",
@@ -213,5 +213,9 @@
   "cars_speeding_in_direction": "aut překročilo rychlost ve směru",
   "cars_passed_opposite": "aut projelo v protisměru",
   "cars_speeding_opposite": "aut překročilo rychlost v protisměru",
-  "passed": "projelo"
+  "passed": "projelo",
+
+  "welcome_title": "Vítejte!",
+  "welcome_text": "Klikněte na otazník vpravo nahoře pro nápovědu, jak používat tuto aplikaci.",
+  "got_it": "Rozumím"
 }
