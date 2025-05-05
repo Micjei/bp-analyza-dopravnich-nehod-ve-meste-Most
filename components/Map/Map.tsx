@@ -20,7 +20,7 @@ import FooterSection from "../FooterSection";
 import HeaderSection from "../HeaderSection";
 
 // Funkce pro získání dat
-import { fetchRadarsData, fetchAccidentsData } from "@/utils/fetchData";
+//import { fetchRadarsData, fetchAccidentsData } from "@/utils/fetchData";
 
 // Další doplňky pro mapu
 import "leaflet-rotatedmarker";
@@ -53,7 +53,7 @@ import { useTranslation } from "react-i18next";
 import "@/i18n"; // Import konfigurace i18n
 
 import { useData } from "@/context/DataContext";
-import { useTheme } from "@/context/ThemeContext";
+//import { useTheme } from "@/context/ThemeContext";
 import { useMapLayer } from "@/context/MapLayerContext";
 
 const Map: React.FC = () => {
@@ -71,7 +71,7 @@ const Map: React.FC = () => {
   const [showAccidentData, setShowAccidentData] = useState(false);
   const [showTrafficData, setShowTrafficData] = useState(false);
 
-  const { isDark } = useTheme();
+  //const { isDark } = useTheme();
   const { tileLayerUrl, setTileLayerUrl } = useMapLayer();
 
   const [selectedYear, setSelectedYear] = useState(
