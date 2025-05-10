@@ -96,7 +96,7 @@
   "pedestrian": "Pedestrian",
   "passenger": "Pasenger",
   "age": "Age",
-  "unknown_value": "Unknown value",
+  "unknown_value": "Unknown",
   "driver_motor_vehicle": "Driver of a motor vehicle",
   "driver_non_motor_vehicle": "Driver of a non-motor vehicle",
   "animal": "Animal (wild or domestic)",

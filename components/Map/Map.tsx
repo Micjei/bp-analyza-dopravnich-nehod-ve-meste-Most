@@ -152,8 +152,8 @@ const Map: React.FC = () => {
               (drugsFilter === "ano" && drugsYesValues.includes(drogyStr)) ||
               drogyStr === drugsFilter) &&
             (pedestrianFilter === "-" ||
-              (pedestrianFilter === `${t("yes")}` && chodci.length > 0) ||
-              (pedestrianFilter === `${t("no")}` && chodci.length === 0)) &&
+              (pedestrianFilter === "1" && chodci.length > 0) ||
+              (pedestrianFilter === "0" && chodci.length === 0)) &&
             (deadFilter === "-" ||
               parseInt(smrt, 10) === parseInt(deadFilter, 10) ||
               (deadFilter === "0" && parseInt(smrt, 10) !== 1))
@@ -244,7 +244,7 @@ const Map: React.FC = () => {
             .map(
               (m: any, index: number) =>
                 `<b>${t("measurement")}: ${index + 1}:</b> 
-                ${t("speeding")}: ${m.prekroceni_rychl_soucet} km/h,
+                ${t("speeding")}: ${m.prekroceni_rychl_soucet},
                 ${t("date")}: ${formateDate(m.datum_text)}, 
                 ${t("speeding_in_line")}: ${m.prekroceni_rychl_ve_smeru},
                 ${t("speeding_out_line")}: ${

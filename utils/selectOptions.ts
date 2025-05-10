@@ -64,8 +64,8 @@ export const drugsOptions = (t: (key: string) => string) => [
 // Options for filtering pedestrian participation in accident
 export const pedestrianOptions = (t: (key: string) => string) => [
   { label: "-", value: "-" },
-  { label: `${t("yes")}`, value: `${t("yes")}` },
-  { label: `${t("no")}`, value: `${t("no")}` },
+  { label: `${t("yes")}`, value: "1" },
+  { label: `${t("no")}`, value: "0" },
 ];
 
 // Options for filtering fatal accidents (based on p13a)
