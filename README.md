@@ -34,4 +34,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
 # bp-analyza-dopravnich-nehod-ve-meste-Most
+
+This is a web application designed for interactive visualization and analysis of traffic accident and speed measurement data in the city of Most. It provides users with an intuitive interface to explore spatial and statistical data using maps and charts. The application supports filtering by date and additional attributes, offers light/dark mode, and is fully localized (Czech/English).
+
+The project was developed as part of a bachelor's thesis and demonstrates the use of open traffic data in the context of smart cities.

@@ -539,13 +539,14 @@ const Map: React.FC = () => {
           )}
 
           {/* Radar heatmap layer */}
-          {showMeasureHeatmap && (
-            <HeatmapLayer
-              showHeatmap={showMeasureHeatmap}
-              data={filteredRadarsData}
-              intensityType="radars"
-            />
-          )}
+          {showMeasureHeatmap &&
+            showRadarData && ( // !
+              <HeatmapLayer
+                showHeatmap={showMeasureHeatmap}
+                data={filteredRadarsData}
+                intensityType="radars"
+              />
+            )}
 
           {/* Accident markers with clustering */}
           {!showAccidentsHeatmap &&
