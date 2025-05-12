@@ -40,3 +40,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 This is a web application designed for interactive visualization and analysis of traffic accident and speed measurement data in the city of Most. It provides users with an intuitive interface to explore spatial and statistical data using maps and charts. The application supports filtering by date and additional attributes, offers light/dark mode, and is fully localized (Czech/English).
 
 The project was developed as part of a bachelor's thesis and demonstrates the use of open traffic data in the context of smart cities.
+
+URL of the app: (https://bp-analyza-dopravnich-nehod-ve-meste-most-zw49.vercel.app/)
