@@ -6,14 +6,14 @@ import cz from "./locales/cz.json";
 import en from "./locales/en.json";
 
 i18n
-  .use(LanguageDetector) // Automatická detekce jazyka
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources: {
       cs: { translation: cz },
       en: { translation: en },
     },
-    fallbackLng: "cs", // Výchozí jazyk, pokud není detekován
+    fallbackLng: "cs",
     interpolation: { escapeValue: false },
   });
 

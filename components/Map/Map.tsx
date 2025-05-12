@@ -419,7 +419,6 @@ const Map: React.FC = () => {
       heatmapLayer.addTo(map);
 
       return () => {
-        // Cleanup: remove heatmap when component unmounts or updates
         map.removeLayer(heatmapLayer);
       };
     }, [map, showHeatmap, data]);

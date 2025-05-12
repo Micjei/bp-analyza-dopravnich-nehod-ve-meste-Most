@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { DataProvider } from "@/context/DataContext";
-import { MapLayerProvider } from "@/context/MapLayerContext"; // přidat import
+import { MapLayerProvider } from "@/context/MapLayerContext";
 import HeaderSection from "@/components/HeaderSection";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
