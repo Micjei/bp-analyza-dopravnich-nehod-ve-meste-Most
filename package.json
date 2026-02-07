@@ -22,7 +22,7 @@
     "leaflet.heat": "^0.2.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.501.0",
-    "next": "^15.2.4",
+    "next": "15.2.8",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.2",
     "proj4": "^2.15.0",
