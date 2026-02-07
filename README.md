@@ -42,3 +42,5 @@ This is a web application designed for interactive visualization and analysis of
 The project was developed as part of a bachelor's thesis and demonstrates the use of open traffic data in the context of smart cities.
 
 URL of the app: (https://bp-analyza-dopravnich-nehod-ve-meste-most-zw49.vercel.app/)
+
+**This app uses data stored on FIT BUT servers, so the data may no longer be available.**
